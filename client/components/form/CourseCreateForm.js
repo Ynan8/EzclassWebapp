@@ -1,70 +1,72 @@
-import { Button } from 'antd'
 import React from 'react'
 import { FaCloudUploadAlt } from 'react-icons/fa'
+import { Select, SelectItem, Textarea, Input, Button } from "@nextui-org/react";
 
 const CourseCreateForm = () => {
+    const animals = [
+        { label: "Cat", value: "cat", description: "The second most popular pet in the world" },
+        { label: "Dog", value: "dog", description: "The most popular pet in the world" },
+        { label: "Elephant", value: "elephant", description: "The largest land animal" },
+        { label: "Lion", value: "lion", description: "The king of the jungle" },
+        { label: "Tiger", value: "tiger", description: "The largest cat species" },
+        { label: "Giraffe", value: "giraffe", description: "The tallest land animal" },
+        {
+            label: "Dolphin",
+            value: "dolphin",
+            description: "A widely distributed and diverse group of aquatic mammals",
+        },
+        { label: "Penguin", value: "penguin", description: "A group of aquatic flightless birds" },
+        { label: "Zebra", value: "zebra", description: "A several species of African equids" },
+        {
+            label: "Shark",
+            value: "shark",
+            description: "A group of elasmobranch fish characterized by a cartilaginous skeleton",
+        },
+        {
+            label: "Whale",
+            value: "whale",
+            description: "Diverse group of fully aquatic placental marine mammals",
+        },
+        { label: "Otter", value: "otter", description: "A carnivorous mammal in the subfamily Lutrinae" },
+        { label: "Crocodile", value: "crocodile", description: "A large semiaquatic reptile" },
+    ];
+
     return (
         <div>
             <form>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 ">
                     <div className="flex flex-col space-y-1">
-                        <label className=" block text-base font-medium text-[#07074D]">
-                            รหัสวิชา
-                            <span className="text-red-400 ml-[2px]">*</span>
-                        </label>
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
-                                <input
-                                    type="text"
-                                    name="courseNo"
-                                    required
-                                    placeholder="เช่น ค25329"
-                                    className={`w-full shadow-sm rounded-md py-2 border-2 focus:outline-none transition pl-4  pr-10`}
-                                />
-
-
+                                <Input isRequired type="email" variant={"bordered"} label="รหัสวิชา" />
                             </div>
                         </div>
                         <p className="ml-auto text-gray-500 text-xs">/20</p>
                     </div>
                     <div className="flex flex-col space-y-1">
-                        <label className=" block text-base font-medium text-[#07074D]">
-                            ชื่อรายวิชา
-                            <span className="text-red-400 ml-[2px]">*</span>
-                        </label>
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
-                                <input
-                                    type="text"
-                                    name="courseName"
-                                    required
-                                    placeholder="เช่น การเขียนโปรแกรมพื้นฐาน"
-                                    className={`w-full shadow-sm rounded-md py-2 border-2 focus:outline-none transition pl-4 pr-10`}
-                                />
-
+                                <Input isRequired type="test" variant={"bordered"} label="ชื่อรายวิชา" />
                             </div>
                         </div>
                         <p className="ml-auto text-gray-500 text-xs">/100</p>
                     </div>
                 </div>
 
-                <div className="flex flex-col space-y-1 ">
-                    <label className="block text-base font-medium text-[#07074D]">
-                        รายละเอียด
-                        <span className="text-red-400 ml-[2px]">*</span>
-                    </label>
+                <div className="flex flex-col space-y-1 mt-4">
                     <div className="flex items-center space-x-2">
                         <div className="flex-1 relative">
-                            <textarea
-                                type="text"
-                                name="detail"
-                                required
-                                cols=""
-                                rows="4"
-                                placeholder="คำอธิบายเกี่ยวกับรายวิชา"
-                                className={`w-full shadow-sm rounded-md py-2 border-2 focus:outline-none transition pl-4  pr-10`}
+                            <Textarea
+                                label="รายละเอียด"
+                                variant="bordered"
+                                placeholder="เพิ่มคำอธิบายเกี่ยวกับรายวิชา"
+                                disableAnimation
+                                disableAutosize
+                                classNames={{
+                                    base: "w-full ",
+                                    input: "resize-y min-h-[60px]",
+                                }}
                             />
-
 
                         </div>
                     </div>
@@ -72,38 +74,25 @@ const CourseCreateForm = () => {
                 </div>
 
 
-                <div className="flex space-y-1 ">
+                <div className="flex space-y-1 mt-4">
                     <div className="w-full">
-                        <label className="block text-base font-medium text-[#07074D]">
-                            ระดับการศึกษา
-                            <span className="text-red-400 ml-[2px]">*</span>
-                        </label>
-                        <select
-                            id="level-select"
-                            name="level"
-                            className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        <Select
+                            isRequired
+                            items={animals}
+                            label="ระดับการศึกษา"
+                            placeholder="เลือกระดับการศึกษา"
+                            className="max-w-xs"
                         >
-                            <option value="choose">เลือกระดับการศึกษา</option>
-
-                        </select>
+                            {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
+                        </Select>
                     </div>
                 </div>
 
-
                 <div className="mt-6">
-                    <div className="form-group">
-                        <label className="block text-base font-medium text-[#07074D]">รูปรายวิชา <span className="text-red-500">*</span></label>
-                        <div className="flex items-center">
-                            <label className="flex items-center cursor-pointer space-x-1 border-2 rounded-md px-2 py-1.5 max-w-max shadow-sm focus:outline-none  transition hover:bg-gray-100  ">
-                                <FaCloudUploadAlt className="mr-2" size={25} />
-                                <input
-                                    type="file"
-                                    name="image"
-                                    accept="image/*"
-                                    hidden
-                                />
-                            </label>
-                        </div>
+                    <div className="flex items-center">
+                        <Button color="default" variant="bordered" startContent={<FaCloudUploadAlt size={25} />}>
+                            เพิ่มรูปรายวิชา
+                        </Button>
                     </div>
                 </div>
 
@@ -115,9 +104,8 @@ const CourseCreateForm = () => {
                 </div>
                 <div className="flex justify-end mt-6">
                     <Button
-                        className={`hover:shadow-form w-full rounded-md px-6 text-center text-base font-semibold outline-non`}
-                        type="primary"
-                        size="large"
+                        className={`hover:shadow-form w-full rounded-md  text-center text-base font-semibold outline-non`}
+                        color="primary"
                     >
                         บันทึก
                     </Button>

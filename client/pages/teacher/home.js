@@ -2,9 +2,14 @@ import React from 'react';
 import HeaderBarTeacher from '../../components/HeaderBar/HeaderBarTeacher';
 import Link from 'next/link';
 import { FaPlus } from "react-icons/fa";
-import { Button } from '@nextui-org/react';
-import { Card, CardFooter, Image } from "@nextui-org/react";
+import { Button, CardFooter, DropdownSection } from '@nextui-org/react';
+import { Card, CardHeader, CardBody } from "@nextui-org/react";
+
 import { Tabs, Tab } from "@nextui-org/react";
+import bgYear from '../../public/bgYear.png'
+import Image from 'next/image';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, cn } from "@nextui-org/react";
 
 const Home = () => {
   return (
@@ -36,23 +41,61 @@ const Home = () => {
                   </Tabs>
                 </div>
                 <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                  <Card
-                    isFooterBlurred
-                    radius="lg"
-                    className="border-none"
-                  >
-                    <Image
-                      alt="Woman listing to music"
-                      className="object-cover"
-                      height={200}
-                      src="/images/hero-card.jpeg"
-                      width={200}
-                    />
-                    <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
-                      <p className="text-tiny text-white/80">Available soon.</p>
-                      <Button className="text-tiny text-white bg-black/20" variant="flat" color="default" radius="lg" size="sm">
-                        Notify me
-                      </Button>
+                  <Card className="py-4">
+                    <CardBody className="overflow-visible">
+                      <div className="relative">
+
+                        <div
+                          className='ml-auto mb-2'
+                        >
+                          <Dropdown>
+                            <DropdownTrigger>
+                              <Button
+                                className='ml-60'
+                                variant="light"
+                                startContent={<BsThreeDotsVertical size={20} />}
+                              >
+
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
+                              <DropdownItem
+                                key="new"
+                              >
+                                จัดเก็บรายวิชา
+                              </DropdownItem>
+                              <DropdownItem
+                                key="edit"
+                              >
+                                แก้ไขรายวิชา
+                              </DropdownItem>
+                              <DropdownItem
+                                key="delete"
+                                className="text-danger"
+                                color="danger"
+                              >
+                                ลบรายวิชา
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                        <Link
+                          href={`/teacher/course/year/`}
+                        >
+                          <img
+                            className="object-cover"
+                            src={bgYear}
+                            alt={"Thumbnail-alt"}
+                            width={300}
+                            height={160}
+                            style={{ background: "#252525e6", borderRadius: "6px" }}
+                          />
+                          </Link>
+                      </div>
+                    </CardBody>
+                    <CardFooter className="pb-0 px-4 flex-col items-start">
+                      <h4 className="font-bold text-large">Frontend Radio</h4>
+                      <p className="text-tiny uppercase font-bold">Daily Mix</p>
                     </CardFooter>
                   </Card>
 

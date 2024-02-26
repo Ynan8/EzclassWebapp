@@ -14,7 +14,7 @@ const createCourse = () => {
             </Link>
             <div className="mx-auto max-w-screen-lg px-4 pt-2 pb-20 space-y-12">
                 <div className="text-center space-y-4">
-                    <h1 className="text-2xl sm:text-3xl font-semibold">สร้างรายวิชา </h1>
+                    <h1 className="text-2xl sm:text-3xl font-medium">สร้างรายวิชา </h1>
                 </div>
                 <CourseCreateForm />
             </div>
