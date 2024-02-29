@@ -44,23 +44,7 @@ const index = () => {
                 }
             );
 
-            console.log("LOGIN Response",data.payload.user.role)
-
-            dispatch({
-                type: "LOGIN",
-                username: data.payload.user,
-            });
-            
-            // // Save user in local storage
-            window.localStorage.setItem("token", JSON.stringify(data.token));
-
-            if (data.payload.user.role === 'teacher') {
-                router.push('/teacher/home');
-            } else if (data.payload.user.role=== 'student') {
-                router.push('/student/home');
-            } else if (data.payload.user.role === 'admin') {
-                router.push('/admin/home');
-            }
+            router.push("/teacher/home")
 
         } catch (err) {
             setLoading(false); // Set loading state to false after error
