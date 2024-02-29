@@ -65,7 +65,7 @@ const Home = () => {
 
 
   return (
-    <UserRoute>
+    <>
       <div className="flex flex-col min-h-screen bg-gray-50">
         <div className="header flex flex-col">
           <HeaderBarTeacher />
@@ -152,7 +152,7 @@ const Home = () => {
           </div>
         </main>
       </div>
-    </UserRoute>
+    </>
   );
 };
 
