@@ -1,20 +1,24 @@
 const express = require("express");
-const { readdirSync } = require('fs');
-
 const cors = require('cors');
+
+const { readdirSync } = require('fs');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
+const { createServer } = require ('http');
 const morgan = require('morgan');
 const  connectDB  = require("./config/db");
 require('dotenv').config();
 const csrfProtection = csrf({ cookie: true })
 
+const http = require('http')
 
-
+    
 
 
 //express
 const app = express();
+const httpServer = require('http').createServer(app);
+
 
 
 connectDB()
@@ -31,11 +35,7 @@ readdirSync("./routes")
     .map((r) => app.use("/api", require(`./routes/${r}`)));
 
 
-// csrf
-app.use(csrfProtection)
-app.get('/api/csrf-token', (req, res) => {
-    res.json({ csrfToken: req.csrfToken() });
-});
+
 
 
 // port

@@ -5,12 +5,12 @@ import { NextUIProvider } from "@nextui-org/react";
 
 function MyApp({ Component, pageProps }) {
     return (
-        <NextUIProvider >
             <Provider>
+            <NextUIProvider>
                 <Toaster position='top-center' />
                 <Component {...pageProps} />
+            </NextUIProvider>
             </Provider>
-        </NextUIProvider>
 
 
     )

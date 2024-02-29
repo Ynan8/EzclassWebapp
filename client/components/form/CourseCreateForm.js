@@ -1,36 +1,19 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { FaCloudUploadAlt } from 'react-icons/fa'
 import { Select, SelectItem, Textarea, Input, Button } from "@nextui-org/react";
 
-const CourseCreateForm = () => {
-    const animals = [
-        { label: "Cat", value: "cat", description: "The second most popular pet in the world" },
-        { label: "Dog", value: "dog", description: "The most popular pet in the world" },
-        { label: "Elephant", value: "elephant", description: "The largest land animal" },
-        { label: "Lion", value: "lion", description: "The king of the jungle" },
-        { label: "Tiger", value: "tiger", description: "The largest cat species" },
-        { label: "Giraffe", value: "giraffe", description: "The tallest land animal" },
-        {
-            label: "Dolphin",
-            value: "dolphin",
-            description: "A widely distributed and diverse group of aquatic mammals",
-        },
-        { label: "Penguin", value: "penguin", description: "A group of aquatic flightless birds" },
-        { label: "Zebra", value: "zebra", description: "A several species of African equids" },
-        {
-            label: "Shark",
-            value: "shark",
-            description: "A group of elasmobranch fish characterized by a cartilaginous skeleton",
-        },
-        {
-            label: "Whale",
-            value: "whale",
-            description: "Diverse group of fully aquatic placental marine mammals",
-        },
-        { label: "Otter", value: "otter", description: "A carnivorous mammal in the subfamily Lutrinae" },
-        { label: "Crocodile", value: "crocodile", description: "A large semiaquatic reptile" },
-    ];
+const CourseCreateForm = ({
+    handleSubmit,
+    handleChange,
+    values,
+    levels,
+    handleUploadButtonClick,
+    fileInputRef,
+    handleFileInputChange,
+    handleLevelChange
 
+}) => {
+    
     return (
         <div>
             <form>
@@ -38,7 +21,15 @@ const CourseCreateForm = () => {
                     <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
-                                <Input isRequired type="email" variant={"bordered"} label="รหัสวิชา" />
+                                <Input
+                                    isRequired
+                                    type="text"
+                                    name="courseNo"
+                                    value={values.courseNo}
+                                    onChange={handleChange}
+                                    variant={"bordered"}
+                                    label="รหัสวิชา"
+                                />
                             </div>
                         </div>
                         <p className="ml-auto text-gray-500 text-xs">/20</p>
@@ -46,7 +37,14 @@ const CourseCreateForm = () => {
                     <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
-                                <Input isRequired type="test" variant={"bordered"} label="ชื่อรายวิชา" />
+                                <Input
+                                    isRequired
+                                    name="courseName"
+                                    value={values.courseName}
+                                    onChange={handleChange}
+                                    type="text"
+                                    variant={"bordered"}
+                                    label="ชื่อรายวิชา" />
                             </div>
                         </div>
                         <p className="ml-auto text-gray-500 text-xs">/100</p>
@@ -57,6 +55,10 @@ const CourseCreateForm = () => {
                     <div className="flex items-center space-x-2">
                         <div className="flex-1 relative">
                             <Textarea
+                                isRequired
+                                name="detail"
+                                value={values.detail}
+                                onChange={handleChange}
                                 label="รายละเอียด"
                                 variant="bordered"
                                 placeholder="เพิ่มคำอธิบายเกี่ยวกับรายวิชา"
@@ -78,21 +80,36 @@ const CourseCreateForm = () => {
                     <div className="w-full">
                         <Select
                             isRequired
-                            items={animals}
+                            name="level"
+                            items={levels}
                             label="ระดับการศึกษา"
                             placeholder="เลือกระดับการศึกษา"
                             className="max-w-xs"
+                            onChange={handleLevelChange} 
                         >
-                            {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
+                            {(level) => <SelectItem key={level.value}>{level.label}</SelectItem>}
                         </Select>
                     </div>
                 </div>
 
+
                 <div className="mt-6">
                     <div className="flex items-center">
-                        <Button color="default" variant="bordered" startContent={<FaCloudUploadAlt size={25} />}>
+                        <Button
+                            color="default"
+                            variant="bordered"
+                            startContent={<FaCloudUploadAlt size={25} />}
+                            onClick={handleUploadButtonClick}
+                        >
                             เพิ่มรูปรายวิชา
                         </Button>
+                        {/* Hidden file input */}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileInputChange}
+                        />
                     </div>
                 </div>
 
@@ -104,13 +121,13 @@ const CourseCreateForm = () => {
                 </div>
                 <div className="flex justify-end mt-6">
                     <Button
-                        className={`hover:shadow-form w-full rounded-md  text-center text-base font-semibold outline-non`}
+                        size='lg'
+                        onClick={handleSubmit}
                         color="primary"
+                        isLoading={values.loading}
                     >
-                        บันทึก
+                        {values.loading ? "กำลังโหลด..." : "บันทึก"}
                     </Button>
-
-
                 </div>
             </form >
         </div>

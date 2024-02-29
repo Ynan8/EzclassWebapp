@@ -32,35 +32,80 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    try {
-        const { username, password } = req.body
+  try {
+    //code
+    // 1. Check User
+    const { username, password } = req.body
+    var user = await User.findOneAndUpdate({ username }, { new: true })
+    console.log(user)
 
-    
-        // check if our db has user with that email
-        const user = await User.findOne({ username }).exec();
-        if (!user) return res.status(400).send("ไม่พบบัญชีผู้ใช้");
-        // check password
-        const match = await comparePassword(password, user.password);
-        if (!match) return res.status(400).send('รหัสผ่านไม่ถูกต้อง');
-    
-        // const status = await User.findOne({ status:"false" }).exec();
-        // if (!status) return res.status(400).send('อีเมลล์ยังไม่ได้รับการอนุมัติ');
-        // create signed jwt
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET,
-          {
-            expiresIn: "7d",
-          })
-        // return user and token to client, exclude hashed password
-        user.password = undefined;
-        // send token in cookie
-        res.cookie('token', token, {
-          httpOnly: true,
-          // secure: true, //only works on https
-        });
-        // send user as json response 
-        res.json(user);
-      } catch (err) {
-        console.log(err)
-        return res.status(400).send('Error. Try again.')
-      }
+    if (user) {
+        const isMatch = await comparePassword(password, user.password)
+
+        if (!isMatch) {
+            return res.status(400).send('รหัสผ่านไม่ถูกต้อง')
+        }
+        // 2. Payload
+        var payload = {
+            user: {
+                username: user.username,
+                firstName: user.firstName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                image: user.image.Location,
+                role: user.role,
+            }
+        }
+        // 3. Generate
+        jwt.sign(payload, 'jwtsecret', { expiresIn: "1d" }, (err, token) => {
+            if (err) throw err;
+            res.json({ token, payload })
+        })
+    } else {
+        return res.status(400).send('ไม่พบข้อมูลผู้ใช้!!!')
+    }
+
+} catch (err) {
+    //code
+    console.log(err)
+    res.status(500).send('Server Error')
 }
+}
+
+exports.logout = async (req, res) => {
+  try {
+    res.clearCookie('token');
+    return res.json({ message: "ออกจากระบบสำเร็จ" });
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+
+
+exports.currentUser = async (req, res) => {
+
+  try {
+    const user = await User.findOne({username:req.user.username})
+    .select('-password')
+    .exec();
+     res.send(user);
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+// exports.currentTeacher = async (req, res) => {
+//   try {
+//     let user = await User.findById(req.user._id).select("-password").exec();
+//     if (!user.role.includes('teacher')) {
+//       return res.sendStatus(403);
+//     } else {
+//       res.json({ ok: true });
+//     }
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }

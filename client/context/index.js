@@ -36,14 +36,16 @@ const router = useRouter();
         });
     }, []);
 
-    axios.interceptors.response.use(
+    axios.interceptors.response.use(+
         function(response){
             return response;
+            
         }, function(error){
             let res = error.response;
             if(res.status === 401 && res.config && !res.config.__isRetryRequest) {
                 return new Promise((resolve, reject) => {
-                    axios.get(`${process.env.NEXT_PUBLIC_API}/logout`)
+                    axios
+                    .get(`${process.env.NEXT_PUBLIC_API}/logout`)
                     .then((data) => {
                         console.log('/401 error > logout')
                         dispatch({type: 'LOGOUT'})
@@ -59,14 +61,6 @@ const router = useRouter();
             return Promise.reject(error);
         });
 
-        useEffect(() => {
-            const getCsrfToken = async () => {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/csrf-token`);
-                console.log('CSRF', data)
-                axios.defaults.headers['X-CSRF-Token'] = data.getCsrfToken;
-            };
-            getCsrfToken();
-        }, []);
 
     return (
         <Context.Provider value={{state, dispatch}}>{children}</Context.Provider>

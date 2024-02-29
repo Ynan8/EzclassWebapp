@@ -10,10 +10,11 @@ import Image from 'next/image'
 import Logo from '../public/Logo.png'
 import LogoString from '../public/LogoString.png'
 import { useRouter } from 'next/router'
+import { Button } from "@nextui-org/react";
 
 const index = () => {
-    const [username, setUsername] = useState("31280");
-    const [password, setPassword] = useState("11111111");
+    const [username, setUsername] = useState("3001");
+    const [password, setPassword] = useState("020145");
     const [loading, setLoading] = useState(false);
 
     // state
@@ -21,44 +22,57 @@ const index = () => {
         dispatch,
     } = useContext(Context);
 
+    console.log(user)
+
+
+
     // router
     const router = useRouter();
+
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
+
             const { data } = await axios.post(
                 `${process.env.NEXT_PUBLIC_API}/login`,
                 {
                     username,
                     password,
-                });
-            
+                }
+            );
+
+            console.log("LOGIN Response",data.payload.user.role)
+
             dispatch({
                 type: "LOGIN",
-                payload: data,
+                username: data.payload.user,
             });
+            
+            // // Save user in local storage
+            window.localStorage.setItem("token", JSON.stringify(data.token));
 
-            // Save in local storage
-            window.localStorage.setItem("user", JSON.stringify(data));
-
-            // Redirect based on user role
-            if (data.role === 'teacher') {
+            if (data.payload.user.role === 'teacher') {
                 router.push('/teacher/home');
-            } else if (data.role === 'student') {
+            } else if (data.payload.user.role=== 'student') {
                 router.push('/student/home');
-            } else if (data.role === 'admin') {
+            } else if (data.payload.user.role === 'admin') {
                 router.push('/admin/home');
             }
 
         } catch (err) {
-            setLoading(false);
+            setLoading(false); // Set loading state to false after error
             toast.error(err.response.data);
             console.log(err);
+        } finally { // Ensure loading state returns to false even on errors
+            setLoading(false);
         }
     };
+
+  
+
 
     return (
         <>
@@ -117,10 +131,10 @@ const index = () => {
                                     </Link>
 
                                 </div>
-                                <div className='mt-8 flex flex-col gap-y-4'>
-                                    <button className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-blue-500 rounded-xl text-white font-bold text-lg'>
-                                        เข้าสู่ระบบ
-                                    </button>
+                                <div className='mt-8 flex flex-col gap-y-4 '>
+                                    <Button size='lg' onClick={handleSubmit} color="primary" isLoading={loading} >
+                                        {loading ? "กำลังโหลด..." : "เข้าสู่ระบบ"}
+                                    </Button>
                                 </div>
                             </div>
                         </form>
