@@ -79,9 +79,11 @@ const Home = () => {
                     {/* <SearchCourse /> */}
                   </div>
                   <div className="flex items-center">
+                    <Link href={'/teacher/createCourse'} >
                     <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
                       สร้างรายวิชา
                     </Button>
+                   </Link>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4 mb-4">
