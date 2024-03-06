@@ -22,8 +22,6 @@ const index = () => {
         dispatch,
     } = useContext(Context);
 
-
-
     // router
     const router = useRouter();
 
