@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Button, Switch } from '@nextui-org/react';
-import QuizLesson from '../../../../../components/Form/QuizLesson';
+import QuizLesson from '../../../../../components/form/QuizLesson';
 
 const CreateQuiz = () => {
   const router = useRouter();
