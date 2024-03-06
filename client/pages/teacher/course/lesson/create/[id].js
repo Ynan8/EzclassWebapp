@@ -3,7 +3,7 @@ import { Input, Listbox, ListboxItem, ListboxSection, Switch } from "@nextui-org
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import { BsBlockquoteRight, BsFileCodeFill, BsFileEarmarkTextFill,  BsYoutube } from 'react-icons/bs';
 import { useRouter } from 'next/router';
-import ContentLesson from '../../../../../components/Form/ContentLesson';
+import ContentLesson from '../../../../../components/form/ContentLesson';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
