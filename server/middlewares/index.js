@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken")
-const expressJwt = require("express-jwt"); // Correct import statement
 
 exports.auth = async (req, res, next) => {
     try {
@@ -10,7 +9,6 @@ exports.auth = async (req, res, next) => {
         }
         const decoded = jwt.verify(token, 'jwtsecret')
         req.user = decoded.user
-        
         next();
     } catch (err) {
         // err

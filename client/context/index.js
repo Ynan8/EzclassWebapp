@@ -1,69 +1,64 @@
 import { useReducer, createContext, useEffect } from "react";
 import axios from "axios";
-import {useRouter}  from "next/router";
+import { useRouter } from "next/router";
 
 // initial state
-const intialState = {
-    user:null
-}
+const initialState = {
+    user: null
+};
 
 // create context
 const Context = createContext()
 
 // root reducer
 const rootReducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case "LOGIN":
-            return {...state, user: action.payload};
+            return { ...state, user: action.user };
         case "LOGOUT":
-            return {...state, user: null};
+            return { ...state, user: null };
         default:
-            return state; 
+            return state;
     }
 };
 
 // context provider
-const Provider = ({children}) => {
-    const [state, dispatch] = useReducer(rootReducer, intialState)
-
-//router
-const router = useRouter();
+const Provider = ({ children }) => {
+    const [state, dispatch] = useReducer(rootReducer, initialState);
+    const router = useRouter();
 
     useEffect(() => {
-        dispatch({
-            type: "LOGIN",
-            payload: JSON.parse(window.localStorage.getItem("user")),
-        });
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
+        if (user && token) {
+            axios.defaults.headers.common['authtoken'] = token;
+            dispatch({
+                type: "LOGIN",
+                user: user,
+            });
+        }
     }, []);
 
-    axios.interceptors.response.use(+
-        function(response){
+    axios.interceptors.response.use(
+        function (response) {
             return response;
-            
-        }, function(error){
+        }, 
+        function (error) {
             let res = error.response;
-            if(res.status === 401 && res.config && !res.config.__isRetryRequest) {
-                return new Promise((resolve, reject) => {
-                    axios
-                    .get(`${process.env.NEXT_PUBLIC_API}/logout`)
-                    .then((data) => {
-                        console.log('/401 error > logout')
-                        dispatch({type: 'LOGOUT'})
-                        window.localStorage.removeItem('user')
-                        router.push('/')
-                    })
-                    .catch(err => {
-                        console.log('AXIOS INTERCEPTOR ERR')
-                        reject(error);
-                    })
-                })
+            if (res.status === 401 && res.config && !res.config.__isRetryRequest) {
+                // Consider handling token expiration more gracefully here
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                dispatch({ type: 'LOGOUT' });
+                router.push('/');
+                return Promise.reject(error);
             }
             return Promise.reject(error);
-        });
-
+        }
+    );
 
     return (
-        <Context.Provider value={{state, dispatch}}>{children}</Context.Provider>
+        <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
     );
 };
 

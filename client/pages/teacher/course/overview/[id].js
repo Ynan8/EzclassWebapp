@@ -8,13 +8,16 @@ import { BsBook, BsJournalCheck } from 'react-icons/bs';
 import { SiGoogleclassroom } from 'react-icons/si';
 import CardOverviewCourse from '../../../../components/Cards/CardOverviewCourse';
 import AverageScoreCourse from '../../../../components/Charts/AverageScoreCourse';
+import { useRouter } from 'next/router';
 
 
 const OverviewCourse = () => {
+    const router = useRouter();
+    const { id } = router.query;
     return (
         <div>
             <div className="min-h-screen flex flex-col flex-auto  bg-gray-50 text-black ">
-                <SideBarTeacher />
+                <SideBarTeacher courseYearId={id} />
                 <HeaderBarTeacher />
                 <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
                     <div className="px-10">

@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import 'antd/dist/antd'
 import { Toaster } from 'react-hot-toast';
 import { Provider } from '../context';
 import { NextUIProvider } from "@nextui-org/react";

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Tooltip, Chip } from "@nextui-org/react";
@@ -13,16 +13,165 @@ import { CiEdit, CiSearch } from "react-icons/ci";
 import { Listbox, ListboxItem, ListboxSection, cn } from "@nextui-org/react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Link } from "@nextui-org/react";
 import AddSection from '../../../../components/Modals/AddSection';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import SectionAccordionTeacher from '../../../../components/Accordion/SectionAccordionTeacher';
+import UpdateSection from '../../../../components/Modals/UpdateSection';
 
 const LessonCourse = () => {
 
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const router = useRouter();
+    const { id } = router.query;
 
+    // Show Course Year
+    const [courseYear, setCourseYear] = useState({});
+
+    useEffect(() => {
+        if (id) {
+            loadCourseYear();
+        }
+    }, [id]);
+
+    const loadCourseYear = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseYear/single/${id}`);
+            // Select the first element from the array (if it exists)
+            const firstElement = data && data.length > 0 ? data[0] : {};
+            setCourseYear(firstElement);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+        }
+    };
+
+    const courseId = courseYear.courseId
+
+    const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onOpenChange: onOpenChangeModalCreate } = useDisclosure();
+    const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
+    const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
+
+
+    // Add section
+    const handleAddSection = async (sectionName) => {
+        try {
+            const { data } = await axios.post(
+                `${process.env.NEXT_PUBLIC_API}/section/${id}/${courseId}`,
+                { sectionName: sectionName }
+            );
+            loadSection();
+            toast.success('สร้างบทเรียนสำเร็จ');
+        } catch (error) {
+            console.error('Error creating section:', error);
+            // Handle error, show toast, etc.
+        }
+    };
+
+    // Show section
+    useEffect(() => {
+        if (courseId) {
+            loadSection();
+        }
+    }, [courseId]);
+    const [section, setSection] = useState([])
+    const loadSection = async () => {
+        try {
+            const { data: sections } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section`, {
+                params: {
+                    courseYearId: id,
+                },
+            });
+
+            // Fetch lesson and quiz data for each section
+            const sectionsWithData = await Promise.all(
+                sections.map(async (section) => {
+                    const lessonData = await Promise.all(
+                        section.lesson.map(async (lessonId) => {
+                            try {
+                                const { data: lesson } = await axios.get(`${process.env.NEXT_PUBLIC_API}/lesson/${lessonId}`);
+                                return lesson;
+                            } catch (error) {
+                                console.error('Error loading lesson:', error);
+                                return null;
+                            }
+                        })
+                    );
+
+                    const quizData = await Promise.all(
+                        section.quiz.map(async (quizId) => {
+                            try {
+                                const { data: quiz } = await axios.get(`${process.env.NEXT_PUBLIC_API}/quiz/${quizId}`);
+                                return quiz;
+                            } catch (error) {
+                                console.error('Error loading quiz:', error);
+                                return null;
+                            }
+                        })
+                    );
+
+                    const AssignmentData = await Promise.all(
+                        section.assignment.map(async (assignmentId) => {
+                            try {
+                                const { data: assignment } = await axios.get(`${process.env.NEXT_PUBLIC_API}/assignment/${assignmentId}`);
+                                return assignment;
+                            } catch (error) {
+                                console.error('Error loading assignment:', error);
+                                return null;
+                            }
+                        })
+                    );
+
+                    return { ...section, lessonData, quizData, AssignmentData };
+                })
+            );
+
+            setSection(sectionsWithData);
+        } catch (error) {
+            console.error('Error loading sections:', error);
+        }
+    };
+
+    // Update Section
+    const [currentSection, setCurrentSection] = useState({});
+
+    const handleUpdateSection = async (e) => {
+        e.preventDefault();
+        try {
+            const { data } = await axios.put(
+                `${process.env.NEXT_PUBLIC_API}/section/${courseId}/${currentSection._id}`,
+                currentSection
+            );
+            loadSection();
+            toast.success('อัปเดตบทเรียนสำเร็จ');
+        } catch (err) {
+            console.log(err);
+            toast.error("ไม่สามารถอัปเดตบทเรียนได้");
+        }
+    };
+
+    // Delete Section
+    const [sectionId, setSectionId] = useState("");
+
+    const openDeleteModal = (id) => {
+        setSectionId(id);
+        onOpenModalDelete();
+    };
+
+    const handleDeleteSection = async (sectionId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/section/${sectionId}`);
+
+            toast.success('ลบบทเรียนสำเร็จ');
+            loadSection();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบบทเรียนได้');
+        }
+    };
 
     return (
         <div>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-                <SideBarTeacher />
+                <SideBarTeacher courseYearId={id} />
                 <HeaderBarTeacher />
                 <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
                     <div className="px-10">
@@ -36,7 +185,7 @@ const LessonCourse = () => {
                     </div>
                     <div className="flex p-8 ">
                         <div className="flex space-x-2 ml-auto">
-                            <Button onPress={onOpen} color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
+                            <Button onPress={onOpenModalCreate} color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
                                 สร้างบทเรียน
                             </Button>
                         </div>
@@ -45,167 +194,94 @@ const LessonCourse = () => {
                     </div>
                     <div className="px-12 w-full">
                         <div className="px-[40px] flex flex-col item-center justify-center">
+                            {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
+                            {/* SectionAccordion */}
                             <div className="flex flex-col space-y-4">
-                                <Accordion selectionMode="multiple" variant="splitted" >
-                                    <AccordionItem
-                                        className='p-3'
-                                        title={
-                                            <div className='flex items-center' >
-                                                <p className='text-xl' >
-                                                    <span className='font-semibold ' >บทที่ 1</span> พื้นฐานไพทอน
-                                                </p>
-                                                <div className="flex space-x-4 mr-4 ml-auto">
-                                                    <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                        <CiEdit size={23} className="ml-auto" />
-                                                    </span>
-                                                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                        <GoTrash size={20} className="" />
-                                                    </span>
-
-                                                </div>
-                                            </div>
-                                        }
-                                        startContent={<FaBookOpen size={25} className="text-primary" />}
-                                    >
-                                        <Listbox variant="flat" aria-label="Listbox menu with sections">
-                                            <ListboxSection title="บทเรียนย่อย" showDivider>
-                                                <ListboxItem
-                                                    key="new"
-                                                    title={
-                                                        <div className='flex items-center text-lg' >
-                                                            <p>
-                                                                <span className='font-semibold' >บทเรียนย่อยที่ 1.1</span> พื้นฐานไพทอน
-                                                            </p>
-                                                            <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                                <Chip className="capitalize" color={"success"} size="md" variant="flat">
-                                                                    เผยแพร่
-                                                                </Chip>
-                                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                    <CiEdit size={23} className="ml-auto" />
-                                                                </span>
-                                                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                                    <GoTrash size={20} className="" />
-                                                                </span>
-
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    startContent={
-                                                        <div className="bg-primary/10 text-primary p-2 rounded-md">
-                                                            <MdLibraryBooks size={25} className="text-primary" />
-                                                        </div>
-                                                    }
-
-
-                                                >
-                                                </ListboxItem>
-                                            </ListboxSection>
-
-                                            <ListboxSection title="แบบทดสอบท้ายบทเรียน" showDivider>
-                                                <ListboxItem
-                                                    key="delete"
-                                                    title={
-                                                        <div className='flex items-center text-lg' >
-                                                            <p>
-                                                                <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> พื้นฐานไพทอน
-                                                            </p>
-                                                            <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                                <Chip className="capitalize" color={"success"} size="md" variant="flat">
-                                                                    เผยแพร่
-                                                                </Chip>
-                                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                    <CiEdit size={23} className="ml-auto" />
-                                                                </span>
-                                                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                                    <GoTrash size={20} className="" />
-                                                                </span>
-
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    startContent={
-                                                        <div className="bg-danger/10 text-danger p-2 rounded-md">
-                                                            <MdQuiz size={25} className="text-danger" />
-                                                        </div>
-                                                    }
-
-                                                >
-                                                </ListboxItem>
-                                            </ListboxSection>
-
-                                            <ListboxSection title="งานที่มอบหมาย" showDivider>
-                                                <ListboxItem
-                                                    key="delete"
-                                                    title={
-                                                        <div className='flex items-center text-lg' >
-                                                            <p>
-                                                                <span className='font-semibold' >งานชิ้นที่ 1</span> พื้นฐานไพทอน
-                                                            </p>
-                                                            <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                                <Chip className="capitalize" color={"success"} size="md" variant="flat">
-                                                                    เผยแพร่
-                                                                </Chip>
-                                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                    <CiEdit size={23} className="ml-auto" />
-                                                                </span>
-                                                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                                    <GoTrash size={20} className="" />
-                                                                </span>
-
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    startContent={
-                                                        <div className="bg-warning/10 text-warning p-2 rounded-md">
-                                                            <MdAssignment size={25} className="text-warning" />
-                                                        </div>
-                                                    }
-
-                                                >
-
-                                                </ListboxItem>
-                                            </ListboxSection>
-
-                                            <ListboxItem
-                                                variant="light"
-                                                className='hover:bg-transparent'
-                                            >
-                                                <div className="flex space-x-4">
-                                                    <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
-                                                        บทเรียนย่อย
-                                                    </Button>
-                                                    <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
-                                                        แบบทดสอบท้ายบทเรียน
-                                                    </Button>
-                                                    <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
-                                                        มอบหมายงาน
-                                                    </Button>
-                                                </div>
-                                            </ListboxItem>
-
-
-                                        </Listbox>
-                                    </AccordionItem>
-                                </Accordion>
-
+                                <SectionAccordionTeacher
+                                    onOpenModalUpdate={onOpenModalUpdate}
+                                    section={section}
+                                    setCurrentSection={setCurrentSection}
+                                    onOpenModalDelete={onOpenModalDelete}
+                                    openDeleteModal={openDeleteModal}
+                                    courseYearId={id}
+                                    loadSection={loadSection}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Create */}
             <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
+                isOpen={isOpenModalCreate}
+                onOpenChange={onOpenChangeModalCreate}
                 placement="top-center"
             >
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <AddSection onClose={onClose} />
+                            <AddSection
+                                handleAddSection={handleAddSection}
+                                onClose={onClose}
+                            />
                         </>
                     )}
                 </ModalContent>
             </Modal>
+            {/* Update */}
+            <Modal
+                isOpen={isOpenModalUpdate}
+                onOpenChange={onOpenChangeModalUpdate}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <UpdateSection
+                            currentSection={currentSection}
+                            setCurrentSection={setCurrentSection}
+                            handleUpdateSection={handleUpdateSection}
+                            onClose={onClose}
+                        />
+                    )}
+                </ModalContent>
+            </Modal>
+
+
+            {/* Delete */}
+            <Modal
+                isOpen={isOpenModalDelete}
+                onOpenChange={onOpenChangeModalDelete}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องลบบทเรียนหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบบทเรียนจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger" onPress={onClose} onClick={() => handleDeleteSection(sectionId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
         </div>
     )
 }

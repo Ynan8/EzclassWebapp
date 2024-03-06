@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Breadcrumbs, BreadcrumbItem, Tabs, Tab } from "@nextui-org/react";
+import React, { useEffect, useState } from 'react'
+import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, DropdownSection, ModalHeader, ModalBody, ModalFooter, Card, CardHeader, CardBody } from "@nextui-org/react";
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher';
 import AddCourseYear from '../../../../components/Modals/AddCourseYear';
 import Image from 'next/image';
@@ -8,193 +8,405 @@ import bgYearAdd from '../../../../public/bgYearAdd.png'
 import bgYear from '../../../../public/bgYear.png'
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
+import { Modal, ModalContent, useDisclosure, Link } from "@nextui-org/react";
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import UpdateCourseYear from '../../../../components/Modals/UpdateCourseYear';
+import toast from 'react-hot-toast';
 
 
 const TeacherCourse = () => {
+    const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onOpenChange: onOpenChangeModalCreate } = useDisclosure();
+    const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
+    const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
 
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [selectedYearId, setSelectedYearId] = useState("");
 
-    const menu = {
+    // Load course 
+    const [course, setCourse] = useState({});
 
+    const router = useRouter();
+    const { id } = router.query;
+
+    useEffect(() => {
+        if (id) {
+            loadCourse();
+        }
+    }, [id]);
+
+
+    const loadCourse = async () => {
+        if (id) {
+            try {
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${id}`);
+                setCourse(data);
+            } catch (error) {
+                console.error("Error loading course:", error);
+            }
+        }
+    }
+
+    // Show Course Year
+    const [courseYear, setCourseYear] = useState([])
+    useEffect(() => {
+        loadCourseYear()
+    }, [id])
+
+    const loadCourseYear = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseYear/${id}`);
+            setCourseYear(data);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+        }
     };
-    
+
+    // Update courseYear
+    const [currentCourseYear, setCurrentCourseYear] = useState({});
+
+    const handleUpdateCourseYear = async (e) => {
+        try {
+            const { data } = await axios.put(
+                `${process.env.NEXT_PUBLIC_API}/courseYear/${currentCourseYear._id}`,
+                currentCourseYear
+            );
+            loadCourseYear();
+            toast.success("แก้ไขปีการศึกษาสำเร็จ");
+        } catch (error) {
+            console.error(error); // Handle any errors that may occur during the deletion process
+            toast.error("ไม่สามารถแก้ไขปีการศึกษาได้");
+        }
+    };
+
+    // Delete Course Year
+    const [courseYearId, setCourseYearId] = useState("");
+
+    const openDeleteModal = (id) => {
+        setCourseYearId(id);
+        onOpenModalDelete();
+    };
+
+    const handleDeleteCourseYear = async (courseYearId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-courseYear/${courseYearId}`);
+
+            toast.success('ลบปีการศึกษาสำเร็จ');
+            loadCourseYear();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบปีการศึกษาได้');
+        }
+    };
+
+
+    const handleArchivedCourseYear = async (courseYearId) => {
+        try {
+            await axios.put(`${process.env.NEXT_PUBLIC_API}/archived-courseYear/${courseYearId}`);
+            toast.success('จัดเก็บปีการศึกษาสำเร็จ');
+            loadCourseYear();
+        } catch (error) {
+            console.error('Error canceling:', error);
+            toast.error('ไม่สามารถจัดเก็บปีการศึกษา ลองอีกครั้ง!!');
+        }
+    };
+
+    const handleCancelArchivedCourseYear = async (courseYearId) => {
+        try {
+            await axios.put(`${process.env.NEXT_PUBLIC_API}/cancel-archived-courseYear/${courseYearId}`);
+
+            toast.success('ยกเลิกจัดเก็บปีการศึกษาสำเร็จ');
+            loadCourseYear();
+        } catch (error) {
+            console.error('Error canceling:', error);
+            toast.error('ไม่สามารถยกเลิกจัดเก็บปีการศึกษา ลองอีกครั้ง!!');
+        }
+    };
+
+
+
+
     return (
         <div>
 
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <HeaderBarTeacher />
-                <div className="h-full mt-20 mb-4 ">
+                <div className="h-full mt-20 mb-2">
                     <div className="pl-20 mb-6">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>ชื่อวิชา</BreadcrumbItem>
+                            <BreadcrumbItem>{course.courseName}</BreadcrumbItem>
                             <BreadcrumbItem>ปีการศึกษา</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
                 </div>
                 <main className="flex-1 pb-16 sm:pb-32">
-
-
                     <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
                         <div className=" rounded py-4  md:py-7 px-4 md:px-8 xl:px-10">
                             <div
                                 className="relative flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0 rounded-lg p-3 border border-gray-200 bg-white"
                             >
                                 <div className="w-full md:w-1/4 bg-white grid place-items-center">
-                                    <img
-                                        className="object-cover rounded"
-                                        src={bgYearAdd}
-                                    />
-
+                                    {course && course.image && (
+                                        <img
+                                            className="object-cover rounded"
+                                            src={course.image.Location}
+                                            alt={course.courseName}
+                                        />
+                                    )}
                                 </div>
                                 <div className="w-full md:w-2/3 bg-white flex flex-col space-y-2 p-3">
                                     <h3 className="font-black md:text-2xl text-xl">
-                                        courseName
+                                        {course.courseNo} : {course.courseName}
                                     </h3>
                                     <div className="flex mt-4">
-                                        <p className="md:text-lg  text-base"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' >มัธยมศึกษาปีที่ level</span>  </p>
+                                        <p className="md:text-lg  text-base"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' >มัธยมศึกษาปีที่ {course.level}</span>  </p>
                                     </div>
-                                    <p className="md:text-lg text-gray-600 text-base">detail</p>
-
+                                    <p className="md:text-lg text-gray-600 text-base">{course.detail}</p>
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap gap-4 my-8 mt-4">
                                 <Tabs size={"lg"} aria-label="Tabs sizes">
-                                    <Tab key="active" title="ปีการศึกษาปัจจุบัน" />
-                                    <Tab key="music" title="ปีการศึกษาที่จัดเก็บ" />
+                                    <Tab key="active" title="ปีการศึกษาปัจจุบัน" >
+                                        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
+                                            <div
+                                                onClick={onOpenModalCreate}
+                                                className="cursor-pointer  bg-white shadow-md border rounded-xl overflow-hidden hover:text-blue-500 "
+                                            >
+                                                <div className="h-full w-full relative">
+                                                    <Image
+                                                        alt='addCourseYear'
+                                                        className="w-full h-full object-cover rounded-t"
+                                                        src={bgYearAdd} />
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                                            <p className="text-xl"><AiOutlinePlus size={45} /></p>
+                                                            <p className="text-2xl">เพิ่มปีการศึกษา</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {courseYear && courseYear
+                                                .filter(courseYear => courseYear.status === true)
+                                                .map(yearData => (
+                                                    <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
+                                                        <Card key={yearData._id} className="py-3">
+                                                            <CardHeader className="flex-col items-start">
+                                                                <div className="absolute top-0 right-0 m-2">
+                                                                    <Dropdown>
+                                                                        <DropdownTrigger>
+                                                                            <Button
+                                                                                size='sm'
+                                                                                variant="light"
+                                                                                startContent={<BsThreeDotsVertical size={18} />}
+                                                                            />
+                                                                        </DropdownTrigger>
+                                                                        <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                                            <DropdownSection showDivider>
+                                                                                <DropdownItem
+                                                                                    key="edit"
+                                                                                    onClick={() => {
+                                                                                        onOpenModalUpdate();
+                                                                                        setCurrentCourseYear(yearData);
+                                                                                    }}
+                                                                                >
+                                                                                    <p>แก้ไข</p>
+                                                                                </DropdownItem>
+
+
+                                                                                <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
+                                                                                    <p>จัดเก็บ</p>
+                                                                                </DropdownItem>
+                                                                                <DropdownItem
+                                                                                    key="copy"
+                                                                                >
+                                                                                    <p>คัดลอก</p>
+                                                                                </DropdownItem>
+                                                                            </DropdownSection>
+                                                                            <DropdownSection>
+                                                                                <DropdownItem
+                                                                                    key="delete"
+                                                                                    className="text-danger"
+                                                                                    color="danger"
+                                                                                    onPress={onOpenModalDelete}
+                                                                                >
+                                                                                    <p onClick={() => openDeleteModal(yearData._id)}>
+                                                                                        ลบปีการศึกษา
+                                                                                    </p>
+                                                                                </DropdownItem>
+                                                                            </DropdownSection>
+                                                                        </DropdownMenu>
+                                                                    </Dropdown>
+                                                                </div>
+                                                            </CardHeader>
+                                                            <CardBody className="overflow-visible ">
+
+                                                                <Image
+                                                                    alt="Card background"
+                                                                    className="object-cover rounded-xl"
+                                                                    src={bgYear}
+                                                                />
+                                                                <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
+                                                                    <p className="text-3xl">ปีการศึกษา</p>
+                                                                    <p className="text-6xl font-semibold">{yearData.year}</p>
+                                                                </div>
+                                                            </CardBody>
+                                                        </Card>
+                                                    </Link>
+                                                ))}
+                                        </div>
+
+                                    </Tab>
+                                    <Tab key="music" title="ปีการศึกษาที่จัดเก็บ" >
+                                        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
+
+                                            {courseYear && courseYear
+                                                .filter(courseYear => courseYear.status === false)
+                                                .map(yearData => (
+                                                    <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
+                                                        <Card key={yearData._id} className="py-3">
+                                                            <CardHeader className="flex-col items-start">
+                                                                <div className="absolute top-0 right-0 m-2">
+                                                                    <Dropdown>
+                                                                        <DropdownTrigger>
+                                                                            <Button
+                                                                                size='sm'
+                                                                                variant="light"
+                                                                                startContent={<BsThreeDotsVertical size={18} />}
+                                                                            />
+                                                                        </DropdownTrigger>
+                                                                        <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                                            <DropdownSection showDivider>
+                                                                                <DropdownItem
+                                                                                    key="edit"
+                                                                                    onClick={() => {
+                                                                                        onOpenModalUpdate();
+                                                                                        setCurrentCourseYear(yearData);
+                                                                                    }}
+                                                                                >
+                                                                                    <p>แก้ไข</p>
+                                                                                </DropdownItem>
+
+
+                                                                                <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
+                                                                                    <p>จัดเก็บ</p>
+                                                                                </DropdownItem>
+                                                                                <DropdownItem
+                                                                                    key="copy"
+                                                                                >
+                                                                                    <p>คัดลอก</p>
+                                                                                </DropdownItem>
+                                                                            </DropdownSection>
+                                                                            <DropdownSection>
+                                                                                <DropdownItem
+                                                                                    key="delete"
+                                                                                    className="text-danger"
+                                                                                    color="danger"
+                                                                                    onPress={onOpenModalDelete}
+                                                                                >
+                                                                                    <p onClick={() => openDeleteModal(yearData._id)}>
+                                                                                        ลบปีการศึกษา
+                                                                                    </p>
+                                                                                </DropdownItem>
+                                                                            </DropdownSection>
+                                                                        </DropdownMenu>
+                                                                    </Dropdown>
+                                                                </div>
+                                                            </CardHeader>
+                                                            <CardBody className="overflow-visible ">
+                                                                <Image
+                                                                    alt="Card background"
+                                                                    className="object-cover rounded-xl"
+                                                                    src={bgYear}
+                                                                />
+                                                                <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
+                                                                    <p className="text-3xl">ปีการศึกษา</p>
+                                                                    <p className="text-6xl font-semibold">{yearData.year}</p>
+                                                                </div>
+                                                            </CardBody>
+                                                        </Card>
+                                                    </Link>
+                                                ))}
+                                        </div>
+                                    </Tab>
                                 </Tabs>
                             </div>
-                            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
-
-                                <div
-                                    className="bg-white shadow-md rounded overflow-hidden hover:text-blue-500 "
-                                >
-                                    <div className="h-full w-full relative">
-                                        <Image
-                                            alt='courseYear'
-                                            className="w-full h-full object-cover rounded-t"
-                                            src={bgYearAdd} />
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                            <div className="flex flex-col items-center justify-center space-y-2">
-                                                <Button onPress={onOpen} variant='light' startContent={<AiOutlinePlus size={25} />}>เพิ่มปีการศึกษา</Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <Link
-                                    href={`/teacher/course/room/${menu.id}`}
-                                >
-                                    <div className="bg-white cursor-pointer shadow-md rounded ">
-                                        <div className="h-full w-full relative">
-                                            <Image className="w-full h-full object-cover rounded-t" src={bgYear} alt='courseYear' />
-                                            <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
-                                                <p className="text-3xl">ปีการศึกษา</p>
-                                                <p className="text-6xl font-semibold">2567</p>
-                                            </div>
-                                            <div className="absolute top-0 right-0 m-2">
-                                                <Dropdown>
-                                                    <DropdownTrigger>
-                                                        <Button
-                                                            variant="light"
-                                                            size='sm'
-                                                            startContent={<BsThreeDotsVertical size={25} />}
-                                                        >
-
-                                                        </Button>
-                                                    </DropdownTrigger>
-                                                    <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
-                                                        <DropdownItem
-                                                            key="new"
-                                                        >
-                                                            แก้ไข
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            key="edit"
-                                                        >
-                                                            คัดคลอก
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            key="keep"
-                                                        >
-                                                            จัดเก็บปีการศึกษา
-                                                        </DropdownItem>
-                                                    </DropdownMenu>
-                                                </Dropdown>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    </Link>
-                                    <div className="bg-white cursor-pointer shadow-md rounded ">
-                                        <div className="h-full w-full relative">
-                                            <Image className="w-full h-full object-cover rounded-t" src={bgYear} alt='courseYear' />
-                                            <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
-                                                <p className="text-3xl">ปีการศึกษา</p>
-                                                <p className="text-6xl font-semibold">2567</p>
-                                            </div>
-                                            <div className="absolute top-0 right-0 m-3">
-                                                <BsThreeDotsVertical
-                                                    size={25}
-                                                    className="text-gray-600 cursor-pointer"
-                                                />
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div className="bg-white cursor-pointer shadow-md rounded ">
-                                        <div className="h-full w-full relative">
-                                            <Image className="w-full h-full object-cover rounded-t" src={bgYear} alt='courseYear' />
-                                            <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
-                                                <p className="text-3xl">ปีการศึกษา</p>
-                                                <p className="text-6xl font-semibold">2567</p>
-                                            </div>
-                                            <div className="absolute top-0 right-0 m-3">
-                                                <BsThreeDotsVertical
-                                                    size={25}
-                                                    className="text-gray-600 cursor-pointer"
-                                                />
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div className="bg-white cursor-pointer shadow-md rounded ">
-                                        <div className="h-full w-full relative">
-                                            <Image className="w-full h-full object-cover rounded-t" src={bgYear} alt='courseYear' />
-                                            <div className="absolute inset-x-0 bottom-0 mb-10 flex flex-col items-center justify-center text-white">
-                                                <p className="text-3xl">ปีการศึกษา</p>
-                                                <p className="text-6xl font-semibold">2567</p>
-                                            </div>
-                                            <div className="absolute top-0 right-0 m-3">
-                                                <BsThreeDotsVertical
-                                                    size={25}
-                                                    className="text-gray-600 cursor-pointer"
-                                                />
-                                            </div>
-
-                                        </div>
-                                    </div>
-                            </div>
-
                         </div>
                     </div>
                 </main >
             </div >
+            {/*Create */}
             <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
+                isOpen={isOpenModalCreate}
+                onOpenChange={onOpenChangeModalCreate}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <AddCourseYear
+                            courseId={id}
+                            onClose={onClose}
+                            loadCourseYear={loadCourseYear}
+                        />
+                    )}
+                </ModalContent>
+            </Modal>
+
+            {/* Update */}
+            <Modal
+                isOpen={isOpenModalUpdate}
+                onOpenChange={onOpenChangeModalUpdate}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <UpdateCourseYear
+                            yearId={selectedYearId}
+                            onClose={onClose}
+                            loadCourseYear={loadCourseYear}
+                            currentCourseYear={currentCourseYear}
+                            setCurrentCourseYear={setCurrentCourseYear}
+                            handleUpdateCourseYear={handleUpdateCourseYear}
+                        />
+                    )}
+                </ModalContent>
+            </Modal>
+
+            {/* Delete */}
+            <Modal
+                isOpen={isOpenModalDelete}
+                onOpenChange={onOpenChangeModalDelete}
                 placement="top-center"
             >
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <AddCourseYear onClose={onClose} />
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องลบปีการศึกษาหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบปีการศึกษาจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger" onPress={onClose} onClick={() => handleDeleteCourseYear(courseYearId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
                         </>
                     )}
                 </ModalContent>
             </Modal>
+
         </div >
     )
 }

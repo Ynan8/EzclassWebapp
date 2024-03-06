@@ -18,42 +18,11 @@ const HeaderBarTeacher = () => {
     // state
     const [hidden, setHidden] = useState(true);
     const [loading, setLoading] = useState(false);
+
     const { state: { user },
         dispatch,
     } = useContext(Context);
 
-    // useEffect(() => {
-    //     fetchUser();
-    // }, [])
-
-    // const fetchUser = async () => {
-    //     try {
-    //         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/current-user`);
-    //         console.log(data);
-    //         setHidden(false);
-    //     } catch (err) {
-    //         console.log(err)
-    //         setHidden(false);
-    //     }
-    // };
-
-    // const [userData, setUserData] = useState({});
-
-
-    // useEffect(() => {
-    //     getUser();
-    // }, [])
-
-    // const getUser = async () => {
-    //     try {
-    //         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/user/${user._id}`);
-    //         setUserData(data);
-    //         setLoading(false);
-    //     } catch (err) {
-    //         console.log(err)
-    //         setLoading(false);
-    //     }
-    // };
 
 
     // router
@@ -64,8 +33,8 @@ const HeaderBarTeacher = () => {
     const logout = async () => {
         setLoading(true);
         dispatch({ type: "LOGOUT" });
-        window.localStorage.removeItem('user');
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/logout`); 
+        window.localStorage.removeItem('token');
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/logout`);
         setLoading(false);
 
         toast.promise(
@@ -109,18 +78,18 @@ const HeaderBarTeacher = () => {
                     <div className="flex gap-x-2 ml-auto">
                         <div className="flex items-center gap-4">
 
-                            {/* <Dropdown placement="bottom-start">
+                            <Dropdown placement="bottom-start">
                                 <DropdownTrigger>
-                                        <User
-                                            as="button"
-                                            avatarProps={{
-                                                isBordered: true,
-                                                src:user && user.image.Location,
-                                            }}
-                                            className="transition-transform"
-                                            description={user&&user.role}
-                                            name={user && user.firstName + ' ' + user.lastName}
-                                        />
+                                    <User
+                                        as="button"
+                                        avatarProps={{
+                                            isBordered: true,
+                                            src: user && user.image,
+                                        }}
+                                        className="transition-transform"
+                                        description={user && user.role}
+                                        name={user && user.firstName + ' ' + user && user.lastName}
+                                    />
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="User Actions" variant="flat">
 
@@ -137,7 +106,7 @@ const HeaderBarTeacher = () => {
                                         ออกจากระบบ
                                     </DropdownItem>
                                 </DropdownMenu>
-                            </Dropdown> */}
+                            </Dropdown>
                         </div>
                     </div>
                 </div>

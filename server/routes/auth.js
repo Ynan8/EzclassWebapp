@@ -14,6 +14,8 @@ const {
     login ,
     logout,
     currentUser,
+    currentTeacher
+
 } = require("../controllers/auth")
 
 router.get("/auth", (req,res) => {
@@ -24,6 +26,10 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/current-user",auth, currentUser);
+
+
+
+
 
 
 

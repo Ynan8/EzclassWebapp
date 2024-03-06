@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { FaCloudUploadAlt } from 'react-icons/fa'
-import { Select, SelectItem, Textarea, Input, Button } from "@nextui-org/react";
+import { Select, SelectItem, Textarea, Input, Button, Card, Image } from "@nextui-org/react";
+import { Badge, Avatar } from "@nextui-org/react";
 
 const CourseCreateForm = ({
     handleSubmit,
@@ -10,10 +11,12 @@ const CourseCreateForm = ({
     handleUploadButtonClick,
     fileInputRef,
     handleFileInputChange,
-    handleLevelChange
-
+    handleLevelChange,
+    characterCounts,
+    preview,
+    handleImage,
+    handleImageRemove,
 }) => {
-    
     return (
         <div>
             <form>
@@ -32,8 +35,11 @@ const CourseCreateForm = ({
                                 />
                             </div>
                         </div>
-                        <p className="ml-auto text-gray-500 text-xs">/20</p>
+                        <div className="flex  space-x-4 mt-1">
+                            <p className="text-gray-500 text-xs">{characterCounts.courseNo}/20</p>
+                        </div>
                     </div>
+
                     <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
@@ -47,7 +53,10 @@ const CourseCreateForm = ({
                                     label="ชื่อรายวิชา" />
                             </div>
                         </div>
-                        <p className="ml-auto text-gray-500 text-xs">/100</p>
+                        <div className="flex space-x-4 mt-1">
+
+                            <p className="text-gray-500 text-xs">{characterCounts.courseName}/100</p>
+                        </div>
                     </div>
                 </div>
 
@@ -72,7 +81,11 @@ const CourseCreateForm = ({
 
                         </div>
                     </div>
-                    <p className="ml-auto text-gray-500 text-xs">/200</p>
+                    <div className="flex space-x-4 mt-1">
+
+                        <p className="text-gray-500 text-xs">{characterCounts.detail}/200</p>
+                    </div>
+
                 </div>
 
 
@@ -85,7 +98,7 @@ const CourseCreateForm = ({
                             label="ระดับการศึกษา"
                             placeholder="เลือกระดับการศึกษา"
                             className="max-w-xs"
-                            onChange={handleLevelChange} 
+                            onChange={handleLevelChange}
                         >
                             {(level) => <SelectItem key={level.value}>{level.label}</SelectItem>}
                         </Select>
@@ -103,19 +116,33 @@ const CourseCreateForm = ({
                         >
                             เพิ่มรูปรายวิชา
                         </Button>
-                        {/* Hidden file input */}
                         <input
                             type="file"
                             ref={fileInputRef}
                             style={{ display: 'none' }}
-                            onChange={handleFileInputChange}
+                            onChange={handleImage}
                         />
                     </div>
                 </div>
 
-
-
-
+                {preview &&
+                    <div className="mt-6 text-center">
+                        <Badge onClick={handleImageRemove} content="X" size='lg' className="ml-4 cursor-pointer" color="danger">
+                            <Card
+                                radius="md"
+                                className="border-none"
+                            >
+                                <Image
+                                    alt="course image"
+                                    className="object-cover"
+                                    height={200}
+                                    width={340}
+                                    src={preview}
+                                />
+                            </Card>
+                        </Badge>
+                    </div>
+                }
 
                 <div>
                 </div>

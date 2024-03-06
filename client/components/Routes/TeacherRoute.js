@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import SyncOutlined from '@ant-design/icons/SyncOutlined';
+import { Spinner } from '@nextui-org/react';
 
 
 const TeacherRoute = ({ children }) => {
@@ -30,9 +31,9 @@ const TeacherRoute = ({ children }) => {
     return (
         <>
             {!ok ? (
-                <SyncOutlined
-                    spin
-                    className='text-9xl flex h-screen items-center justify-center text-blue-500'
+              
+                <Spinner
+                className='   transform: scale(3); text-9xl flex h-screen items-center justify-center text-blue-500'
                 />
             ) : (
                 <>{children}</>

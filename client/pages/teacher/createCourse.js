@@ -1,7 +1,13 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import CourseCreateForm from '../../components/Form/CourseCreateForm'
 import Link from 'next/link'
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import axios from 'axios';
+import Resizer from "react-image-file-resizer"
+import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/router';
+import { Context } from '../../context';
+
 
 
 const createCourse = () => {
@@ -16,23 +22,26 @@ const createCourse = () => {
     });
 
     const [characterCounts, setCharacterCounts] = useState({
+        courseNo: 0,
         courseName: 0,
         detail: 0,
     });
 
-    
-    
+    const router = useRouter()
+
+
+
     const handleLevelChange = (event) => {
         const level = event.target.value;
         setSelectedLevel(level);
-        
+
         // Update the values state with the selected level
         setValues({
             ...values,
             level: level,
         });
     };
-    
+
 
     // select level
     const levels = [
@@ -45,7 +54,6 @@ const createCourse = () => {
     ];
 
     //button upload
-
     const [selectedFile, setSelectedFile] = useState(null);
     const fileInputRef = useRef(null);
 
@@ -59,6 +67,51 @@ const createCourse = () => {
         // Trigger the file input when the button is clicked
         fileInputRef.current.click();
     };
+
+    //    // image preview
+    const [image, setImage] = useState({});
+    const [preview, setPreview] = useState('');
+    const [imageSelected, setImageSelected] = useState(false);
+
+    const handleImage = (e) => {
+        let file = e.target.files[0]
+        setPreview(window.URL.createObjectURL(file));
+        setValues({ ...values, loading: true });
+        // resize
+        Resizer.imageFileResizer(file, 720, 500, "JPEG", 100, 0, async (uri) => {
+            try {
+                let { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/course/upload-image`, {
+                    image: uri,
+                });
+                console.log("Image uploaded", data);
+                // set image in the state
+                setImage(data)
+                setValues({ ...values, loading: false });
+                setImageSelected(true);
+
+            } catch (err) {
+                console.log(err)
+                setValues({ ...values, loading: false })
+                toast.error('Image upload failed. Try later.')
+            }
+        })
+    }
+
+
+    const handleImageRemove = async () => {
+        try {
+            // console.log(values);
+            setValues({ ...values, loading: true });
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API}/course/remove-image`, { image });
+            setImage({});
+            setPreview('');
+            setValues({ ...values, loading: false });
+        } catch (err) {
+            console.log(err);
+            setValues({ ...values, loading: false });
+            toast.error("Image upload failed. Try later.");
+        }
+    }
 
 
 
@@ -92,17 +145,17 @@ const createCourse = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("VALUES >>>", values)
-        // try {
-        //     const { data } = await axios.post('/api/course', {
-        //         ...values,
-        //         image,
-        //     });
-        //     toast.success('สร้างรายวิชาสำเร็จ');
-        //     router.push("/teacher/home");
-        // } catch (err) {
-        //     toast.error(err.response.data);
-        // }
+        try {
+            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/course`, {
+                ...values,
+                image,
+            });
+            toast.success('สร้างรายวิชาสำเร็จ');
+             router.push("/teacher/home");
+        } catch (err) {
+            console.log(err)
+            toast.error("ไม่สามารถสร้างรายวิชาได้ กรุณาลองอีกครั้ง!");
+        }
     };
 
 
@@ -127,6 +180,10 @@ const createCourse = () => {
                     fileInputRef={fileInputRef}
                     handleFileInputChange={handleFileInputChange}
                     handleLevelChange={handleLevelChange}
+                    characterCounts={characterCounts}
+                    preview={preview}
+                    handleImage={handleImage}
+                    handleImageRemove={handleImageRemove}
                 />
             </div>
         </div>

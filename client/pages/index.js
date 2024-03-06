@@ -22,14 +22,10 @@ const index = () => {
         dispatch,
     } = useContext(Context);
 
-    console.log(user)
-
 
 
     // router
     const router = useRouter();
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,19 +40,25 @@ const index = () => {
                 }
             );
 
-            console.log("LOGIN Response",data.payload.user.role)
 
             dispatch({
                 type: "LOGIN",
-                username: data.payload.user,
+                user: data.payload.user,
             });
-            
+
+
+            // console.log("LOGIN Response", data.payload.user)
+            // console.log("LOGIN Response", data.token)
+
+
             // // Save user in local storage
-            window.localStorage.setItem("token", JSON.stringify(data.token));
+            window.localStorage.setItem("user", JSON.stringify(data.payload.user));
+            window.localStorage.setItem("token", data.token);
+
 
             if (data.payload.user.role === 'teacher') {
                 router.push('/teacher/home');
-            } else if (data.payload.user.role=== 'student') {
+            } else if (data.payload.user.role === 'student') {
                 router.push('/student/home');
             } else if (data.payload.user.role === 'admin') {
                 router.push('/admin/home');
@@ -71,7 +73,7 @@ const index = () => {
         }
     };
 
-  
+
 
 
     return (

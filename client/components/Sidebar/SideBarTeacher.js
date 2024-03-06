@@ -6,16 +6,19 @@ import { SlGraduation } from "react-icons/sl";
 import { RxDashboard } from "react-icons/rx"
 import { SiGoogleclassroom } from "react-icons/si"
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-const SideBarTeacher = () => {
+const SideBarTeacher = ({ courseYearId }) => {
 
     const menu = {
-
+        id: courseYearId
     };
+    const currentPath = useRouter().asPath;
 
     const isLinkActive = (href) => {
-
+        return currentPath === href;
     };
+
     return (
         <div className="fixed flex flex-col top-[60px]  left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
             <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
@@ -74,7 +77,7 @@ const SideBarTeacher = () => {
 
             </div>
         </div>
-    )   
+    )
 }
 
 export default SideBarTeacher

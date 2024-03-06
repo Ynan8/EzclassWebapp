@@ -1,9 +1,12 @@
 import { Button, Input, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react'
-import React from 'react'
+import React, { useState } from 'react'
 
 const AddSection = ({
+ 
+    handleAddSection,
     onClose
 }) => {
+    const [sectionName, setSectionName] = useState('');
     return (
         <div>
             <ModalHeader className="flex flex-col gap-1">สร้างบทเรียน</ModalHeader>
@@ -13,18 +16,21 @@ const AddSection = ({
                     placeholder="ชื่อบทเรียน"
                     variant="bordered"
                     focus={{ borderColor: 'primary' }}
+                    value={sectionName}
+                    name='sectionName'
+                    onChange={(e) => setSectionName(e.target.value)}
                 />
 
             </ModalBody>
             <ModalFooter>
-                <Button color="danger" variant="flat" onPress={onClose}>
+                <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button onClick={() => handleAddSection(sectionName)} color="primary" onPress={onClose}>
                     บันทึก
                 </Button>
             </ModalFooter>
-        </div>
+        </div >
     )
 }
 
