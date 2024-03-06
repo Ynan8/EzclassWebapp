@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
-import UpdateQuizLesson from '../../../../../components/form/UpdateQuizLesson';
 import toast from 'react-hot-toast';
 import { Button, Switch } from '@nextui-org/react';
 
@@ -240,12 +239,7 @@ const EditQuiz = () => {
             </div>
             <div className={`flex-grow ml-1/4`} style={{ overflowY: 'auto', paddingLeft: isSidebarOpen ? '20%' : 0 }}>
                 <div class=" flex-grow h-full  mt-20 mb-10 ">
-                    <UpdateQuizLesson
-                        questions={questions}
-                        setQuestions={setQuestions}
-                        values={values}
-                        setValues={setValues}
-                    />
+                   
                 </div>
             </div>
         </div>
