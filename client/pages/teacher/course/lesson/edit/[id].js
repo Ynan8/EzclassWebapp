@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import { BsBlockquoteRight, BsFileCodeFill, BsFileEarmarkTextFill, BsYoutube } from 'react-icons/bs';
-import UpdateContentLesson from '../../../../../components/Form/UpdateContentLesson';
+import UpdateContentLesson from '../../../../../components/form/UpdateContentLesson';
 
 const EditContentLesson = () => {
     const router = useRouter();
