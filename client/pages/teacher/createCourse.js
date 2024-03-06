@@ -9,7 +9,6 @@ import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router';
 
 
-
 const createCourse = () => {
     const [selectedLevel, setSelectedLevel] = useState("");
     const [values, setValues] = useState({
