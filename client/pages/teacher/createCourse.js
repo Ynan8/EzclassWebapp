@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import CourseCreateForm from '../../components/Form/CourseCreateForm'
-import React, { useRef, useState } from 'react'
 import CourseCreateForm from '../../components/Form/CourseCreateForm'
 import Link from 'next/link'
 import { AiOutlineArrowLeft } from "react-icons/ai";
