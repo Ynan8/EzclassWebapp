@@ -1,14 +1,12 @@
 
 import React, { useRef, useState } from 'react'
-import CourseCreateForm from '../../components/Form/CourseCreateForm'
+import CourseCreateForm from '../../components/form/CourseCreateForm'
 import Link from 'next/link'
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import axios from 'axios';
 import Resizer from "react-image-file-resizer"
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router';
-
-
 
 const createCourse = () => {
     const [selectedLevel, setSelectedLevel] = useState("");
