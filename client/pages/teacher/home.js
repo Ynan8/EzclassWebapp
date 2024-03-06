@@ -3,13 +3,13 @@ import HeaderBarTeacher from '../../components/HeaderBar/HeaderBarTeacher';
 import { FaPlus } from "react-icons/fa";
 import { Button, CardFooter, Skeleton } from '@nextui-org/react';
 import { Card, CardBody } from "@nextui-org/react";
-import { Tabs, Tab,  } from "@nextui-org/react";
+import { Tabs, Tab, } from "@nextui-org/react";
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { Context } from '../../context';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import Link from 'next/link';
 
 
@@ -101,17 +101,10 @@ const Home = () => {
                   </div>
                   <div className="flex items-center">
                     <Link href={'/teacher/createCourse'} >
-
                       <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
                         สร้างรายวิชา
                       </Button>
                     </Link>
-
-                    <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
-                      สร้างรายวิชา
-                    </Button>
-                   </Link>
-
                   </div>
                 </div>
 
@@ -264,7 +257,6 @@ const Home = () => {
           </div>
         </main>
       </div>
-<<<<<<< HEAD
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -297,8 +289,6 @@ const Home = () => {
           )}
         </ModalContent>
       </Modal>
-=======
->>>>>>> 76bbfa3c88f1859b37a43b21af84ddccd6ba093e
     </>
   );
 };

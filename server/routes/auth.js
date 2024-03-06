@@ -14,7 +14,6 @@ const {
     login ,
     logout,
     currentUser,
-    currentTeacher
 
 } = require("../controllers/auth")
 
@@ -22,18 +21,13 @@ router.get("/auth", (req,res) => {
     res.send('Hello auth End')
 })
 
+router.get("/", (req, res) => {
+    res.send("hello api");
+});
+
 router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/current-user",auth, currentUser);
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

@@ -40,7 +40,6 @@ const index = () => {
                 }
             );
 
-<<<<<<< HEAD
 
             dispatch({
                 type: "LOGIN",
@@ -64,9 +63,7 @@ const index = () => {
             } else if (data.payload.user.role === 'admin') {
                 router.push('/admin/home');
             }
-=======
             router.push("/teacher/home")
->>>>>>> 76bbfa3c88f1859b37a43b21af84ddccd6ba093e
 
         } catch (err) {
             setLoading(false); // Set loading state to false after error
