@@ -101,10 +101,17 @@ const Home = () => {
                   </div>
                   <div className="flex items-center">
                     <Link href={'/teacher/createCourse'} >
+
                       <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
                         สร้างรายวิชา
                       </Button>
                     </Link>
+
+                    <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
+                      สร้างรายวิชา
+                    </Button>
+                   </Link>
+
                   </div>
                 </div>
 
@@ -257,6 +264,7 @@ const Home = () => {
           </div>
         </main>
       </div>
+<<<<<<< HEAD
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -289,6 +297,8 @@ const Home = () => {
           )}
         </ModalContent>
       </Modal>
+=======
+>>>>>>> 76bbfa3c88f1859b37a43b21af84ddccd6ba093e
     </>
   );
 };
