@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
-import UpdateQuizLesson from '../../../../../components/Form/UpdateQuizLesson';
+import UpdateQuizLesson from '../../../../../components/form/UpdateQuizLesson';
 import toast from 'react-hot-toast';
 import { Button, Switch } from '@nextui-org/react';
 
