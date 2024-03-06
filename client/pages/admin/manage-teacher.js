@@ -6,7 +6,6 @@ import { Button, Modal, ModalContent, useDisclosure } from '@nextui-org/react';
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from 'react-icons/fa';
 import AddTeacher from '../../components/Modals/AddTeacher';
 import toast from 'react-hot-toast';
-import moment from "moment/min/moment-with-locales";
 
 
 
