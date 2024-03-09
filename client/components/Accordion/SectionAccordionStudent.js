@@ -8,14 +8,9 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const SectionAccordionStd = ({
-    section,
-}) => {
-  
-
+const SectionAccordionStd = ({ section, id }) => {
     return (
         <>
-        {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
             <Accordion selectionMode="multiple" variant="splitted">
                 {section.map((item, index) => (
                     <AccordionItem
@@ -32,7 +27,7 @@ const SectionAccordionStd = ({
                     >
                         <Listbox variant="flat" aria-label="Listbox menu with sections">
                             <ListboxSection title="บทเรียนย่อย" showDivider>
-                                {item.lessonData?.map((lesson, lessonIndex) => (
+                                {item.lessonData?.filter(lesson => lesson.published === "true").map((lesson, lessonIndex) => (
                                     <ListboxItem
                                         className='mb-2'
                                         key={lessonIndex}
@@ -41,17 +36,7 @@ const SectionAccordionStd = ({
                                                 <p>
                                                     <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
                                                 </p>
-                                                <div className="flex items-center space-x-4 mr-4 ml-auto">
 
-                                                    <Chip
-                                                        className="capitalize"
-                                                        color={lesson.published === "true" ? "success" : "default"}
-                                                        size="md"
-                                                        variant="flat"
-                                                    >
-                                                        {lesson.published === "true" ? "เผยแพร่" : "แบบร่าง"}
-                                                    </Chip>
-                                                </div>
                                             </div>
                                         }
                                         startContent={
@@ -65,24 +50,15 @@ const SectionAccordionStd = ({
                             </ListboxSection>
 
                             <ListboxSection title="แบบทดสอบท้ายบทเรียน" showDivider>
-                                {item.quizData?.map((quiz, lessonIndex) => (
+                                {item.quizData?.filter(quiz => quiz.published === "true").map((quiz, quizIndex) => (
                                     <ListboxItem
-                                        key="delete"
+                                        key={quizIndex}
                                         title={
                                             <div className='flex items-center text-lg' >
                                                 <p>
                                                     <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
                                                 </p>
-                                                <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                    <Chip
-                                                        className="capitalize"
-                                                        color={quiz.published === "true" ? "success" : "default"}
-                                                        size="md"
-                                                        variant="flat"
-                                                    >
-                                                        {quiz.published === "true" ? "เผยแพร่" : "แบบร่าง"}
-                                                    </Chip>
-                                                </div>
+
                                             </div>
                                         }
                                         startContent={
@@ -90,34 +66,32 @@ const SectionAccordionStd = ({
                                                 <MdQuiz size={25} className="text-danger" />
                                             </div>
                                         }
-
                                     >
                                     </ListboxItem>
                                 ))}
                             </ListboxSection>
 
                             <ListboxSection title="งานที่มอบหมาย" showDivider>
-                                {item.AssignmentData?.map((assignment, lessonIndex) => (
+                                {item.AssignmentData?.map((assignment, assignmentIndex) => (
+
                                     <ListboxItem
-                                        key="delete"
+                                        key={assignmentIndex}
                                         title={
-                                            <div className='flex items-center text-lg' >
-                                                <p>
-                                                    <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
-                                                </p>
-                                                <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                    <Chip className="capitalize" color={"success"} size="md" variant="flat">
-                                                        เผยแพร่
-                                                    </Chip>
+                                            <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
+
+                                                <div className='flex items-center text-lg' >
+                                                    <p>
+                                                        <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
+                                                    </p>
                                                 </div>
-                                            </div>
+                                            </Link>
+
                                         }
                                         startContent={
                                             <div className="bg-warning/10 text-warning p-2 rounded-md">
                                                 <MdAssignment size={25} className="text-warning" />
                                             </div>
                                         }
-
                                     >
                                     </ListboxItem>
                                 ))}
@@ -127,7 +101,6 @@ const SectionAccordionStd = ({
                     </AccordionItem >
                 ))}
             </Accordion >
-           
         </>
     );
 };

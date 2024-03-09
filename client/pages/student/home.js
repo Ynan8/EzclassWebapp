@@ -70,13 +70,13 @@ const Home = () => {
                                   </CardBody>
                                 </Link>
                                 <CardFooter className="pb-0 px-4 flex-col items-start">
-                                  <h4 className="font-bold text-large">
+                                <h4 className="font-bold text-large">
                                     {course.courseName.length > 30
                                       ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
                                       : `${course.courseNo} : ${course.courseName}`
                                     }
                                   </h4>
-                                  <p className="text-tiny uppercase font-bold">
+                                  <p className="text-lg font-bold">
                                     {course.level.length > 30
                                       ? `${course.level.substring(0, 60)}...`
                                       : `มัธยมศึกษาปีที่ ${course.level}`
@@ -111,13 +111,13 @@ const Home = () => {
                                   </CardBody>
                                 </Link>
                                 <CardFooter className="pb-0 px-4 flex-col items-start">
-                                  <h4 className="font-bold text-large">
+                                <h4 className="font-bold text-large">
                                     {course.courseName.length > 30
                                       ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
                                       : `${course.courseNo} : ${course.courseName}`
                                     }
                                   </h4>
-                                  <p className="text-tiny uppercase font-bold">
+                                  <p className="text-lg font-bold">
                                     {course.level.length > 30
                                       ? `${course.level.substring(0, 60)}...`
                                       : `มัธยมศึกษาปีที่ ${course.level}`

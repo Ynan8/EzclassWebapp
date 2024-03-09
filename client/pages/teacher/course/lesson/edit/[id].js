@@ -123,7 +123,7 @@ const EditContentLesson = () => {
             };
         });
     };
-    
+
     const handleAnswerChange = (value, lessonIndex, answerIndex) => {
         setValues((prevValues) => {
             const updatedContents = [...prevValues.contents];
@@ -137,7 +137,7 @@ const EditContentLesson = () => {
             };
         });
     };
-    
+
     const handleCorrectAnswerChange = (isChecked, lessonIndex, answerIndex) => {
         setValues((prevValues) => {
             const updatedContents = [...prevValues.contents];
@@ -151,7 +151,7 @@ const EditContentLesson = () => {
             };
         });
     };
-    
+
     const addAnswer = (lessonIndex) => {
         setValues((prevValues) => {
             const updatedContents = [...prevValues.contents];
@@ -165,7 +165,7 @@ const EditContentLesson = () => {
             };
         });
     };
-    
+
     const removeAnswer = (lessonIndex, answerIndex) => {
         setValues((prevValues) => {
             const updatedContents = [...prevValues.contents];
@@ -176,7 +176,47 @@ const EditContentLesson = () => {
             };
         });
     };
-    
+
+
+    const moveContentUp = (index) => {
+        setValues((prevValues) => {
+            if (index > 0) {
+                const updatedContents = [...prevValues.contents];
+                [updatedContents[index], updatedContents[index - 1]] = [updatedContents[index - 1], updatedContents[index]];
+                return {
+                    ...prevValues,
+                    contents: updatedContents,
+                };
+            }
+            return prevValues;
+        });
+    };
+
+
+    const moveContentDown = (index) => {
+        setValues((prevValues) => {
+            if (index < prevValues.contents.length - 1) {
+                const updatedContents = [...prevValues.contents];
+                [updatedContents[index], updatedContents[index + 1]] = [updatedContents[index + 1], updatedContents[index]];
+                return {
+                    ...prevValues,
+                    contents: updatedContents,
+                };
+            }
+            return prevValues;
+        });
+    };
+
+    const deleteContent = (index) => {
+        setValues((prevValues) => {
+            const updatedContents = [...prevValues.contents];
+            updatedContents.splice(index, 1);
+            return {
+                ...prevValues,
+                contents: updatedContents,
+            };
+        });
+    };
 
 
 
@@ -394,6 +434,9 @@ const EditContentLesson = () => {
                             addAnswer={addAnswer}
                             handleCorrectAnswerChange={handleCorrectAnswerChange}
                             removeAnswer={removeAnswer}
+                            moveContentUp={moveContentUp}
+                            moveContentDown={moveContentDown}
+                            deleteContent={deleteContent}
                         />
                     </div>
                 </div>

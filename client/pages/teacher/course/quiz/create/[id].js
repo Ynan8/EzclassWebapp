@@ -109,9 +109,9 @@ const CreateQuiz = () => {
                   <Switch onChange={(e) => handleChangeStatus(e)} size='sm' defaultSelected aria-label="Automatic updates" />
                 </div>
               </button>
-              <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              {/* <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 ตัวอย่าง
-              </button>
+              </button> */}
             </div>
           </div>
           <div
@@ -217,7 +217,7 @@ const CreateQuiz = () => {
             </div>
           </div>
         </div>
-        <div className={`flex-grow ml-1/4`} style={{ overflowY: 'auto', paddingLeft: isSidebarOpen ? '20%' : 0 }}>
+        <div className={`flex-grow ml-1/4`} style={{ paddingLeft: isSidebarOpen ? '20%' : 0 }}>
           <div class=" flex-grow h-full  mt-20 mb-10 ">
             <QuizLesson
               questions={questions}

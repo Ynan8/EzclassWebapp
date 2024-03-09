@@ -37,7 +37,7 @@ const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
         dispatch,
     } = useContext(Context);
 
-  
+
     // router
     const router = useRouter();
 
@@ -55,7 +55,7 @@ const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
 
     return (
         <>
-            <div className="fixed flex flex-col top-[75px] left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
+            <div className="fixed flex flex-col top-[55px] left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
                 <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
                     <ul className="flex flex-col py-8 space-y-1">
                         <li className="my-px py-2 ">
@@ -73,7 +73,7 @@ const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
                         <li className="my-px py-2 ">
                             <Link
                                 href={`/teacher/course/room/assignment/${menu.id}/`}
-                                className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/teacher/course/lesson/${menu.id}`)
+                                className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/teacher/course/room/assignment/${menu.id}`)
                                     ? 'bg-gray-100 text-blue-700'
                                     : 'text-gray-100 hover:bg-gray-100 hover:text-blue-700 duration-300'
                                     }`}
@@ -84,9 +84,9 @@ const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
                         </li>
                         <li className="my-px py-2 ">
                             <Link
-                                href={`/teacher/course/assignment/${menu.id}/?courseYearId=${courseYearId}`}
+                                href={`/teacher/course/room/gradeBook/${menu.id}/`}
 
-                                className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/teacher/course/assignment/${menu.id}`)
+                                className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/teacher/course/room/gradeBook/${menu.id}`)
                                     ? 'bg-gray-100 text-blue-700'
                                     : 'text-gray-100 hover:bg-gray-100 hover:text-blue-700 duration-300'
                                     }`}

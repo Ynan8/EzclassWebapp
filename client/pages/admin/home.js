@@ -5,9 +5,13 @@ import HeaderBarAdmin from '../../components/HeaderBar/HeaderBarAdmin';
 import SideBarAdmin from '../../components/Sidebar/SideBarAdmin';
 import AdminTeacherCard from '../../components/Cards/AdminTeacherCard';
 import axios from 'axios';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import InfoTeacher from '../../components/Modals/InfoTeacher';
 
 
 const home = () => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
 
     //list student
     const [studentList, setStudentList] = useState([]);
@@ -43,6 +47,14 @@ const home = () => {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/list-course`);
         setCourseList(data);
     };
+
+    const [teacher, setTeacher] = useState("");
+
+    const teacherModal = (teacher) => {
+        setTeacher(teacher);
+        onOpen();
+    };
+
 
     return (
         <div>
@@ -128,28 +140,33 @@ const home = () => {
                                     รายชื่อคุณครู
                                 </p>
                             </div>
-
                             <div
                                 className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 py-4 gap-8 xl:w-full cursor-pointer"
                             >
                                 {teacherList.map((teacher, index) => (
                                     <div
+                                        onClick={() => {
+                                            teacherModal(teacher);
+                                        }}
                                     >
                                         <AdminTeacherCard key={index} teacher={teacher} />
                                     </div>
                                 ))}
                             </div>
-
-                            {/* <Modal
-                                open={visible}
-                                width={1000}
-                                onCancel={() => setVisible(false)}
-                                footer={null}
-                            >
-                                <InfoTeacher
-                                    teacher={teacher}
-                                />
-                            </Modal> */}
+                            <Modal
+                                size={"4xl"}
+                                isOpen={isOpen}
+                                onOpenChange={onOpenChange}>
+                                <ModalContent>
+                                    {(onClose) => (
+                                        <>
+                                            <ModalBody>
+                                                <InfoTeacher teacher={teacher} />
+                                            </ModalBody>
+                                        </>
+                                    )}
+                                </ModalContent>
+                            </Modal>
                         </div>
                     </div>
                 </div>

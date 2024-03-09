@@ -49,6 +49,9 @@ const LessonStudent = () => {
     }
 
 
+
+
+
     // Show section
     useEffect(() => {
         if (id) {
@@ -170,7 +173,7 @@ const LessonStudent = () => {
                                 >
                                     บทเรียนทั้งหมด
                                 </h1>
-                                <div className="flex space-x-12 justify-center ่">
+                                {/* <div className="flex space-x-12 justify-center ่">
                                     <div className="flex flex-col items-center">
                                         <p className='text-3xl' >5</p>
                                         <p>สิ่งที่ต้องทำ</p>
@@ -183,11 +186,12 @@ const LessonStudent = () => {
                                         <p className='text-3xl' >1</p>
                                         <p>ยังทำไม่เสร็จ</p>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="flex flex-col space-y-4 mt-4">
                                 <SectionAccordionStd
                                     section={section}
+                                    id={id}
                                 />
                             </div>
                         </div>

@@ -122,7 +122,7 @@ const ManageTeacher = () => {
                                 <thead>
                                     <tr className="text-lg font-medium border-b border-gray-200">
                                         <td className=" py-1 px-4 text-center ">ลำดับ</td>
-                                        <td className=" py-1 px-4 text-center ">รหัสนักเรียน</td>
+                                        <td className=" py-1 px-4 text-center ">รหัสผู้สอน</td>
                                         <td className=" py-1 px-4 text-center ">ชื่อ-สกุล</td>
                                         <td className=" py-1 px-4 text-center ">เพิ่มเมื่อ</td>
 

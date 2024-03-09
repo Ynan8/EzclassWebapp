@@ -1,5 +1,8 @@
 const Course = require('../models/course');
 const CourseRoom = require('../models/courseRoom');
+const QuizScore = require('../models/quizScore');
+const Section = require('../models/section');
+const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../utils/auth')
 
 
@@ -132,3 +135,92 @@ exports.teacherList = async (req, res) => {
     console.log(err)
   }
 }
+
+exports.getQuizScoreCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;  // Destructure to get courseId
+
+    const quizScoreCourse = await QuizScore.find({ courseId: courseId })
+      .exec();
+    res.json(quizScoreCourse);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+exports.averageScores = async (req, res) => {
+  const { courseYearId } = req.params;
+
+  try {
+    const sections = await Section.find({ courseYearId }).lean();
+    const courseRooms = await CourseRoom.find({ courseYearId }).lean();
+    let allScores = [];
+
+    for (let section of sections) {
+      let roomScores = [];
+      for (let room of courseRooms) {
+        let scores = await QuizScore.find({
+          sectionId: section._id,
+          courseRoomId: room._id
+        }).lean();
+        let averageScore = scores.reduce((acc, { score }) => acc + score, 0) / scores.length || 0;
+        roomScores.push(averageScore);
+      }
+      allScores.push({
+        section: section.sectionName,
+        scores: roomScores
+      });
+    }
+
+    res.json(allScores);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.addStudent = async (req, res) => {
+  //courseRoomId
+  const { id } = req.params;
+  try {
+    //Check student
+    const { firstName, lastName, username, password } = req.body;
+
+
+    var user = await User.findOne({ username }).exec();
+    if (user) {
+      return res.status(400).send("มีบัญชีผู้ใช้แล้ว");
+    }
+
+    // hash password
+    const hashedPassword = await hashPassword(password);
+
+    user = new User({
+      firstName,
+      lastName,
+      username,
+      password: hashedPassword,
+      role: "student",
+    });
+
+    await user.save();
+
+    const updatedCourseRoom = await CourseRoom.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { studentId: user._id },
+      },
+      { new: true }
+    ).exec();
+
+    console.log("save teacher", user);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error!");
+  }
+};
+

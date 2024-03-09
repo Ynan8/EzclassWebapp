@@ -20,7 +20,7 @@ const SideBarTeacher = ({ courseYearId }) => {
     };
 
     return (
-        <div className="fixed flex flex-col top-[60px]  left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
+        <div className="fixed flex flex-col  left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
             <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
                 <ul className="flex flex-col py-8 space-y-1">
                     <p className=' text-sm sm:text-center md:text-left md:px-3 md:text-lg lg:text-xl'>แดชบอร์ด</p>

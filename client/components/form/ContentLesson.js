@@ -1,6 +1,6 @@
-import { Button, Checkbox, Input } from '@nextui-org/react'
+import { Button, Checkbox, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Input } from '@nextui-org/react'
 import React from 'react'
-import { BsBlockquoteRight, BsFileEarmarkTextFill, BsQuestionSquare, BsThreeDots, BsYoutube } from 'react-icons/bs'
+import { BsBlockquoteRight, BsFileEarmarkTextFill, BsQuestionSquare, BsThreeDots, BsThreeDotsVertical, BsYoutube } from 'react-icons/bs'
 import dynamic from "next/dynamic";
 const JoditEditor = dynamic(() => import("jodit-react"), {
     ssr: false,
@@ -10,6 +10,7 @@ import { dracula } from '@uiw/codemirror-theme-dracula';
 import { python } from '@codemirror/lang-python';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { TbTrash } from 'react-icons/tb'
+import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa6";
 
 
 const ContentLesson = ({
@@ -25,7 +26,11 @@ const ContentLesson = ({
     addAnswer,
     handleCorrectAnswerChange,
     removeAnswer,
+    moveContentUp,
+    moveContentDown,
+    deleteContent,
 }) => {
+
     return (
         <div
             className="mx-auto max-w-screen-lg px-4 pt-20 pb-20 space-y-12"
@@ -63,10 +68,47 @@ const ContentLesson = ({
                                         </div>
                                     </div>
                                     <div className="relative" >
-                                        <BsThreeDots
+                                        <Dropdown>
+                                            <DropdownTrigger>
+                                                <Button
+                                                    size='sm'
+                                                    variant="light"
+                                                    startContent={<BsThreeDots size={18} />}
+                                                />
+                                            </DropdownTrigger>
+                                            <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                <DropdownSection showDivider>
+                                                    <DropdownItem
+                                                        key="moveUp" 
+                                                        onClick={() => moveContentUp(index)}
+                                                       startContent={<FaArrowUp size={20} />}
 
-                                            className="h-6 cursor-pointer"
-                                        />
+                                                        >
+                                                        <p>เลื่อนขึ้น</p>
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                       key="moveDown" 
+                                                       onClick={() => moveContentDown(index)}
+                                                       startContent={<FaArrowDown size={20} />}
+                                                       >
+                                                        <p>เลื่อนลง</p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                                <DropdownSection>
+                                                    <DropdownItem
+                                                        key="delete"
+                                                        onClick={() => deleteContent(index)}
+                                                        className="text-danger"
+                                                        color="danger"
+                                                        startContent={<FaTrash size={20} />}
+                                                    >
+                                                        <p>
+                                                            ลบ
+                                                        </p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                            </DropdownMenu>
+                                        </Dropdown>
                                     </div>
                                 </div>
                                 <div className="flex flex-col space-y-1">
@@ -74,7 +116,7 @@ const ContentLesson = ({
                                         <JoditEditor
                                             name="richText"
                                             required
-                                            value={lesson.richText || ""}
+                                            value={lesson.article || ""}
                                             onChange={(newContent) => handleArticleChange(newContent, index)}
                                         />
                                     </div>
@@ -101,12 +143,47 @@ const ContentLesson = ({
                                         </div>
                                     </div>
                                     <div className="relative" >
-                                        <BsThreeDots
-                                            className="h-6 cursor-pointer"
-                                        />
-                                        <div className="absolute w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 origin-top-right right-0">
+                                    <Dropdown>
+                                            <DropdownTrigger>
+                                                <Button
+                                                    size='sm'
+                                                    variant="light"
+                                                    startContent={<BsThreeDots size={18} />}
+                                                />
+                                            </DropdownTrigger>
+                                            <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                <DropdownSection showDivider>
+                                                    <DropdownItem
+                                                        key="moveUp" 
+                                                        onClick={() => moveContentUp(index)}
+                                                       startContent={<FaArrowUp size={20} />}
 
-                                        </div>
+                                                        >
+                                                        <p>เลื่อนขึ้น</p>
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                       key="moveDown" 
+                                                       onClick={() => moveContentDown(index)}
+                                                       startContent={<FaArrowDown size={20} />}
+                                                       >
+                                                        <p>เลื่อนลง</p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                                <DropdownSection>
+                                                    <DropdownItem
+                                                        key="delete"
+                                                        onClick={() => deleteContent(index)}
+                                                        className="text-danger"
+                                                        color="danger"
+                                                        startContent={<FaTrash size={20} />}
+                                                    >
+                                                        <p>
+                                                            ลบ
+                                                        </p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                            </DropdownMenu>
+                                        </Dropdown>
                                     </div>
                                 </div>
                                 <div className="px-8 pt-4 pb-6 space-y-6">
@@ -135,11 +212,47 @@ const ContentLesson = ({
                                     <div className="flex items-center space-x-2  text-white     ">
 
                                         <div className="relative" >
-                                            <BsThreeDots
+                                        <Dropdown>
+                                            <DropdownTrigger>
+                                                <Button
+                                                    size='sm'
+                                                    variant="light"
+                                                    startContent={<BsThreeDots size={18} />}
+                                                />
+                                            </DropdownTrigger>
+                                            <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                <DropdownSection showDivider>
+                                                    <DropdownItem
+                                                        key="moveUp" 
+                                                        onClick={() => moveContentUp(index)}
+                                                       startContent={<FaArrowUp size={20} />}
 
-                                                className="h-6 cursor-pointer"
-                                            />
-
+                                                        >
+                                                        <p>เลื่อนขึ้น</p>
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                       key="moveDown" 
+                                                       onClick={() => moveContentDown(index)}
+                                                       startContent={<FaArrowDown size={20} />}
+                                                       >
+                                                        <p>เลื่อนลง</p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                                <DropdownSection>
+                                                    <DropdownItem
+                                                        key="delete"
+                                                        onClick={() => deleteContent(index)}
+                                                        className="text-danger"
+                                                        color="danger"
+                                                        startContent={<FaTrash size={20} />}
+                                                    >
+                                                        <p>
+                                                            ลบ
+                                                        </p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                            </DropdownMenu>
+                                        </Dropdown>
                                         </div>
                                     </div>
                                 </div>
@@ -172,12 +285,47 @@ const ContentLesson = ({
                                         </div>
                                     </div>
                                     <div className="relative" >
-                                        <BsThreeDots
-                                            className="h-6 cursor-pointer"
-                                        />
-                                        <div className="absolute w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 origin-top-right right-0">
+                                    <Dropdown>
+                                            <DropdownTrigger>
+                                                <Button
+                                                    size='sm'
+                                                    variant="light"
+                                                    startContent={<BsThreeDots size={18} />}
+                                                />
+                                            </DropdownTrigger>
+                                            <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                <DropdownSection showDivider>
+                                                    <DropdownItem
+                                                        key="moveUp" 
+                                                        onClick={() => moveContentUp(index)}
+                                                       startContent={<FaArrowUp size={20} />}
 
-                                        </div>
+                                                        >
+                                                        <p>เลื่อนขึ้น</p>
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                       key="moveDown" 
+                                                       onClick={() => moveContentDown(index)}
+                                                       startContent={<FaArrowDown size={20} />}
+                                                       >
+                                                        <p>เลื่อนลง</p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                                <DropdownSection>
+                                                    <DropdownItem
+                                                        key="delete"
+                                                        onClick={() => deleteContent(index)}
+                                                        className="text-danger"
+                                                        color="danger"
+                                                        startContent={<FaTrash size={20} />}
+                                                    >
+                                                        <p>
+                                                            ลบ
+                                                        </p>
+                                                    </DropdownItem>
+                                                </DropdownSection>
+                                            </DropdownMenu>
+                                        </Dropdown>
                                     </div>
                                 </div>
                                 <div className="px-8 pt-4 pb-6 space-y-6">

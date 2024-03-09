@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 
 
 const CourseRoom = () => {
+    const [searchQuery, setSearchQuery] = useState('');
 
     const router = useRouter();
     const { id } = router.query;
@@ -110,7 +111,7 @@ const CourseRoom = () => {
             case "student":
                 return (
                     <div className="flex flex-col">
-                        <p className="text-lg  ">39 คน</p>
+                        <p className="text-lg">{courseRoom.studentId.length} คน</p>
                     </div>
                 );
             case "status":
@@ -123,13 +124,13 @@ const CourseRoom = () => {
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="ดูห้องเรียน">
-                        <Link
+                            <Link
                                 href={`/teacher/course/room/single/${courseRoom._id}`}
                                 className="pointer"
-                              >
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <IoEyeOutline size={25} />
-                            </span>
+                            >
+                                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                    <IoEyeOutline size={25} />
+                                </span>
                             </Link>
                         </Tooltip>
                         <Tooltip content="แก้ไข">
@@ -167,8 +168,8 @@ const CourseRoom = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>ชื่อวิชา</BreadcrumbItem>
-                            <BreadcrumbItem>ชื่อปีการศึกษา</BreadcrumbItem>
+                            <BreadcrumbItem>การเขียนโปรแกรม ด้วยภาษาไพธอนเบื้องต้น</BreadcrumbItem>
+                            <BreadcrumbItem>2566</BreadcrumbItem>
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -186,9 +187,12 @@ const CourseRoom = () => {
                                         }}
                                         placeholder="ค้นหาชื่อห้องเรียน..."
                                         size="sm"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         startContent={<CiSearch size={25} className="text-default-300" />}
                                         variant="bordered"
                                     />
+
                                     <div className="flex gap-3">
                                         <Button onPress={onOpenModalCreate} className='ml-auto' color="primary" variant="bordered" size='md' radius="sm" startContent={<FaPlus />}>
                                             สร้างห้องเรียน
@@ -206,14 +210,17 @@ const CourseRoom = () => {
                                             )}
                                         </TableHeader>
                                         <TableBody>
-                                            {courseRoom && courseRoom.map((item, index) => (
-                                                <TableRow key={item._id}>
-                                                    {columns.map((column) => (
-                                                        <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
-                                                    ))}
-                                                </TableRow>
-                                            ))}
+                                            {courseRoom && courseRoom
+                                                .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                .map((item, index) => (
+                                                    <TableRow key={item._id}>
+                                                        {columns.map((column) => (
+                                                            <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                ))}
                                         </TableBody>
+
                                     </Table>
                                 </div>
                             </div>

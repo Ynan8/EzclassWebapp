@@ -14,7 +14,8 @@ const {
     archivedCourseYear,
     cancelArchivedCourseYear,
     deleteCourseYear,
-    getSingleCourseYear
+    getSingleCourseYear,
+    duplicateCourseYear 
 } = require('../controllers/courseYear')
 
 router.post("/add-courseYear",auth, addCourseYear);
@@ -26,6 +27,10 @@ router.delete('/delete-courseYear/:id', auth, deleteCourseYear);
 router.put('/archived-courseYear/:id', auth, archivedCourseYear);
 router.put('/cancel-archived-courseYear/:id', auth, cancelArchivedCourseYear);
 router.get("/courseYear/single/:id", getSingleCourseYear);
+
+router.post("/duplicate-courseYear/:courseYearId",auth, duplicateCourseYear );
+
+
 
 
 

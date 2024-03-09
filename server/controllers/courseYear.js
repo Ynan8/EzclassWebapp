@@ -1,4 +1,7 @@
 const CourseYear = require("../models/courseYear");
+const Section = require("../models/section");
+const mongoose = require('mongoose');
+
 
 const Course = require("../models/course");
 
@@ -137,3 +140,39 @@ exports.cancelArchivedCourseYear = async (req, res) => {
     res.status(500).json({ error: 'Failed to cancel course completion.' });
   }
 };
+
+exports.duplicateCourseYear = async (req, res) => {
+  try {
+      const { courseYearId } = req.params; // Get the course year ID to duplicate
+      const originalCourseYear = await CourseYear.findById(courseYearId).exec();
+
+      if (!originalCourseYear) {
+          return res.status(404).json({ error: 'Course year not found' });
+      }
+
+      // Create a new course year with the same data except for the year
+      const duplicatedCourseYear = await new CourseYear({
+          ...originalCourseYear.toObject(),
+          year: `${originalCourseYear.year} Copy`, // Append "Copy" to the old year name
+          _id: new mongoose.Types.ObjectId() // Generate a new ID for the duplicated course year
+      }).save();
+
+      // Duplicate sections
+      const originalSections = await Section.find({ courseYearId: courseYearId }).exec();
+
+      for (const section of originalSections) {
+          // Create a new section with the same data
+          await new Section({
+              ...section.toObject(),
+              _id: new mongoose.Types.ObjectId(), // Generate a new ID for the duplicated section
+              courseYearId: duplicatedCourseYear._id // Set the course year ID to the duplicated course year
+          }).save();
+      }
+
+      res.json({ message: 'Course year duplicated successfully', duplicatedCourseYear });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error!");
+  }
+};
+

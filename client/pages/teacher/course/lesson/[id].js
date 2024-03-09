@@ -178,8 +178,8 @@ const LessonCourse = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>ไพทอนพื้นฐาน</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา 2567</BreadcrumbItem>
+                            <BreadcrumbItem>การเขียนโปรแกรม ด้วยภาษาไพธอนเบื้องต้น</BreadcrumbItem>
+                            <BreadcrumbItem>2566</BreadcrumbItem>
                             <BreadcrumbItem>บทเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>

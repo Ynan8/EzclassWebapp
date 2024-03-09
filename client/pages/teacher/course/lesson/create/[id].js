@@ -129,6 +129,36 @@ const CreateContentLesson = () => {
     console.log(newStatus);
   };
 
+  const moveContentUp = (index) => {
+    if (index > 0) {
+        setContentLessons((prevSections) => {
+            const updatedSections = [...prevSections];
+            [updatedSections[index], updatedSections[index - 1]] = [updatedSections[index - 1], updatedSections[index]];
+            return updatedSections;
+        });
+    }
+};
+
+const moveContentDown = (index) => {
+    setContentLessons((prevSections) => {
+        if (index < prevSections.length - 1) {
+            const updatedSections = [...prevSections];
+            [updatedSections[index], updatedSections[index + 1]] = [updatedSections[index + 1], updatedSections[index]];
+            return updatedSections;
+        }
+        return prevSections;
+    });
+};
+
+const deleteContent = (index) => {
+    setContentLessons((prevSections) => {
+        const updatedSections = [...prevSections];
+        updatedSections.splice(index, 1);
+        return updatedSections;
+    });
+};
+
+
   const handleAddContentLesson = async () => {
 
     try {
@@ -203,9 +233,9 @@ const CreateContentLesson = () => {
                   <Switch onChange={(e) => handleChangeStatus(e)} size='sm' defaultSelected aria-label="Automatic updates" />
                 </div>
               </button>
-              <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              {/* <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 ตัวอย่าง
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -343,6 +373,9 @@ const CreateContentLesson = () => {
               addAnswer={addAnswer}
               handleCorrectAnswerChange={handleCorrectAnswerChange}
               removeAnswer={removeAnswer}
+              moveContentUp={moveContentUp}
+              moveContentDown={moveContentDown}
+              deleteContent={deleteContent}
             />
           </div>
         </div>

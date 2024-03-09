@@ -17,6 +17,7 @@ const SectionAccordion = ({
     courseYearId,
     loadSection,
 }) => {
+    const { isOpen: isOpenModalDeleteAssignment, onOpen: onOpenModalDeleteAssignment, onOpenChange: onCloseModalDeleteAssignment } = useDisclosure();
     const { isOpen: isOpenModalDeleteQuiz, onOpen: onOpenModalDeleteQuiz, onOpenChange: onCloseModalDeleteQuiz } = useDisclosure();
     const { isOpen: isOpenModalDeleteLesson, onOpen: onOpenModalDeleteLesson, onClose: onCloseModalDeleteLesson } = useDisclosure();
     const { isOpen: isOpenModalDeleteSection, onOpen: onOpenModalDeleteSection, onClose: onCloseModalDeleteSection } = useDisclosure();
@@ -69,9 +70,29 @@ const SectionAccordion = ({
         }
     };
 
+    // Delete assignment
+    const [assignmentId, setAssignmentId] = useState("");
+
+    const openDeleteModalAssignment = (id) => {
+        setAssignmentId(id);
+        onOpenModalDeleteAssignment();
+    };
+
+    const handleDeleteAssignment = async (assignmentId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/assignment/${assignmentId}`);
+
+            toast.success('ลบแบบทดสอบสำเร็จ');
+            loadSection();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบแบบทดสอบได้ได้');
+        }
+    };
+
     return (
         <>
-        {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
+            {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
             <Accordion selectionMode="multiple" variant="splitted">
                 {section.map((item, index) => (
                     <AccordionItem
@@ -212,13 +233,17 @@ const SectionAccordion = ({
                                                     <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
                                                 </p>
                                                 <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                    <Chip className="capitalize" color={"success"} size="md" variant="flat">
-                                                        เผยแพร่
-                                                    </Chip>
-                                                    <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                        <CiEdit size={23} className="ml-auto" />
-                                                    </span>
-                                                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                                    <Link href={`/teacher/course/assignment/edit/${assignment._id}?courseYear=${courseYearId}`}>
+                                                        <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                            <CiEdit size={23} className="ml-auto" />
+                                                        </span>
+                                                    </Link>
+                                                    <span
+                                                        onClick={() => {
+                                                            openDeleteModalAssignment(assignment._id)
+                                                            onOpenModalDeleteAssignment()
+                                                        }}
+                                                        className="text-lg text-danger cursor-pointer active:opacity-50">
                                                         <GoTrash size={20} className="" />
                                                     </span>
 
@@ -276,7 +301,7 @@ const SectionAccordion = ({
                             <ModalHeader className="flex flex-col gap-1">
                                 <p className="text-lg font-medium leading-6 text-gray-900"
                                 >
-                                    คุณต้องลบบทเรียนย่อยหรือไม่ ?
+                                    คุณต้องการลบบทเรียนย่อยหรือไม่ ?
                                 </p>
                             </ModalHeader>
                             <ModalBody>
@@ -309,7 +334,7 @@ const SectionAccordion = ({
                             <ModalHeader className="flex flex-col gap-1">
                                 <p className="text-lg font-medium leading-6 text-gray-900"
                                 >
-                                    คุณต้องลบแบบทดสอบท้ายบทเรียนหรือไม่ ?
+                                    คุณต้องการลบแบบทดสอบท้ายบทเรียนหรือไม่ ?
                                 </p>
                             </ModalHeader>
                             <ModalBody>
@@ -323,6 +348,39 @@ const SectionAccordion = ({
                                     ยกเลิก
                                 </Button>
                                 <Button color="danger" onPress={onClose} onClick={() => handleDeleteQuiz(quizId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            {/* Delete  Assignment*/}
+            <Modal
+                isOpen={isOpenModalDeleteAssignment}
+                onClose={onCloseModalDeleteAssignment}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องการลบงานที่มอบหมายหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบงานที่มอบหมายจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger" onPress={onClose} onClick={() => handleDeleteAssignment(assignmentId)}>
                                     ยืนยัน
                                 </Button>
                             </ModalFooter>

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import { Button, Switch } from '@nextui-org/react';
+import UpdateQuizLesson from '../../../../../components/Form/UpdateQuizLesson';
 
 
 
@@ -113,6 +114,7 @@ const EditQuiz = () => {
             <div class="fixed w-full flex items-center justify-between h-14 text-white z-10">
                 <div class="flex-1 flex justify-between items-center h-16   bg-white w-full border-b border-gray-300">
                     <div className="flex items-center ml-4">
+
                         <span
                             className="text-white text-4xl top-5 left-4 cursor-pointer"
                             onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -132,9 +134,6 @@ const EditQuiz = () => {
                             <div className="ml-2 form-check flex items-center justify-center form-switch">
                                 <Switch onChange={(e) => handleChangeStatus(e)} size='sm' defaultSelected aria-label="Automatic updates" />
                             </div>
-                        </button>
-                        <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                            ตัวอย่าง
                         </button>
                     </div>
                 </div>
@@ -239,7 +238,10 @@ const EditQuiz = () => {
             </div>
             <div className={`flex-grow ml-1/4`} style={{ overflowY: 'auto', paddingLeft: isSidebarOpen ? '20%' : 0 }}>
                 <div class=" flex-grow h-full  mt-20 mb-10 ">
-                   
+                    <UpdateQuizLesson
+                        values={values}
+                        setValues={setValues}
+                    />
                 </div>
             </div>
         </div>

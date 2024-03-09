@@ -7,6 +7,7 @@ import { RxDashboard } from "react-icons/rx"
 import { SiGoogleclassroom } from "react-icons/si"
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { LiaMedalSolid } from 'react-icons/lia';
 
 const SideBarStudent = ({ id }) => {
 
@@ -37,18 +38,6 @@ const SideBarStudent = ({ id }) => {
                     </li>
                     <li className="my-px py-2 ">
                         <Link
-                            href={`/student/course/assignment/${menu.id}`}
-                            className={`relative flex flex-row items-center rounded-lg h-11 px-4 focus:outline-none text-white-600 hover:text-white-800 border-l-5 border-transparent pr-6 ${isLinkActive(`/student/course/assignment/${menu.id}`)
-                                ? 'bg-gray-100 text-blue-700'
-                                : 'text-gray-100 hover:bg-gray-100 hover:text-blue-700 duration-300'
-                                }`}
-                        >
-                            <BsJournalCheck size={30} className="min-w-max" />
-                            <span className="ml-4 text-lg">งานที่มอบหมาย</span>
-                        </Link>
-                    </li>
-                    <li className="my-px py-2 ">
-                        <Link
                             href={`/student/course/codeRoom/${menu.id}`}
                             className={`relative flex flex-row items-center rounded-lg h-11 px-4 focus:outline-none text-white-600 hover:text-white-800 border-l-5 border-transparent pr-6 ${isLinkActive(`/student/course/codeRoom/${menu.id}`)
                                 ? 'bg-gray-100 text-blue-700'
@@ -57,6 +46,18 @@ const SideBarStudent = ({ id }) => {
                         >
                             <BsCodeSquare size={30} className="min-w-max" />
                             <span className="ml-4 text-lg">ห้องเรียนเขียนโค้ด</span>
+                        </Link>
+                    </li>
+                    <li className="my-px py-2 ">
+                        <Link
+                            href={`/student/course/assignment/${menu.id}`}
+                            className={`relative flex flex-row items-center rounded-lg h-11 px-4 focus:outline-none text-white-600 hover:text-white-800 border-l-5 border-transparent pr-6 ${isLinkActive(`/student/course/assignment/${menu.id}`)
+                                ? 'bg-gray-100 text-blue-700'
+                                : 'text-gray-100 hover:bg-gray-100 hover:text-blue-700 duration-300'
+                                }`}
+                        >
+                            <LiaMedalSolid size={30} className="min-w-max" />
+                            <span className="ml-4 text-lg">ผลการเรียน</span>
                         </Link>
                     </li>
                 </ul>

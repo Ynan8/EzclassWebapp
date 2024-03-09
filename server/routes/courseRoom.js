@@ -12,11 +12,13 @@ const {
     getCourseRoom,
     updateCourseRoom,
     deleteCourseRoom,
+    getCourseRoomRead
 } = require('../controllers/courseRoom')
 
 
 router.post("/add-courseRoom", addCourseRoom);
 router.get("/courseRoom/:id", getCourseRoom);
+router.get("/courseRoomSingle/:id", getCourseRoomRead);
 router.put("/courseRoom/:id", auth, updateCourseRoom);
 router.delete('/delete-courseRoom/:id', auth, deleteCourseRoom);
 

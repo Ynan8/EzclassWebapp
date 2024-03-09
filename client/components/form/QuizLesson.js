@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { BsQuestionSquare, BsThreeDots } from 'react-icons/bs'
 import { TbTrash } from 'react-icons/tb'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { Button, Checkbox, Input, Select, SelectItem } from '@nextui-org/react'
+import { Button, Checkbox, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Input, Select, SelectItem } from '@nextui-org/react'
 import { IoIosCheckboxOutline, IoIosRadioButtonOn, IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
+import { FaArrowDown, FaArrowUp, FaTrash } from 'react-icons/fa6'
 
 const QuizLesson = ({
     questions,
@@ -71,44 +72,6 @@ const QuizLesson = ({
         setQuestions(newQuestions);
     };
 
-    const handleSubmit = () => {
-        const formData = questions.map((question, index) => {
-            switch (question.questionType) {
-                case 'multiple-choice':
-                    return {
-                        questionIndex: index + 1,
-                        questionType: question.questionType,
-                        questionText: question.questionText,
-                        options: question.options,
-                        correctOptionIndex: question.correctOptionIndex,
-                        score: question.score
-                    };
-
-                case 'single-choice':
-                    return {
-                        questionIndex: index + 1,
-                        questionType: question.questionType,
-                        questionText: question.questionText,
-                        options: question.options,
-                        correctOptionIndex: question.correctAnswerIndex
-                    };
-
-                case 'true-false':
-                    return {
-                        questionIndex: index + 1,
-                        questionType: question.questionType,
-                        questionText: question.questionText,
-                        answer: question.trueFalseOptions
-                    };
-
-                default:
-                    return null; // Handle other question types if needed
-            }
-        });
-
-        console.log(formData);
-    };
-
 
     const handleCheckboxChange = (questionIndex, optionIndex) => {
         const updatedQuestions = [...questions];
@@ -159,11 +122,6 @@ const QuizLesson = ({
         setQuestions(updatedQuestions);
     };
 
-    const handleOpenEndAnswerChange = (e, index) => {
-        const updatedQuestions = [...questions];
-        updatedQuestions[index].openEndAnswer = e.target.value;
-        setQuestions(updatedQuestions);
-    };
 
     const handleTrueFalseChange = (e, index) => {
         const updatedQuestions = [...questions];
@@ -178,6 +136,36 @@ const QuizLesson = ({
         updatedQuestions[questionIndex].options.splice(optionIndex, 1);
         setQuestions(updatedQuestions);
     };
+
+    const moveQuestionUp = (index) => {
+        if (index > 0) {
+            setQuestions((prevQuestions) => {
+                const updatedQuestions = [...prevQuestions];
+                [updatedQuestions[index], updatedQuestions[index - 1]] = [updatedQuestions[index - 1], updatedQuestions[index]];
+                return updatedQuestions;
+            });
+        }
+    };
+
+    const moveQuestionDown = (index) => {
+        setQuestions((prevQuestions) => {
+            if (index < prevQuestions.length - 1) {
+                const updatedQuestions = [...prevQuestions];
+                [updatedQuestions[index], updatedQuestions[index + 1]] = [updatedQuestions[index + 1], updatedQuestions[index]];
+                return updatedQuestions;
+            }
+            return prevQuestions;
+        });
+    };
+
+    const deleteQuestion = (index) => {
+        setQuestions((prevQuestions) => {
+            const updatedQuestions = [...prevQuestions];
+            updatedQuestions.splice(index, 1);
+            return updatedQuestions;
+        });
+    };
+
 
 
     return (
@@ -214,7 +202,47 @@ const QuizLesson = ({
                                             onChange={(e) => handleScoreChange(e, index)}
                                         />
                                         <div className="relative">
-                                            <BsThreeDots className="h-6 cursor-pointer" />
+                                            <Dropdown>
+                                                <DropdownTrigger>
+                                                    <Button
+                                                        size='sm'
+                                                        variant="light"
+                                                        startContent={<BsThreeDots size={18} />}
+                                                    />
+                                                </DropdownTrigger>
+                                                <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                    <DropdownSection showDivider>
+                                                        <DropdownItem
+                                                            key="moveUp"
+                                                            onClick={() => moveQuestionUp(index)}
+                                                            startContent={<FaArrowUp size={20} />}
+
+                                                        >
+                                                            <p>เลื่อนขึ้น</p>
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            key="moveDown"
+                                                            onClick={() => moveQuestionDown(index)}
+                                                            startContent={<FaArrowDown size={20} />}
+                                                        >
+                                                            <p>เลื่อนลง</p>
+                                                        </DropdownItem>
+                                                    </DropdownSection>
+                                                    <DropdownSection>
+                                                        <DropdownItem
+                                                            key="delete"
+                                                            onClick={() => deleteQuestion(index)}
+                                                            className="text-danger"
+                                                            color="danger"
+                                                            startContent={<FaTrash size={20} />}
+                                                        >
+                                                            <p>
+                                                                ลบ
+                                                            </p>
+                                                        </DropdownItem>
+                                                    </DropdownSection>
+                                                </DropdownMenu>
+                                            </Dropdown>
                                         </div>
                                     </div>
                                 </div>
@@ -306,7 +334,7 @@ const QuizLesson = ({
                                                 <p
                                                     className="bg-transparent focus:outline-none w-full disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    True
+                                                    ถูก
                                                 </p>
                                             </label>
                                             <label className="flex items-center space-x-3 rounded-md p-2 bg-transparent">
@@ -320,7 +348,7 @@ const QuizLesson = ({
                                                 <p
                                                     className="bg-transparent focus:outline-none w-full disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    False
+                                                    ผิด
                                                 </p>
                                             </label>
                                         </>

@@ -2,8 +2,14 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../../../../components/LessonStudentView/Sidebar';
+import LessonContent from '../../../../../components/LessonStudentView/LessonContent';
+import QuizContent from '../../../../../components/LessonStudentView/QuizContent';
+import Headerbar from '../../../../../components/LessonStudentView/Headerbar';
+import toast from 'react-hot-toast';
 
 const LessonView = () => {
+  const [currentLessonIndex, setCurrentLessonIndex] = useState(null);
+
   // Load course 
   const [course, setCourse] = useState({});
   const [loading, setLoading] = useState(false);
@@ -16,6 +22,7 @@ const LessonView = () => {
     if (id) {
       loadCourse();
       loadCourseYearId();
+      loadCourseRoom();
     }
   }, [id]);
 
@@ -45,6 +52,22 @@ const LessonView = () => {
     }
   }
 
+      // Get course Room 
+      const [courseRoom, setCourseRoom] = useState()
+      const loadCourseRoom = async () => {
+          if (id) {
+  
+              try {
+                  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/std/getCourseRoomId/${id}`);
+                  setCourseRoom(data);
+              } catch (error) {
+                  console.error("Error loading course:", error);
+              }
+          }
+      }
+  
+      console.log("GET COURSE YEAR ID", courseRoom)
+
 
   // Show section
   useEffect(() => {
@@ -55,61 +78,54 @@ const LessonView = () => {
 
   const [section, setSection] = useState([])
   const loadSection = async () => {
-    try {
-      const { data: sections } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section`, {
-        params: {
-          courseYearId: courseYearId,
-        },
-      });
+    if (id) {
+      try {
+        const { data: sections } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section`, {
+          params: {
+            courseYearId: courseYearId,
+          },
+        });
 
-      // Fetch lesson and quiz data for each section
-      const sectionsWithData = await Promise.all(
-        sections.map(async (section) => {
-          const lessonData = await Promise.all(
-            section.lesson.map(async (lessonId) => {
-              try {
-                const { data: lesson } = await axios.get(`${process.env.NEXT_PUBLIC_API}/lesson/${lessonId}`);
-                return lesson;
-              } catch (error) {
-                console.error('Error loading lesson:', error);
-                return null;
-              }
-            })
-          );
+        // Fetch lesson and quiz data for each section
+        const sectionsWithData = await Promise.all(
+          sections.map(async (section) => {
+            const lessonData = await Promise.all(
+              section.lesson.map(async (lessonId) => {
+                try {
+                  const { data: lesson } = await axios.get(`${process.env.NEXT_PUBLIC_API}/lesson/${lessonId}`);
+                  return lesson;
+                } catch (error) {
+                  console.error('Error loading lesson:', error);
+                  return null;
+                }
+              })
+            );
 
-          const quizData = await Promise.all(
-            section.quiz.map(async (quizId) => {
-              try {
-                const { data: quiz } = await axios.get(`${process.env.NEXT_PUBLIC_API}/quiz/${quizId}`);
-                return quiz;
-              } catch (error) {
-                console.error('Error loading quiz:', error);
-                return null;
-              }
-            })
-          );
+            const quizData = await Promise.all(
+              section.quiz.map(async (quizId) => {
+                try {
+                  const { data: quiz } = await axios.get(`${process.env.NEXT_PUBLIC_API}/quiz/${quizId}`);
+                  return quiz;
+                } catch (error) {
+                  console.error('Error loading quiz:', error);
+                  return null;
+                }
+              })
+            );
 
-          const AssignmentData = await Promise.all(
-            section.assignment.map(async (assignmentId) => {
-              try {
-                const { data: assignment } = await axios.get(`${process.env.NEXT_PUBLIC_API}/assignment/${assignmentId}`);
-                return assignment;
-              } catch (error) {
-                console.error('Error loading assignment:', error);
-                return null;
-              }
-            })
-          );
+            return { ...section, lessonData, quizData };
+          })
+        );
 
-          return { ...section, lessonData, quizData, AssignmentData };
-        })
-      );
+        setSection(sectionsWithData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading sections:', error);
+        setLoading(false);
+      }
+    };
+  }
 
-      setSection(sectionsWithData);
-    } catch (error) {
-      console.error('Error loading sections:', error);
-    }
-  };
 
   // toggle 
   const [openToggles, setOpenToggles] = useState([]);
@@ -185,6 +201,197 @@ const LessonView = () => {
     }
   };
 
+  const goToPreviousLesson = () => {
+    if (selectedSectionIndex !== null) {
+      const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
+        (lesson) => lesson._id === activeLessonId
+      );
+
+      if (currentLessonIndex > 0) {
+        // If there is a lesson before the current one, show it
+        const previousLessonId = section[selectedSectionIndex].lessonData[currentLessonIndex - 1]._id;
+        showLessonContent(selectedSectionIndex, previousLessonId);
+      } else {
+        // If there is no lesson before the current one, move to the previous section
+        const previousSectionIndex = selectedSectionIndex - 1;
+        if (previousSectionIndex >= 0) {
+          const previousSection = section[previousSectionIndex];
+          const lastLessonId =
+            previousSection.lessonData.length > 0
+              ? previousSection.lessonData[previousSection.lessonData.length - 1]._id
+              : null;
+
+          if (lastLessonId) {
+            showLessonContent(previousSectionIndex, lastLessonId);
+          }
+        }
+      }
+    }
+  };
+
+  const goToNextLesson = (lessonId) => {
+    markCompleted(lessonId);
+    if (selectedSectionIndex !== null) {
+        const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
+            (lesson) => lesson._id === activeLessonId
+        );
+        const totalLessons = section[selectedSectionIndex].lessonData.length;
+        if (currentLessonIndex < totalLessons - 1) {
+            // If there is a lesson after the current one, show it
+            const nextLessonId = section[selectedSectionIndex].lessonData[currentLessonIndex + 1]._id;
+            showLessonContent(selectedSectionIndex, nextLessonId);
+        } else {
+            // If there is no lesson after the current one, move to the next section
+            goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
+            goToLessonQuiz()
+        }
+    }
+};
+
+  
+
+  const [completedLessons, setCompletedLessons] = useState([]);
+
+  const markCompleted = async (lessonId) => {
+    try {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-completed`, {
+        courseId: id,
+        lessonId: lessonId, // Pass the lessonId to the function
+      });
+      console.log(data);
+      setCompletedLessons([...completedLessons, lessonId]);
+    } catch (error) {
+      console.error('Error marking lesson as completed:', error);
+    }
+  };
+
+  // complete lesson
+  useEffect(() => {
+    if (id) loadCompletedLessons();
+  }, [id]);
+
+
+  const loadCompletedLessons = async () => {
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-completed`, {
+      courseId: id
+    })
+    setCompletedLessons(data)
+  }
+
+  const [completedQuiz, setCompletedQuiz] = useState([]);
+
+  const markCompletedQuiz = async (quizId) => {
+    try {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-completedQuiz`, {
+        courseId: id,
+        quizId: quizId, // Pass the lessonId to the function
+      });
+      console.log(data);
+      setCompletedQuiz([...completedQuiz, quizId]);
+    } catch (error) {
+      console.error('Error marking quiz as completed:', error);
+    }
+  };
+
+  // complete quiz
+  useEffect(() => {
+    if (id) loadCompletedQuiz();
+  }, [id]);
+
+
+  const loadCompletedQuiz = async () => {
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-completedQuiz`, {
+      courseId: id
+    })
+    setCompletedQuiz(data)
+  }
+
+  const [userAnswers, setUserAnswers] = useState({});
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState({});
+
+  const [ExerciseAnswer, setExerciseAnswer] = useState([]);
+
+  const handleAnswerChange = (e, contentIndex) => {
+    const answerIndex = parseInt(e.target.value, 10);
+    setUserAnswers((prevUserAnswers) => ({
+      ...prevUserAnswers,
+      [contentIndex]: answerIndex,
+    }));
+  };
+
+
+  const markExerciseAnswer = async (exerciseId, contentIndex) => {
+    // Assuming the correct answer is stored in the `isCorrect` property of each answer
+    const correctAnswerIndex = selectedLessonContent[contentIndex]?.exercise?.answers.findIndex(answer => answer.isCorrect);
+    const userAnswerIndex = userAnswers[contentIndex]; // Assuming this is the index of the selected answer
+
+    const isCorrect = correctAnswerIndex === userAnswerIndex;
+
+    setIsAnswerCorrect((prevIsAnswerCorrect) => ({
+      ...prevIsAnswerCorrect,
+      [contentIndex]: isCorrect,
+    }));
+
+    if (isCorrect) {
+      try {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-exercise`, {
+          courseId: id,
+          exerciseId: exerciseId,
+        });
+        console.log(data);
+        setExerciseAnswer([...ExerciseAnswer, exerciseId]);
+        toast.success('คำตอบถูกต้อง!');
+      } catch (error) {
+        console.error('Error marking exercise as completed:', error);
+      }
+    } else {
+      // The answer is incorrect, you can handle it here
+      toast.error('คำตอบไม่ถูกต้อง ลองอีกครั้ง!');
+    }
+  };
+
+
+  // complete lesson
+  useEffect(() => {
+    if (id) loadExerciseAnswer();
+  }, [id]);
+
+
+  const loadExerciseAnswer = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['authtoken'] = token;
+    }
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-exercise`, {
+      courseId: id
+    })
+    setExerciseAnswer(data)
+  }
+
+  console.log("ExExerciseAnswerer", ExerciseAnswer)
+
+
+  const [stdSubmit, setStdSubmit] = useState({})
+
+  useEffect(() => {
+    StdSubmitQuiz();
+  }, [id]);
+
+  const StdSubmitQuiz = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        axios.defaults.headers.common['authtoken'] = token;
+      }
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/quizScore/`);
+      setStdSubmit(data)
+    } catch (error) {
+      console.error('Error loading quiz score:', error);
+    }
+  };
+
+
+
   //Show Quiz
   const [selectedQuizContent, setSelectedQuizContent] = useState(null);
   const [activeQuizId, setActiveQuizId] = useState(null);
@@ -211,23 +418,96 @@ const LessonView = () => {
     }
   };
 
+  const goToLessonQuiz = (lessonId) => {
+    if (selectedSectionIndex !== null && section[selectedSectionIndex].quizData.length > 0) {
+      const currentQuizId = section[selectedSectionIndex].quizData[0]._id; // Assuming you want the first quiz
+
+      // Call your showQuizContent function with the appropriate parameters
+      showQuizContent(selectedSectionIndex, currentQuizId, section[selectedSectionIndex]._id);
+    }
+  };
+
+
+  const goToNextLessonQuiz = (lessonId) => {
+    // If there is no lesson after the current one, move to the next section
+    const nextSectionIndex = selectedSectionIndex + 1;
+    if (nextSectionIndex < section.length) {
+      const nextSection = section[nextSectionIndex];
+      const firstLessonId = nextSection.lessonData.length > 0 ? nextSection.lessonData[0]._id : null;
+      if (firstLessonId) {
+        showLessonContent(nextSectionIndex, firstLessonId);
+      }
+    }
+  };
+
+  const isLastLesson = () => {
+    const totalSections = section.length;
+    const totalLessonsInLastSection = section[totalSections - 1].lessonData.length;
+    const lastLessonId = section[totalSections - 1].lessonData[totalLessonsInLastSection - 1]._id;
+
+    return selectedLesson?._id === lastLessonId;
+};
+
 
   return (
     <div>
       <div className="flex min-h-screen bg-white">
         {/* Collapsible Sidebar */}
         <Sidebar
-          loading={loading}
-          sidebarCollapsed={sidebarCollapsed}
-          id={id}
-          section={section}
-          openSections={openSections}
-          toggleLesson={toggleLesson}
-          showLessonContent={showLessonContent}
-          showQuizContent={showQuizContent}
-          activeLessonId={activeLessonId}
-        />
+         loading={loading}
+         sidebarCollapsed={sidebarCollapsed}
+         id={id}
+         section={section}
+         openSections={openSections}
+         toggleLesson={toggleLesson}
+         showLessonContent={showLessonContent}
+         showQuizContent={showQuizContent}
+         activeLessonId={activeLessonId}
+         activeQuizId={activeQuizId}
+         completedLessons={completedLessons}
+         completedQuiz={completedQuiz}
+         course={course}
+         stdSubmit={stdSubmit}
 
+        />
+        <div className={`flex-grow ${sidebarCollapsed ? 'ml-0' : 'ml-1/4'}`} style={{ overflowY: 'auto', paddingLeft: sidebarCollapsed ? 0 : '20%' }}>
+
+          {/* HeaderBar */}
+          <Headerbar
+            sidebarCollapsed={sidebarCollapsed}
+            setSidebarCollapsed={setSidebarCollapsed}
+          />
+
+          {/* Lesson Content */}
+          <LessonContent
+            selectedLessonContent={selectedLessonContent}
+            selectedLesson={selectedLesson}
+            toggleLesson={toggleLesson}
+            goToNextLesson={goToNextLesson}
+            goToPreviousLesson={goToPreviousLesson}
+            goToLessonQuiz={goToLessonQuiz}
+            ExerciseAnswer={ExerciseAnswer}
+            markExerciseAnswer={markExerciseAnswer}
+            handleAnswerChange={handleAnswerChange}
+            isLastLesson={isLastLesson}
+          />
+
+
+
+          {/* Content Quiz */}
+          {selectedQuizContent !== null && (
+            <QuizContent
+              selectedQuizContent={selectedQuizContent}
+              setSelectedQuizContent={setSelectedQuizContent}
+              courseId={id}
+              sectionId={activeSectionId}
+              quizId={activeQuizId}
+              goToNextLessonQuiz={goToNextLessonQuiz}
+              markCompletedQuiz={markCompletedQuiz}
+              courseRoom={courseRoom}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

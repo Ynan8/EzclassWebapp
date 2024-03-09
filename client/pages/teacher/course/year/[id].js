@@ -122,16 +122,26 @@ const TeacherCourse = () => {
         }
     };
 
+    const handleDuplicateCourseYear = async (courseYearId) => {
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_API}/duplicate-courseYear/${courseYearId}`);
+            toast.success('ปีการศึกษาถูกคัดลอกสำเร็จ');
+            loadCourseYear();
+        } catch (error) {
+            console.error('Error duplicating course year:', error);
+            toast.error('ไม่สามารถคัดลอกปีการศึกษาได้');
+        }
+    };
+
 
 
 
     return (
         <div>
-
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <HeaderBarTeacher />
                 <div className="h-full mt-20 mb-2">
-                    <div className="pl-20 mb-6">
+                    <div className="pl-10  mb-6">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
@@ -190,56 +200,56 @@ const TeacherCourse = () => {
                                             {courseYear && courseYear
                                                 .filter(courseYear => courseYear.status === true)
                                                 .map(yearData => (
-                                                    <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
-                                                        <Card key={yearData._id} className="py-3">
-                                                            <CardHeader className="flex-col items-start">
-                                                                <div className="absolute top-0 right-0 m-2">
-                                                                    <Dropdown>
-                                                                        <DropdownTrigger>
-                                                                            <Button
-                                                                                size='sm'
-                                                                                variant="light"
-                                                                                startContent={<BsThreeDotsVertical size={18} />}
-                                                                            />
-                                                                        </DropdownTrigger>
-                                                                        <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                                                                            <DropdownSection showDivider>
-                                                                                <DropdownItem
-                                                                                    key="edit"
-                                                                                    onClick={() => {
-                                                                                        onOpenModalUpdate();
-                                                                                        setCurrentCourseYear(yearData);
-                                                                                    }}
-                                                                                >
-                                                                                    <p>แก้ไข</p>
-                                                                                </DropdownItem>
+                                                    <Card key={yearData._id} className="py-3">
+                                                        <CardHeader className="flex-col items-start">
+                                                            <div className="absolute top-0 right-0 m-2">
+                                                                <Dropdown>
+                                                                    <DropdownTrigger>
+                                                                        <Button
+                                                                            size='sm'
+                                                                            variant="light"
+                                                                            startContent={<BsThreeDotsVertical size={18} />}
+                                                                        />
+                                                                    </DropdownTrigger>
+                                                                    <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                                        <DropdownSection showDivider>
+                                                                            <DropdownItem
+                                                                                key="edit"
+                                                                                onClick={() => {
+                                                                                    onOpenModalUpdate();
+                                                                                    setCurrentCourseYear(yearData);
+                                                                                }}
+                                                                            >
+                                                                                <p>แก้ไข</p>
+                                                                            </DropdownItem>
 
 
-                                                                                <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
-                                                                                    <p>จัดเก็บ</p>
-                                                                                </DropdownItem>
-                                                                                <DropdownItem
-                                                                                    key="copy"
-                                                                                >
-                                                                                    <p>คัดลอก</p>
-                                                                                </DropdownItem>
-                                                                            </DropdownSection>
-                                                                            <DropdownSection>
-                                                                                <DropdownItem
-                                                                                    key="delete"
-                                                                                    className="text-danger"
-                                                                                    color="danger"
-                                                                                    onPress={onOpenModalDelete}
-                                                                                >
-                                                                                    <p onClick={() => openDeleteModal(yearData._id)}>
-                                                                                        ลบปีการศึกษา
-                                                                                    </p>
-                                                                                </DropdownItem>
-                                                                            </DropdownSection>
-                                                                        </DropdownMenu>
-                                                                    </Dropdown>
-                                                                </div>
-                                                            </CardHeader>
+                                                                            <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
+                                                                                <p>จัดเก็บ</p>
+                                                                            </DropdownItem>
+                                                                            <DropdownItem key="duplicate" onClick={() => handleDuplicateCourseYear(yearData._id)}>
+                                                                                <p>คัดลอกปีการศึกษา</p>
+                                                                            </DropdownItem>
+
+                                                                        </DropdownSection>
+                                                                        <DropdownSection>
+                                                                            <DropdownItem
+                                                                                key="delete"
+                                                                                className="text-danger"
+                                                                                color="danger"
+                                                                                onPress={onOpenModalDelete}
+                                                                            >
+                                                                                <p onClick={() => openDeleteModal(yearData._id)}>
+                                                                                    ลบปีการศึกษา
+                                                                                </p>
+                                                                            </DropdownItem>
+                                                                        </DropdownSection>
+                                                                    </DropdownMenu>
+                                                                </Dropdown>
+                                                            </div>
+                                                        </CardHeader>
+                                                        <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
+
                                                             <CardBody className="overflow-visible ">
 
                                                                 <Image
@@ -252,68 +262,67 @@ const TeacherCourse = () => {
                                                                     <p className="text-6xl font-semibold">{yearData.year}</p>
                                                                 </div>
                                                             </CardBody>
-                                                        </Card>
-                                                    </Link>
+                                                        </Link>
+
+                                                    </Card>
                                                 ))}
                                         </div>
 
                                     </Tab>
                                     <Tab key="music" title="ปีการศึกษาที่จัดเก็บ" >
                                         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
-
                                             {courseYear && courseYear
                                                 .filter(courseYear => courseYear.status === false)
                                                 .map(yearData => (
-                                                    <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
-                                                        <Card key={yearData._id} className="py-3">
-                                                            <CardHeader className="flex-col items-start">
-                                                                <div className="absolute top-0 right-0 m-2">
-                                                                    <Dropdown>
-                                                                        <DropdownTrigger>
-                                                                            <Button
-                                                                                size='sm'
-                                                                                variant="light"
-                                                                                startContent={<BsThreeDotsVertical size={18} />}
-                                                                            />
-                                                                        </DropdownTrigger>
-                                                                        <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                                                                            <DropdownSection showDivider>
-                                                                                <DropdownItem
-                                                                                    key="edit"
-                                                                                    onClick={() => {
-                                                                                        onOpenModalUpdate();
-                                                                                        setCurrentCourseYear(yearData);
-                                                                                    }}
-                                                                                >
-                                                                                    <p>แก้ไข</p>
-                                                                                </DropdownItem>
+                                                    <Card key={yearData._id} className="py-3">
+                                                        <CardHeader className="flex-col items-start">
+                                                            <div className="absolute top-0 right-0 m-2">
+                                                                <Dropdown>
+                                                                    <DropdownTrigger>
+                                                                        <Button
+                                                                            size='sm'
+                                                                            variant="light"
+                                                                            startContent={<BsThreeDotsVertical size={18} />}
+                                                                        />
+                                                                    </DropdownTrigger>
+                                                                    <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                                        <DropdownSection showDivider>
+                                                                            <DropdownItem
+                                                                                key="edit"
+                                                                                onClick={() => {
+                                                                                    onOpenModalUpdate();
+                                                                                    setCurrentCourseYear(yearData);
+                                                                                }}
+                                                                            >
+                                                                                <p>แก้ไข</p>
+                                                                            </DropdownItem>
 
 
-                                                                                <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
-                                                                                    <p>จัดเก็บ</p>
-                                                                                </DropdownItem>
-                                                                                <DropdownItem
-                                                                                    key="copy"
-                                                                                >
-                                                                                    <p>คัดลอก</p>
-                                                                                </DropdownItem>
-                                                                            </DropdownSection>
-                                                                            <DropdownSection>
-                                                                                <DropdownItem
-                                                                                    key="delete"
-                                                                                    className="text-danger"
-                                                                                    color="danger"
-                                                                                    onPress={onOpenModalDelete}
-                                                                                >
-                                                                                    <p onClick={() => openDeleteModal(yearData._id)}>
-                                                                                        ลบปีการศึกษา
-                                                                                    </p>
-                                                                                </DropdownItem>
-                                                                            </DropdownSection>
-                                                                        </DropdownMenu>
-                                                                    </Dropdown>
-                                                                </div>
-                                                            </CardHeader>
+                                                                            <DropdownItem onClick={() => handleCancelArchivedCourseYear(yearData._id)} key="archived">
+                                                                                <p>ยกเลิกจัดเก็บ</p>
+                                                                            </DropdownItem>
+                                                                            <DropdownItem key="duplicate" onClick={() => handleDuplicateCourseYear(yearData._id)}>
+                                                                                <p>คัดลอกปีการศึกษา</p>
+                                                                            </DropdownItem>
+                                                                        </DropdownSection>
+                                                                        <DropdownSection>
+                                                                            <DropdownItem
+                                                                                key="delete"
+                                                                                className="text-danger"
+                                                                                color="danger"
+                                                                                onPress={onOpenModalDelete}
+                                                                            >
+                                                                                <p onClick={() => openDeleteModal(yearData._id)}>
+                                                                                    ลบปีการศึกษา
+                                                                                </p>
+                                                                            </DropdownItem>
+                                                                        </DropdownSection>
+                                                                    </DropdownMenu>
+                                                                </Dropdown>
+                                                            </div>
+                                                        </CardHeader>
+                                                        <Link href={`/teacher/course/room/${yearData._id}`} className="pointer">
+
                                                             <CardBody className="overflow-visible ">
                                                                 <Image
                                                                     alt="Card background"
@@ -325,8 +334,8 @@ const TeacherCourse = () => {
                                                                     <p className="text-6xl font-semibold">{yearData.year}</p>
                                                                 </div>
                                                             </CardBody>
-                                                        </Card>
-                                                    </Link>
+                                                        </Link>
+                                                    </Card>
                                                 ))}
                                         </div>
                                     </Tab>

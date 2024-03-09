@@ -7,9 +7,7 @@ import { AiOutlineArrowLeft, AiOutlineLeft } from 'react-icons/ai'
 import { FaCloudUploadAlt, FaCloudUploadAltUploadAlt, FaPlus } from 'react-icons/fa'
 import { Button, Input, Select, SelectItem, } from "@nextui-org/react";
 import dynamic from 'next/dynamic'
-const JoditEditor = dynamic(() => import("jodit-react"), {
-  ssr: false,
-});
+
 
 const createAssignment = () => {
   const [values, setValues] = useState({
@@ -42,6 +40,7 @@ const createAssignment = () => {
 
       if (assignmentFile) {
         setUploadButtonText(assignmentFile.name); // Update the button text
+        setOriginalFileName(assignmentFile.name)
         setValues({ ...values, loading: true });
 
         const FileData = new FormData();
@@ -63,33 +62,26 @@ const createAssignment = () => {
   };
 
 
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-
       setValues({ ...values, loading: true });
 
-      let assignmentData;
-
-      assignmentData = {
-        assignmentFile: {
+      let assignmentData = {
+        ...values,
+        assignmentFile: assignmentFile ? {
           originalName: originalFileName,
           location: assignmentFile.Location,
           bucket: assignmentFile.Bucket,
           key: assignmentFile.Key,
-        },
-        ...values,
-      }
+        } : null,
+      };
 
       const formData = {
         sectionId: id,
         assignments: assignmentData,
         selectedCourseRooms: selectedCourseRooms,
       };
-
-      console.log(formData)
-
 
       const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment`, formData);
       toast.success('มอบหมายงานสำเร็จ');
@@ -101,6 +93,8 @@ const createAssignment = () => {
       setValues({ ...values, loading: false });
     }
   };
+
+
   // select corse room
   const [selectedCourseRooms, setSelectedCourseRooms] = useState([]);
 
@@ -238,7 +232,7 @@ const createAssignment = () => {
             <div className="flex flex-col mt-1 w-full md:w-auto">
               <Select
                 placeholder="เลือกห้องเรียน"
-                multiple
+                selectionMode='multiple'
                 variant="bordered"
               >
                 {options.map((option) => (
@@ -258,7 +252,7 @@ const createAssignment = () => {
 
           <div className="flex flex-col space-y-1">
             <label className="block text-base font-medium text-[#07074D]">
-              สัดส่วนคะแนน
+              สัดส่วนคะแนน(เปอร์เซ็น)
               <span className="text-red-400 ml-[2px]">*</span>
             </label>
             <div className="flex items-center space-x-2">
@@ -316,15 +310,16 @@ const createAssignment = () => {
           </div>
 
         </div>
-        <div className=" flex items-center justify-end w-full  mt-10">
+        <div className=" flex items-center justify-end w-full  mt-6">
           <Button
-            size='lg'
+            size="lg"
             onClick={handleSubmit}
             color="primary"
-          // isLoading={values.loading}
+            isLoading={values.loading}
           >
-            บันทึก  {/* {values.loading ? "กำลังโหลด..." : "บันทึก"} */}
+            {values.loading ? "กำลังโหลด..." : "บันทึก"}
           </Button>
+
         </div>
       </div >
     </div >

@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacherRoom';
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from 'react-icons/fa';
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react';
 import UploadStudentFile from '../../../../../components/Modals/UploadStudentFile';
 import axios from 'axios';
+import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher';
+import AddStudent from '../../../../../components/Modals/AddStudent';
+import UpdateStudent from '../../../../../components/Modals/UpdateStudent';
+import toast from 'react-hot-toast';
 
 
 const ManageUser = () => {
@@ -14,6 +18,29 @@ const ManageUser = () => {
 
   const { isOpen: isOpenModalExcel, onOpen: onOpenModalExcel, onOpenChange: onOpenChangeModalExcel } = useDisclosure();
   const { isOpen: isOpenModalStudent, onOpen: onOpenModalStudent, onOpenChange: onOpenChangeModalStudent } = useDisclosure();
+  const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
+  const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
+        firstName,
+        lastName,
+        username,
+        password,
+      });
+      toast.success("เพิ่มนักเรียนสำเร็จ");
+      loadStudentCourse()
+    } catch (err) {
+      toast.error(err.response.data);
+    }
+  };
 
   const [student, setStudent] = useState([]);
 
@@ -33,22 +60,68 @@ const ManageUser = () => {
       loadStudentCourse();
     }
   }, [id]);
+
+  // Update Student
+  const [currentStd, setCurrentStd] = useState({});
+
+  const handleUpdateStd = async (e) => {
+    try {
+      const { data } = await axios.put(
+        `${process.env.NEXT_PUBLIC_API}/student/${currentStd._id}`,
+        currentRoom
+      );
+      loadStudentCourse();
+      toast.success("แก้ไขข้อมูลนักเรียนสำเร็จ");
+    } catch (error) {
+      console.error(error);
+      toast.error("ไม่สามารถแก้ไขข้อมูลนักเรียนได้");
+    }
+  };
+
+  // Delete Student
+  const [stdId, setStdId] = useState("");
+
+  const openDeleteModal = (id) => {
+    setStdId(id);
+    onOpenModalDelete();
+  };
+
+  const handleDeleteStudent = async (roomId) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-student/${stdId}`);
+
+      toast.success('ลบนักเรียนสำเร็จ');
+      loadCourseRoom();
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      toast.error('ไม่สามารถลบนักเรียนได้ ลองอีกครั้ง!!');
+    }
+  };
+
   return (
     <div>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
         <SidebarTeacherRoom id={id} />
+        <HeaderBarTeacher />
         <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
-          {/* BreadCrubm */}
-          <div className="px-10">
 
+          <div className="px-10">
+            <Breadcrumbs size='lg'>
+              <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
+              <BreadcrumbItem>ชื่อวิชา</BreadcrumbItem>
+              <BreadcrumbItem>ชื่อปีการศึกษา</BreadcrumbItem>
+              <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
+              <BreadcrumbItem>จัดการผู้ใช้</BreadcrumbItem>
+            </Breadcrumbs>
           </div>
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
             <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
-              <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
-                <div class="sm:flex items-center justify-between px-4">
+              <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
+                <div className="sm:flex items-center justify-between px-4">
                   <p className='text-2xl font-semibold'>ข้อมูลนักเรียน</p>
                   <div className="flex ml-auto">
                     <Button
+                      onPress={onOpenModalStudent}
                       radius='sm'
                       className="ml-3 flex items-center text-white "
                       color="primary"
@@ -75,39 +148,6 @@ const ManageUser = () => {
                     </Button>
                   </div>
 
-
-                  {/* <Modal
-                    open={visibleFile}
-                    width={1000}
-                    onCancel={() => {
-                      setVisibleFile(false);
-                    }}
-                    footer={null}
-                    closable={false}
-                    centered
-                    styles={{ maxHeight: '70vh', overflowY: 'auto' }}
-                  >
-                    <UploadFile
-                      courseRoomId={id}
-                      setVisibleFile={setVisibleFile}
-                      loadStudentCourse={loadStudentCourse}
-                    />
-                  </Modal>
-                  <Modal
-                    open={visibleAddStd}
-                    width={600}
-                    onCancel={() => setVisibleAddStd(false)}
-                    footer={null}
-                    closable={false}
-                    centered
-                    styles={{ maxHeight: '70vh', overflowY: 'auto' }}
-
-                  >
-                    <AddStudent
-
-                    />
-                  </Modal> */}
-
                 </div>
                 <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                   {/* <pre>{JSON.stringify(student,null,4)}</pre> */}
@@ -130,10 +170,17 @@ const ManageUser = () => {
                           <td className="text-center py-2">ยังไม่เข้าเรียน</td>
 
                           <td className="flex justify-center items-center text-center">
-                            <div class="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
+                            <div
+                              onClick={() => {
+                                onOpenModalUpdate();
+                                // setCurrentRoom(courseRoom);
+                              }}
+                              className="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
                               <FaEdit size={25} />
                             </div>
-                            <div class="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
+                            <div
+                              onClick={() => openDeleteModal(student._id)}
+                              className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
                               <FaTrash size={23} />
                             </div>
                           </td>
@@ -158,7 +205,79 @@ const ManageUser = () => {
               <UploadStudentFile
                 courseRoomId={id}
                 onClose={onClose}
+                loadStudentCourse={loadStudentCourse}
               />
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        size={'xl'}
+        isOpen={isOpenModalStudent}
+        onClose={onOpenChangeModalStudent}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <AddStudent
+                onClose={onClose}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+                handleSubmit={handleSubmit}
+              />
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Update */}
+      <Modal
+        isOpen={isOpenModalUpdate}
+        onOpenChange={onOpenChangeModalUpdate}
+        placement="top-center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <UpdateStudent />
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Delete */}
+      <Modal
+        isOpen={isOpenModalDelete}
+        onOpenChange={onOpenChangeModalDelete}
+        placement="top-center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <p className="text-lg font-medium leading-6 text-gray-900"
+                >
+                  คุณต้องการลบนักเรียนหรือไม่ ?
+                </p>
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-base text-gray-500">
+                  การลบนักเรียนจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                </p>
+
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  ยกเลิก
+                </Button>
+                <Button color="danger" onPress={onClose} onClick={() => handleDeleteStudent(stdId)}>
+                  ยืนยัน
+                </Button>
+              </ModalFooter>
             </>
           )}
         </ModalContent>

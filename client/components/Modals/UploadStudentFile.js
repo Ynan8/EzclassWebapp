@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 const UploadStudentFile = ({
     onClose,
     courseRoomId,
+    loadStudentCourse,
 }) => {
     const [uploadButtonText, setUploadButtonText] = useState('อัพโหลดไฟล์');
     const [students, setStudents] = useState([]);
@@ -71,6 +72,7 @@ const UploadStudentFile = ({
                 toast.success('เพิ่มนักเรียนสำเร็จ');
                 onClose(); // Close the modal after successful import
             }
+            loadStudentCourse()
             setLoading(false);
         } catch (error) {
             console.error('Error importing students:', error);

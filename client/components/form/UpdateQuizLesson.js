@@ -1,7 +1,8 @@
-import { Button, Checkbox, Input, Radio, RadioGroup, Select, SelectItem } from '@nextui-org/react'
+import { Button, Checkbox, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Input, Radio, RadioGroup, Select, SelectItem } from '@nextui-org/react'
 import React from 'react'
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
+import { FaArrowDown, FaArrowUp, FaTrash } from 'react-icons/fa6';
 import { IoIosCheckboxOutline, IoIosRadioButtonOn, IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { TbTrash } from 'react-icons/tb';
 
@@ -158,21 +159,6 @@ const UpdateQuizLesson = ({
         });
     };
 
-
-
-
-
-    const handleOpenEndAnswerChange = (e, index) => {
-        setValues((prevValues) => {
-            const updatedQuestions = [...prevValues.questions];
-            updatedQuestions[index].openEndAnswer = e.target.value;
-            return {
-                ...prevValues,
-                questions: updatedQuestions,
-            };
-        });
-    };
-
     const handleTrueFalseChange = (e, index) => {
         setValues((prevValues) => {
             const updatedQuestions = [...prevValues.questions];
@@ -203,12 +189,51 @@ const UpdateQuizLesson = ({
         });
     };
 
+    const moveQuestionUp = (index) => {
+        setValues((prevValues) => {
+            if (index > 0) {
+                const updatedQuestions = [...prevValues.questions];
+                [updatedQuestions[index], updatedQuestions[index - 1]] = [updatedQuestions[index - 1], updatedQuestions[index]];
+                return {
+                    ...prevValues,
+                    questions: updatedQuestions,
+                };
+            }
+            return prevValues;
+        });
+    };
+    
+    const moveQuestionDown = (index) => {
+        setValues((prevValues) => {
+            if (index < prevValues.questions.length - 1) {
+                const updatedQuestions = [...prevValues.questions];
+                [updatedQuestions[index], updatedQuestions[index + 1]] = [updatedQuestions[index + 1], updatedQuestions[index]];
+                return {
+                    ...prevValues,
+                    questions: updatedQuestions,
+                };
+            }
+            return prevValues;
+        });
+    };
+    
+    const deleteQuestion = (index) => {
+        setValues((prevValues) => {
+            const updatedQuestions = [...prevValues.questions];
+            updatedQuestions.splice(index, 1);
+            return {
+                ...prevValues,
+                questions: updatedQuestions,
+            };
+        });
+    };
+    
+
 
     return (
         <div
             className="mx-auto max-w-screen-lg px-4 pt-20 pb-20 space-y-12"
         >
-            {/* <pre>{JSON.stringify(values.questions, null, 4)}</pre> */}
             {values.questions && values.questions.length > 0 ? (
                 values.questions.map((question, index) => (
                     <div className="w-full rounded p-8" key={index}>
@@ -238,7 +263,47 @@ const UpdateQuizLesson = ({
                                             onChange={(e) => handleScoreChange(e, index)}
                                         />
                                         <div className="relative">
-                                            <BsThreeDots className="h-6 cursor-pointer" />
+                                            <Dropdown>
+                                                <DropdownTrigger>
+                                                    <Button
+                                                        size='sm'
+                                                        variant="light"
+                                                        startContent={<BsThreeDots size={18} />}
+                                                    />
+                                                </DropdownTrigger>
+                                                <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                                                    <DropdownSection showDivider>
+                                                        <DropdownItem
+                                                            key="moveUp"
+                                                            onClick={() => moveQuestionUp(index)}
+                                                            startContent={<FaArrowUp size={20} />}
+
+                                                        >
+                                                            <p>เลื่อนขึ้น</p>
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            key="moveDown"
+                                                            onClick={() => moveQuestionDown(index)}
+                                                            startContent={<FaArrowDown size={20} />}
+                                                        >
+                                                            <p>เลื่อนลง</p>
+                                                        </DropdownItem>
+                                                    </DropdownSection>
+                                                    <DropdownSection>
+                                                        <DropdownItem
+                                                            key="delete"
+                                                            onClick={() => deleteQuestion(index)}
+                                                            className="text-danger"
+                                                            color="danger"
+                                                            startContent={<FaTrash size={20} />}
+                                                        >
+                                                            <p>
+                                                                ลบ
+                                                            </p>
+                                                        </DropdownItem>
+                                                    </DropdownSection>
+                                                </DropdownMenu>
+                                            </Dropdown>
                                         </div>
                                     </div>
                                 </div>

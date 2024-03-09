@@ -93,3 +93,15 @@ exports.deleteCourseRoom = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete course.' });
   }
 };
+
+exports.getCourseRoomRead = async (req, res) => {
+  try {
+      const courseRoomId = req.params.id;
+      const courseRoom = await CourseRoom.findOne({ _id: courseRoomId })
+          .exec();
+      res.json(courseRoom);
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+};

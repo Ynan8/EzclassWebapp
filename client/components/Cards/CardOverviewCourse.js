@@ -3,7 +3,12 @@ import { HiOutlineUserGroup } from 'react-icons/hi';
 import { BsBook, BsJournalCheck } from 'react-icons/bs';
 import { SiGoogleclassroom } from 'react-icons/si';
 
-const CardOverviewCourse = () => {
+const CardOverviewCourse = ({
+    section,
+    courseRoom,
+    totalAssignments,
+    totalStudents,
+}) => {
     return (
         <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
@@ -12,7 +17,7 @@ const CardOverviewCourse = () => {
                         <SiGoogleclassroom size={30} />
                     </div>
                     <div className='flex flex-col space-y-1' >
-                        <span className="block text-2xl font-semibold">5</span>
+                        <span className="block text-2xl font-semibold">{courseRoom.length}</span>
                         <span className="block text-gray-500">ห้องเรียนทั้งหมด</span>
                     </div>
                 </div>
@@ -21,7 +26,7 @@ const CardOverviewCourse = () => {
                         <HiOutlineUserGroup size={30} />
                     </div>
                     <div className='flex flex-col space-y-1'>
-                        <span className="block text-2xl font-semibold">80</span>
+                        <span className="block text-2xl font-semibold">{totalStudents}</span>
                         <span className="block text-gray-500">นักเรียนทั้งหมด</span>
                     </div>
                 </div>
@@ -30,7 +35,7 @@ const CardOverviewCourse = () => {
                         <BsBook size={30} />
                     </div>
                     <div className='flex flex-col space-y-1' >
-                        <span className="block text-2xl font-semibold">10</span>
+                        <span className="block text-2xl font-semibold">{section.length}</span>
                         <span className="block text-gray-500">บทเรียนทั้งหมด</span>
                     </div>
                 </div>
@@ -39,7 +44,7 @@ const CardOverviewCourse = () => {
                         <BsJournalCheck size={30} />
                     </div>
                     <div className='flex flex-col space-y-1' >
-                        <span className="block text-2xl font-semibold">10</span>
+                        <span className="block text-2xl font-semibold">{totalAssignments}</span>
                         <span className="block text-gray-500">มอบหมายงานทั้งหมด</span>
                     </div>
                 </div>

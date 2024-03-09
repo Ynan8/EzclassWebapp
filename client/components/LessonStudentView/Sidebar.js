@@ -53,7 +53,7 @@ const Sidebar = ({
         return total;
     }, 0);
 
-    // const completedProgress = completedQuiz.length + completedLessons.length
+    const completedProgress = completedQuiz.length + completedLessons.length
 
 
     return (
@@ -70,9 +70,7 @@ const Sidebar = ({
             </div>
             <div >
                 <div className="px-2">
-
-                    {course && (
-                        <div className="flex flex-col space-y-3 p-3 border-2 border-blue-500 rounded-md my-2">
+                    <div className="flex flex-col space-y-3 p-3 border-2 border-blue-500 rounded-md my-2">
                             <div className="flex justify-between">
                                 <p className='mb-1 font-bold'>ความคืบหน้า</p>
                                 <p className='mb-1 font-medium text-blue-500'>{`${((completedProgress) / (totalLessonCount + totalQuizCount) * 100).toFixed(2)}%`}</p>
@@ -86,7 +84,6 @@ const Sidebar = ({
                                 <p className='mb-1 font-medium'>{`${completedProgress}/${totalLessonCount + totalQuizCount}`}</p>
                             </div>
                         </div>
-                    )}
                 </div>
 
                 <div className="flex flex-col">
@@ -126,21 +123,74 @@ const Sidebar = ({
                                                 <div className="flex flex-col ml-4">
                                                     {/* Mapping over each lesson in the section */}
                                                     {section.lessonData.map((lesson, lessonIndex) => (
-                                                        <span className='font-bold'>{sectionIndex + 1}.{lessonIndex + 1} { lesson.lessonName }</span> 
+                                                        <div
+                                                            key={lesson._id}
+                                                            className={`flex space-x-2 py-3 cursor-pointer ${lesson._id === activeLessonId ? 'text-blue-500' : ''
+                                                                }`}
+                                                            onClick={() => {
+                                                                // Check if the lesson is completed before calling showLessonContent
+                                                                if (completedLessons.includes(lesson._id)) {
+                                                                    showLessonContent(sectionIndex, lesson._id);
+                                                                } else {
+                                                                    toast.error('บทเรียนยังไม่สำเร็จ!');
+                                                                }
+                                                            }}
+                                                        >
+                                                            {completedLessons.includes(lesson._id) ? (
+                                                                <BsFillCheckCircleFill size={25} className="text-green-500 duration-200" />
+                                                            ) : (
+                                                                <FiLock size={25} className="transition-colors duration-200" />
+                                                            )}
+                                                            <p className={`hover:text-blue-500 duration-200 ${completedLessons.includes(lesson._id) ? 'text-green-600' : ''}`}>
+                                                                <span className='font-bold'>{sectionIndex + 1}.{lessonIndex + 1}</span>  {lesson.lessonName}
+                                                            </p>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
 
 
-                             
+                                        {/* Quiz Data */}
+                                        <div
+                                            className={`flex items-center space-x-2 cursor-pointer border-b-2 border-gray-100 transition-colors duration-200`}
+                                        >
+                                            <div className="flex flex-col ml-4">
+                                                {/* Mapping over each quiz in the section */}
+                                                {section.quizData.map((quiz, quizIndex) => (
+                                                    quiz.published === "true" && (
+                                                        <div
+                                                            key={quiz._id}
+                                                            className={`flex space-x-2 py-3 cursor-pointer ${quiz._id === activeQuizId ? 'text-blue-500' : ''
+                                                                }`}
+                                                            onClick={() => {
+                                                                // Check if the lesson is completed before calling showLessonContent
+                                                                if (completedQuiz.includes(quiz._id)) {
+                                                                    showQuizContent(sectionIndex, quiz._id, section._id);
+                                                                } else {
+                                                                    toast.error('บทเรียนยังไม่สำเร็จ');
+                                                                }
+                                                            }}
+                                                        >
+                                                            {completedQuiz.includes(quiz._id) ? (
+                                                                <BsFillCheckCircleFill size={25} className="text-green-500 duration-200" />
+                                                            ) : (
+                                                                <FiLock size={25} className="transition-colors duration-200" />
+                                                            )}
+                                                            <p className={`hover:text-blue-500 duration-200 ${completedQuiz.includes(quiz._id) ? 'text-green-600' : ''}`}>
+                                                                <span className='font-bold'>แบบทดสอบท้ายบท</span> {quiz.quizName}
+                                                            </p>
+                                                        </div>
+                                                    )
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </>
                             </div>
                         ))
                     )}
                 </div>
-
             </div>
         </div >
     )

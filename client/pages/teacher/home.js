@@ -168,7 +168,7 @@ const Home = () => {
                                       : `${course.courseNo} : ${course.courseName}`
                                     }
                                   </h4>
-                                  <p className="text-tiny uppercase font-bold">
+                                  <p className="text-lg font-bold">
                                     {course.level.length > 30
                                       ? `${course.level.substring(0, 60)}...`
                                       : `มัธยมศึกษาปีที่ ${course.level}`

@@ -59,7 +59,7 @@ const HeaderBarAdmin = () => {
 
             <header className="header bg-white shadow pr-4 fixed top-0 left-0 w-full z-10">
                 <div className="header-content flex ">
-                    <Link href={'/teacher/home'}>
+                    <Link href={'/admin/home'}>
                         <div className="flex justify-center item-center">
                             <div className="Logo">
                                 <Image
