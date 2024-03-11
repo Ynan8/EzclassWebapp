@@ -67,4 +67,37 @@ exports.addTeacher = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+  exports.UpdateTeacher = async (req, res) => {
+    try {
+      const { _id } = req.body;
+      const updated = await User.findOneAndUpdate({ _id }, req.body, {
+        new: true,
+      }).exec();
+      console.log("update", updated)
+      res.json({ ok: true });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
+  exports.removeTeacher = async (req, res) => {
+    const teacherId = req.params.id;
+  
+    try {
+      // Delete the course year by ID
+      const deletedTeacher = await User.findByIdAndDelete(teacherId);
+  
+      // Check if the course year exists
+      if (!deletedTeacher) {
+        return res.status(404).json({ error: 'Course year not found.' });
+      }
+  
+      // Return success response
+      res.status(200).json({ message: 'Course year deleted successfully.' });
+    } catch (error) {
+      console.error('Error deleting course year:', error);
+      res.status(500).json({ error: 'Failed to delete course.' });
+    }
+  };
   

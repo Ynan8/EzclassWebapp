@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import SideBarAdmin from "../../components/Sidebar/SideBarAdmin";
 import HeaderBarAdmin from "../../components/HeaderBar/HeaderBarAdmin";
 import axios from 'axios';
-import { Button, Modal, ModalContent, useDisclosure } from '@nextui-org/react';
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react';
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from 'react-icons/fa';
 import AddTeacher from '../../components/Modals/AddTeacher';
 import toast from 'react-hot-toast';
 import moment from "moment";
+import UpdateTeacher from '../../components/Modals/UpdateTeacher';
 
 
 
@@ -35,15 +36,81 @@ const ManageTeacher = () => {
         }
     };
 
+
+
     //list teacher
     const [teacherList, setTeacherList] = useState([]);
+
     useEffect(() => {
         loadDataTch();
     }, []);
+
     const loadDataTch = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['authtoken'] = token;
+        }
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/list-teacher`);
         setTeacherList(data);
     };
+
+    // Update Teacher
+    const [currentTch, setCurrentTch] = useState({});
+
+    const handleUpdateTch = async () => {
+        try {
+            // Include the fields you want to update in the PUT request body
+            const { data } = await axios.put(
+                `${process.env.NEXT_PUBLIC_API}/teacher/${currentTch._id}`,
+                currentTch
+            );
+            loadDataTch();
+            toast.success("แก้ไขข้อมูลผู้สอนสำเร็จ");
+        } catch (error) {
+            console.error(error);
+            toast.error("ไม่สามารถแก้ไขข้อมูลผู้สอนได้");
+        }
+    };
+
+    // Delete Teacher
+    const [tchId, setTchId] = useState("");
+
+    const openDeleteModal = (id) => {
+        setTchId(id);
+        onOpenModalDelete();
+    };
+
+    const handleDeleteTch = async (tchId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-teacher/${tchId}`);
+            toast.success('ลบผู้สอนสำเร็จ');
+            loadDataTch();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบผู้สอนได้');
+        }
+    };
+
+    // search
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const getFilteredTeachers = () => {
+        if (!searchTerm) return teacherList; // If no search term, return all teachers
+    
+        return teacherList.filter(
+            (teacher) =>
+                teacher.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                teacher.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                teacher.username.toLowerCase().includes(searchTerm.toLowerCase()) // Search by username as well
+        );
+    };
+
+
 
     return (
         <div>
@@ -57,11 +124,12 @@ const ManageTeacher = () => {
                                 <form action="#">
                                     <div className="hidden md:flex relative">
                                         <input
-                                            onChange={(e) => setSearch(e.currentTarget.value)}
-                                            type={"search"}
+                                            type="search"
                                             name="search"
-                                            className="text-sm sm:text-base placeholder-gray-500 rounded-l pl-2 pr-4  border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
+                                            className="text-sm sm:text-base placeholder-gray-500 rounded-l pl-2 pr-4 border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
                                             placeholder="ค้นหาผู้สอน"
+                                            value={searchTerm}
+                                            onChange={handleSearchChange}
                                         />
                                         <button
                                             class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
@@ -129,7 +197,7 @@ const ManageTeacher = () => {
                                     </tr>
                                 </thead>
                                 <tbody className='text-lg'>
-                                    {teacherList.map((teacher, index) => (
+                                    {getFilteredTeachers().map((teacher, index) => (
                                         <tr className=" h-16 transition-colors group">
                                             <td className="text-center py-2">{index + 1}</td>
                                             <td className="text-center py-2">{teacher.username}</td>
@@ -141,10 +209,17 @@ const ManageTeacher = () => {
                                             </td>
 
                                             <td className="flex justify-center items-center text-center">
-                                                <div class="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
+                                                <div
+                                                    onClick={() => {
+                                                        onOpenModalUpdate();
+                                                        setCurrentTch(teacher);
+                                                    }}
+                                                    class="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
                                                     <FaEdit size={25} />
                                                 </div>
-                                                <div class="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
+                                                <div
+                                                    onClick={() => openDeleteModal(teacher._id)}
+                                                    class="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
                                                     <FaTrash size={23} />
                                                 </div>
                                             </td>
@@ -178,6 +253,55 @@ const ManageTeacher = () => {
                                 handleSubmit={handleSubmit}
 
                             />
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            {/* Update */}
+            <Modal
+                isOpen={isOpenModalUpdate}
+                onOpenChange={onOpenChangeModalUpdate}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <UpdateTeacher
+                            currentTch={currentTch}
+                            setCurrentTch={setCurrentTch}
+                            handleUpdateTch={handleUpdateTch}
+                            onClose={onClose}
+                        />
+                    )}
+                </ModalContent>
+            </Modal>
+            <Modal
+                isOpen={isOpenModalDelete}
+                onOpenChange={onOpenChangeModalDelete}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องลบผู้สอนหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบผู้สอนจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger" onPress={onClose} onClick={() => handleDeleteTch(tchId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
                         </>
                     )}
                 </ModalContent>

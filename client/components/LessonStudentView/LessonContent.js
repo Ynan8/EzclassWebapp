@@ -36,7 +36,7 @@ const LessonContent = ({
                 )
             );
         };
-        
+
 
 
         setAllExercisesCorrect(areAllExercisesCorrectInLesson());
@@ -46,7 +46,7 @@ const LessonContent = ({
         (content) => content.type === 'exercise'
     );
 
- 
+
 
 
     return (
@@ -141,52 +141,43 @@ const LessonContent = ({
                     </div>
                     {/* <pre>{JSON.stringify(selectedLesson, null, 4)}</pre> */}
                     <div className={`flex justify-between items-center h-14 bottom-0 pb-4 right-0 left-[20%]}`}>
-    <Button
-        onClick={() => selectedLesson && goToPreviousLesson()}
-        className='px-8'
-        radius='sm'
-        size='lg'
-        color="primary"
-        variant="bordered"
-        startContent={<AiOutlineArrowLeft />}>
-        ย้อนกลับ
-    </Button>
-    {isLastLesson() ? (
-        <Button
-            className='px-8'
-            radius='sm'
-            size='lg'
-            color="success"
-            variant='shadow'>
-            เรียนสำเร็จ
-        </Button>
-    ) : (
-        hasExercisesInLesson ? (
-            <Button
-                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
-                className='px-8'
-                radius='sm'
-                variant='shadow'
-                size='lg'
-                color="primary"
-                isDisabled={!allExercisesCorrect}
-                endContent={<AiOutlineArrowRight />}>
-                บทเรียนถัดไป
-            </Button>
-        ) : (
-            <Button
-                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
-                className='px-8'
-                radius='sm'
-                variant='shadow'
-                size='lg'
-                color="primary"
-                endContent={<AiOutlineArrowRight />}>
-                บทเรียนถัดไป
-            </Button>
-        )
-    )}
-</div>
+                        <Button
+                            onClick={() => selectedLesson && goToPreviousLesson()}
+                            className='px-8'
+                            radius='sm'
+                            size='lg'
+                            color="primary"
+                            variant="bordered"
+                            startContent={<AiOutlineArrowLeft />}>
+                            ย้อนกลับ
+                        </Button>
+
+                        {hasExercisesInLesson ? (
+                            <Button
+                                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
+                                className='px-8'
+                                radius='sm'
+                                variant='shadow'
+                                size='lg'
+                                color="primary"
+                                isDisabled={!allExercisesCorrect}
+                                endContent={<AiOutlineArrowRight />}>
+                                บทเรียนถัดไป
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
+                                className='px-8'
+                                radius='sm'
+                                variant='shadow'
+                                size='lg'
+                                color="primary"
+                                endContent={<AiOutlineArrowRight />}>
+                                บทเรียนถัดไป
+                            </Button>
+                        )
+                        }
+                    </div>
 
 
                 </div>

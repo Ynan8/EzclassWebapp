@@ -73,9 +73,12 @@ const DetailAssignment = () => {
 
     const loadCheckSubmit = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/check-submit/${id}`);
             setCheckSubmit(data)
-            console.log(data)
         } catch (error) {
             console.error('Error loading assignment submit:', error);
         }
@@ -138,8 +141,31 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: false });
             toast.error("ไม่สามารถยกเลิกส่งงาน");
         }
-    };
+    }; // Get course Room 
+    useEffect(() => {
+        if (id) {
+            loadCourseRoom();
+        }
+    }, [courseId]);
 
+    const [courseRoom, setCourseRoom] = useState()
+    const loadCourseRoom = async () => {
+        if (id) {
+
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    axios.defaults.headers.common['authtoken'] = token;
+                }
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/std/getCourseRoomId/${courseId}`);
+                setCourseRoom(data);
+            } catch (error) {
+                console.error("Error loading course:", error);
+            }
+        }
+    }
+
+    // console.log(courseRoom._id)
 
 
     const handleSubmit = async () => {
@@ -151,8 +177,9 @@ const DetailAssignment = () => {
 
             setValues({ ...values, loading: true });
 
-            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}`, {
-                fileSubmit: {
+            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}/${courseRoom._id
+            }`, {
+                fileSubmit: {   
                     originalName: originalFileName,
                     location: assignmentFile.Location,
                     bucket: assignmentFile.Bucket,

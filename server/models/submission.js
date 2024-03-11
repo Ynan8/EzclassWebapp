@@ -10,7 +10,10 @@ const submissionSchema = new mongoose.Schema({
     type: ObjectId,
     ref: "Assignment",
   },
-
+  roomId: {
+    type: ObjectId,
+    ref: "CourseRoom",
+  },
   fileSubmit: {
     originalName: {
       type: String,

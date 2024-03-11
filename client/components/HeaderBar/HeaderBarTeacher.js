@@ -23,6 +23,29 @@ const HeaderBarTeacher = () => {
         dispatch,
     } = useContext(Context);
 
+    const [userData, setUserData] = useState({});
+
+    useEffect(() => {
+        getUser();
+    }, [user])
+
+    const getUser = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
+            if (user && user._id) {
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/user/${user._id}`);
+                setUserData(data);
+                setLoading(false);
+            }
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
+        }
+    };
+
 
 
     // router
@@ -84,19 +107,22 @@ const HeaderBarTeacher = () => {
                                         as="button"
                                         avatarProps={{
                                             isBordered: true,
-                                            src: user && user.image,
+                                            src: userData.image ? userData.image.Location : '/profile.png'
                                         }}
-                                        className="transition-transform"
-                                        description={user && user.role}
-                                        name={user && user.firstName + ' ' + user && user.lastName}
+                                        className="uppercase transition-transform"
+                                        description={userData?.role}
+                                        name={`${userData?.firstName} ${userData?.lastName}`}
                                     />
+
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="User Actions" variant="flat">
 
                                     <DropdownItem
                                         key="settings"
                                     >
-                                        แก้ไขโปรไฟล์
+                                        <Link href={'/teacher/editProfile'}>
+                                            <p>แก้ไขโปรไฟล์</p>
+                                        </Link>
                                     </DropdownItem>
                                     <DropdownItem
                                         key="logout"

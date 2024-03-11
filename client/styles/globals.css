@@ -1,10 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300;400;500;700&family=Kanit:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Itim&family=Playfair+Display&family=Poppins:wght@200;400;700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet');
 
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ReactCollapse--collapse {
+	transition: height 500ms;
+}
 
 * {
 	font-family: 'Kanit', sans-serif;
@@ -15,4 +18,106 @@
 
 body {
 	margin: 0;
+}
+
+
+/* CODE EDITOR*/
+.cm-scroller,
+.cm-gutters {
+	background-color: #282828 !important;
+}
+
+.cm-focused {
+	outline: none !important;
+}
+
+.split {
+	display: flex;
+	flex-direction: row;
+}
+
+.gutter {
+	background-color: rgb(26, 26, 26);
+	background-repeat: no-repeat;
+	background-position: 50%;
+}
+
+.gutter:hover {
+	background-color: #0a84ff;
+}
+
+.gutter.gutter-horizontal {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+	cursor: col-resize;
+}
+
+.gutter.gutter-vertical {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=");
+	cursor: row-resize;
+}
+
+
+.remote-caret {
+	position: absolute;
+	border-left: black;
+	border-left-style: solid;
+	border-left-width: 2px;
+	height: 1em;
+}
+
+.remote-caret {
+	position: relative;
+	top: -0.4em;
+	font-size: 13px;
+	background-color: rgb(250, 129, 0);
+	font-family: serif;
+	font-style: normal;
+	font-weight: normal;
+	line-height: normal;
+	user-select: none;
+	color: white;
+	padding-left: 2px;
+	padding-right: 2px;
+	z-index: 3;
+	border-radius: 20%;
+}
+
+@keyframes zoomInOut {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.5);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+.animate-zoom {
+	animation: zoomInOut 1s;
+	/* Adjust the duration as needed */
+}
+
+.my-cursor-decoration::after {
+    content: attr(data-name);
+    position: absolute;
+    background-color: yellow;
+    color: black;
+    font-size: 12px;
+    padding: 2px;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.my-cursor-label {
+    position: absolute;
+    z-index: 1;
+    background-color: yellow;
+    color: black;
+    font-size: 12px;
+    padding: 2px;
+    border-radius: 4px;
 }

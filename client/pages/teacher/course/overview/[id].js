@@ -39,8 +39,28 @@ const OverviewCourse = () => {
             console.error('Error loading courses:', error);
         }
     };
+    const courseId = courseYear.courseId;
 
-    const courseId = courseYear.courseId
+    const [course, setCourse] = useState({});
+
+
+    useEffect(() => {
+        if (id) {
+            loadCourse();
+        }
+    }, [courseId]);
+
+
+    const loadCourse = async () => {
+        if (id) {
+            try {
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
+                setCourse(data);
+            } catch (error) {
+                console.error("Error loading course:", error);
+            }
+        }
+    }
 
     // Show section
     useEffect(() => {
@@ -151,17 +171,19 @@ const OverviewCourse = () => {
     };
 
 
+
     const [averageScores, setAverageScores] = useState([]);
 
     const loadAverageScores = async () => {
         try {
-            
+
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/average-scores/${id}`);
             setAverageScores(data);
         } catch (error) {
             console.error('Error loading average scores:', error);
         }
     };
+
 
 
 
@@ -175,8 +197,8 @@ const OverviewCourse = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>ชื่อวิชา</BreadcrumbItem>
-                            <BreadcrumbItem>ชื่อปีการศึกษา</BreadcrumbItem>
+                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
+                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
                             <BreadcrumbItem>ภาพรวมรายวิชา</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -188,7 +210,7 @@ const OverviewCourse = () => {
                             courseRoom={courseRoom}
                             totalAssignments={totalAssignments}
                             totalStudents={totalStudents}
-
+                            id={id}
                         />
 
 
@@ -202,7 +224,7 @@ const OverviewCourse = () => {
                             />
                         </div>
                         <div>
-                            <h2>Average Scores</h2>
+                            {/* <h2>Average Scores</h2> */}
                             {/* {averageScores.map((lesson) => (
                                 <div key={lesson.name}>
                                     <h3>{lesson.name}</h3>
@@ -213,7 +235,7 @@ const OverviewCourse = () => {
                                     </ul>
                                 </div>
                             ))} */}
-                            <pre>{JSON.stringify(averageScores, null, 4)}</pre>
+                            {/* <pre>{JSON.stringify(averageScores, null, 4)}</pre> */}
                         </div>
                     </div>
                 </div>

@@ -36,6 +36,51 @@ const AssignmentRoom = () => {
     }
   }
 
+  // Show Course Year
+  const [courseYear, setCourseYear] = useState({});
+
+  useEffect(() => {
+    if (courseYearId) {
+      loadCourseYear();
+    }
+  }, [courseYearId]);
+
+  const loadCourseYear = async () => {
+    try {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseYear/single/${courseYearId}`);
+      const firstElement = data && data.length > 0 ? data[0] : {};
+      setCourseYear(firstElement);
+
+    } catch (error) {
+      console.error('Error loading courses:', error);
+    }
+  };
+
+
+  const courseId = courseYear.courseId;
+
+  const [course, setCourse] = useState({});
+
+
+  useEffect(() => {
+    if (id) {
+      loadCourse();
+    }
+  }, [courseId]);
+
+
+  const loadCourse = async () => {
+    if (id) {
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
+        setCourse(data);
+      } catch (error) {
+        console.error("Error loading course:", error);
+      }
+    }
+  }
+
+
 
 
   // Show section
@@ -85,28 +130,43 @@ const AssignmentRoom = () => {
         <HeaderBarTeacher />
         <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
           <div className="px-10">
-            <Breadcrumbs size='lg'>
+            {/* Breadcrumbs */}
+            <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
               <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-              <BreadcrumbItem>การเขียนโปรแกรม ด้วยภาษาไพธอนเบื้องต้น</BreadcrumbItem>
-              <BreadcrumbItem>2566</BreadcrumbItem>
+              <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
+              <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
               <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
-              <BreadcrumbItem>งานที่มอบหมาย</BreadcrumbItem>
+              <BreadcrumbItem>ตรวจงาน</BreadcrumbItem>
             </Breadcrumbs>
+
           </div>
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
             <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
               <div className="flex flex-col space-y-4">
                 <h1 className=" text-2xl font-semibold text-gray-700"
                 >
-                  งานที่มอบหมายทั้งหมด
+                  ตรวจงาน
                 </h1>
                 {/* <pre>{JSON.stringify(section, null, 4)}</pre> */}
-                <AssignmentAccordionTeacher
-                  section={section}
-                  courseYearId={courseYearId}
-                />
-
               </div>
+              <div className="flex flex-col text-center mt-4">
+                {section.some((sec) => sec.assignmentData.length > 0) ? (
+                  // If there is at least one section with non-empty assignmentData, render the accordion
+                  <AssignmentAccordionTeacher
+                    section={section}
+                    courseYearId={courseYearId}
+                  />
+                ) : (
+                  // If all sections have empty assignmentData, show the message
+                  <>
+                    <h1 className='text-4xl font-bold text-gray-500 mb-3'>ยังไม่มีงานที่มอบหมาย</h1>
+                    <p className="text-gray-600">
+                      คุณยังไม่มีงานที่มอบหมายในรายวิชานี้ สร้างงานที่มอบหมายเมนู <span className='text-blue-800 font-semibold'>บทเรียน</span> ที่เมนูหลักเพื่อสร้างงานที่มอบหมาย
+                    </p>
+                  </>
+                )}
+              </div>
+
             </div>
           </main>
         </div>

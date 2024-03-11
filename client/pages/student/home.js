@@ -9,10 +9,24 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Context } from '../../context';
 import HeaderBarStd from '../../components/HeaderBar/HeaderBarStd';
+import { useRouter } from 'next/router';
 
 const Home = () => {
   const [courseImgLoading, setCourseImgLoading] = useState(false);
   const { state: { user } } = useContext(Context);
+
+  const router = useRouter();
+
+
+  useEffect(() => {
+    if (user !== null && user.role === 'teacher') {
+      router.push('/teacher/home')
+    } else if (user !== null && user.role === 'student') {
+      router.push('/student/home')
+    } else if (user !== null && user.role === 'admin') {
+      router.push('/admin/home')
+    }
+  }, [user])
 
   const [courses, setCourses] = useState([]);
 
@@ -46,90 +60,50 @@ const Home = () => {
             <div className="container mx-auto px-4 sm:px-6 xl:px-12">
               <div className="mt-14 ">
                 <div className="flex flex-wrap gap-4 mb-4">
-                  <Tabs size="lg" aria-label="Options">
-                    <Tab key="active" title="รายวิชาที่เรียน">
-                      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                        {courseImgLoading ? (
-                          Array.from({ length: 4 }).map((_, index) => (
-                            <Skeleton key={index} className="rounded-lg h-64" />
-                          ))
-                        ) : (
-                          courses && courses
-                            .filter(course => course.status === true)
-                            .map(course => (
-                              <Card key={course._id} className="py-8">
-                                <Link href={`/student/course/lesson/[id]`} as={`/student/course/lesson/${course._id}`}>
-                                  <CardBody className="overflow-visible">
-                                    <div className="w-full grid place-items-center">
-                                      <img
-                                        className="object-cover rounded"
-                                        src={course.image.Location}
-                                        alt={course.courseName}
-                                      />
-                                    </div>
-                                  </CardBody>
-                                </Link>
-                                <CardFooter className="pb-0 px-4 flex-col items-start">
-                                <h4 className="font-bold text-large">
-                                    {course.courseName.length > 30
-                                      ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
-                                      : `${course.courseNo} : ${course.courseName}`
-                                    }
-                                  </h4>
-                                  <p className="text-lg font-bold">
-                                    {course.level.length > 30
-                                      ? `${course.level.substring(0, 60)}...`
-                                      : `มัธยมศึกษาปีที่ ${course.level}`
-                                    }
-                                  </p>
-                                </CardFooter>
-                              </Card>
-                            ))
-                        )}
-                      </div>
-                    </Tab>
-                    <Tab key="archived" title="รายวิชาที่จัดเก็บ">
-                      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                        {courseImgLoading ? (
-                          Array.from({ length: 4 }).map((_, index) => (
-                            <Skeleton key={index} className="rounded-lg h-64" />
-                          ))
-                        ) : (
-                          courses && courses
-                            .filter(course => course.status === false)
-                            .map(course => (
-                              <Card key={course._id} className="py-8">
-                                <Link href={`/student/course/lesson/[id]`} as={`/student/course/lesson/${course._id}`}>
-                                  <CardBody className="overflow-visible">
-                                    <div className="w-full grid place-items-center">
-                                      <img
-                                        className="object-cover rounded"
-                                        src={course.image.Location}
-                                        alt={course.courseName}
-                                      />
-                                    </div>
-                                  </CardBody>
-                                </Link>
-                                <CardFooter className="pb-0 px-4 flex-col items-start">
-                                <h4 className="font-bold text-large">
-                                    {course.courseName.length > 30
-                                      ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
-                                      : `${course.courseNo} : ${course.courseName}`
-                                    }
-                                  </h4>
-                                  <p className="text-lg font-bold">
-                                    {course.level.length > 30
-                                      ? `${course.level.substring(0, 60)}...`
-                                      : `มัธยมศึกษาปีที่ ${course.level}`
-                                    }
-                                  </p>
-                                </CardFooter>
-                              </Card>
-                            ))
-                        )}
-                      </div>
-                    </Tab>
-                  </Tabs>
+                  <h1 className=" text-2xl font-semibold text-gray-700"
+                  >
+                  รายวิชาทั้งหมด
+                  </h1>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                    {courseImgLoading ? (
+                      Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton key={index} className="rounded-lg h-64" />
+                      ))
+                    ) : (
+                      courses && courses
+                        .filter(course => course.status === true)
+                        .map(course => (
+                          <Card key={course._id} className="py-8">
+                            <Link href={`/student/course/lesson/[id]`} as={`/student/course/lesson/${course._id}`}>
+                              <CardBody className="overflow-visible">
+                                <div className="w-full grid place-items-center">
+                                  <img
+                                    className="object-cover rounded"
+                                    src={course.image.Location}
+                                    alt={course.courseName}
+                                  />
+                                </div>
+                              </CardBody>
+                            </Link>
+                            <CardFooter className="pb-0 px-4 flex-col items-start">
+                              <h4 className="font-bold text-large">
+                                {course.courseName.length > 30
+                                  ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
+                                  : `${course.courseNo} : ${course.courseName}`
+                                }
+                              </h4>
+                              <p className="text-lg font-bold">
+                                {course.level.length > 30
+                                  ? `${course.level.substring(0, 60)}...`
+                                  : `มัธยมศึกษาปีที่ ${course.level}`
+                                }
+                              </p>
+                            </CardFooter>
+                          </Card>
+                        ))
+                    )}
+                  </div>
+
                 </div>
               </div>
             </div>

@@ -19,6 +19,9 @@ const TeacherCourse = () => {
     const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onOpenChange: onOpenChangeModalCreate } = useDisclosure();
     const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
     const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
+    const { isOpen: isOpenModalApprove, onOpen: onOpenModalApprove, onOpenChange: onOpenChangeModalApprove } = useDisclosure();
+    const { isOpen: isOpenModalCancel, onOpen: onOpenModalCancel, onOpenChange: onOpenChangeModalCancel } = useDisclosure();
+    const { isOpen: isOpenModalDuplicate, onOpen: onOpenModalDuplicate, onOpenChange: onOpenChangeModalDuplicate } = useDisclosure();
 
     const [selectedYearId, setSelectedYearId] = useState("");
 
@@ -27,6 +30,8 @@ const TeacherCourse = () => {
 
     const router = useRouter();
     const { id } = router.query;
+
+
 
     useEffect(() => {
         if (id) {
@@ -99,6 +104,24 @@ const TeacherCourse = () => {
     };
 
 
+
+    //Keep Course Year
+    const openApproveModal = (id) => {
+        setCourseYearId(id);
+        onOpenModalApprove();
+    };
+
+    //Cancel Keep Course Year
+    const openCancelModal = (id) => {
+        setCourseYearId(id);
+        onOpenModalCancel();
+    };
+    // Duplicate modal
+    const openDuplicateModal = (id) => {
+        setCourseYearId(id);
+        onOpenModalDuplicate();
+    };
+
     const handleArchivedCourseYear = async (courseYearId) => {
         try {
             await axios.put(`${process.env.NEXT_PUBLIC_API}/archived-courseYear/${courseYearId}`);
@@ -109,6 +132,8 @@ const TeacherCourse = () => {
             toast.error('ไม่สามารถจัดเก็บปีการศึกษา ลองอีกครั้ง!!');
         }
     };
+
+
 
     const handleCancelArchivedCourseYear = async (courseYearId) => {
         try {
@@ -145,8 +170,8 @@ const TeacherCourse = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา</BreadcrumbItem>
+                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
+                            <BreadcrumbItem>เพิ่มปีการศึกษา</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
                 </div>
@@ -224,10 +249,13 @@ const TeacherCourse = () => {
                                                                             </DropdownItem>
 
 
-                                                                            <DropdownItem onClick={() => handleArchivedCourseYear(yearData._id)} key="archived">
-                                                                                <p>จัดเก็บ</p>
+                                                                            <DropdownItem
+                                                                            >
+                                                                                <p onClick={() => openApproveModal(yearData._id)}>จัดเก็บ</p>
                                                                             </DropdownItem>
-                                                                            <DropdownItem key="duplicate" onClick={() => handleDuplicateCourseYear(yearData._id)}>
+                                                                            <DropdownItem
+
+                                                                                key="duplicate" onClick={() => openDuplicateModal(yearData._id)}>
                                                                                 <p>คัดลอกปีการศึกษา</p>
                                                                             </DropdownItem>
 
@@ -298,10 +326,10 @@ const TeacherCourse = () => {
                                                                             </DropdownItem>
 
 
-                                                                            <DropdownItem onClick={() => handleCancelArchivedCourseYear(yearData._id)} key="archived">
+                                                                            <DropdownItem onClick={() => openCancelModal(yearData._id)} key="archived">
                                                                                 <p>ยกเลิกจัดเก็บ</p>
                                                                             </DropdownItem>
-                                                                            <DropdownItem key="duplicate" onClick={() => handleDuplicateCourseYear(yearData._id)}>
+                                                                            <DropdownItem key="duplicate" onClick={() => openDuplicateModal(yearData._id)}>
                                                                                 <p>คัดลอกปีการศึกษา</p>
                                                                             </DropdownItem>
                                                                         </DropdownSection>
@@ -408,6 +436,107 @@ const TeacherCourse = () => {
                                     ยกเลิก
                                 </Button>
                                 <Button color="danger" onPress={onClose} onClick={() => handleDeleteCourseYear(courseYearId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
+            {/* Approve Keep */}
+            <Modal
+                isOpen={isOpenModalApprove}
+                onOpenChange={onOpenChangeModalApprove}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องการจัดเก็บปีการศึกษาหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การจัดเก็บปีการศึกษานี้จะย้ายไปที่ปีการศึกษาที่จัดเก็บของคุณ  คุณสามารถยกเลิกจัดเก็บปีการศึกษาได้
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="primary" onPress={onClose} onClick={() => handleArchivedCourseYear(courseYearId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            {/* Cancel  */}
+            <Modal
+                isOpen={isOpenModalCancel}
+                onOpenChange={onOpenChangeModalCancel}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องยกเลิกการจัดเก็บปีการศึกษาหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบปีการศึกษาจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="primary" onPress={onClose} onClick={() => handleCancelArchivedCourseYear(courseYearId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            {/* Duplicate  */}
+            <Modal
+                isOpen={isOpenModalDuplicate}
+                onOpenChange={onOpenChangeModalDuplicate}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องการคัดลอกปีการศึกษาหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    ทุกข้อมูลของปีการศึกษาต้นฉบับ จะถูกคัดลอกมาไว้ในการ์ดปีการศึกษา ยกเว้นข้อมูลของนักเรียน
+                                    ในห้องเรียน ดังนั้นต้องทำการ เพิ่มนักเรียนใหม่ เข้ารายวิชาทุกครั้ง
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="primary" onPress={onClose} onClick={() => handleDuplicateCourseYear(courseYearId)}>
                                     ยืนยัน
                                 </Button>
                             </ModalFooter>

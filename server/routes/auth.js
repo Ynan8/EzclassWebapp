@@ -14,7 +14,10 @@ const {
     login ,
     logout,
     currentUser,
-
+    profileImage,
+    UpdateProfile,
+    UpdatePassword,
+    
 } = require("../controllers/auth")
 
 router.get("/auth", (req,res) => {
@@ -24,6 +27,11 @@ router.get("/auth", (req,res) => {
 router.get("/", (req, res) => {
     res.send("hello api");
 });
+
+router.post("/course/profile-image", profileImage);
+router.put("/updateProfile/:id", auth, UpdateProfile);
+router.put("/update-password", auth, UpdatePassword);
+
 
 router.post("/register", register);
 router.post("/login", login);

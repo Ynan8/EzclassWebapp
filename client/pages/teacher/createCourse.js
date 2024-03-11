@@ -124,7 +124,7 @@ const createCourse = () => {
             return;
         }
 
-        if (name === 'courseNo' && value.length > 20) {
+        if (name === 'courseNo' && value.length > 6) {
             return;
         }
 

@@ -2,6 +2,8 @@ const Course = require('../models/course');
 const CourseRoom = require('../models/courseRoom');
 const QuizScore = require('../models/quizScore');
 const Section = require('../models/section');
+const Submission = require('../models/submission');
+
 const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../utils/auth')
 
@@ -22,6 +24,8 @@ exports.ImportStudent = async (req, res) => {
     const { students } = req.body;
     const { courseRoomId } = req.params;
 
+ 
+
     // Extract usernames from student data
     const usernames = students.map(studentData => studentData['รหัสนักเรียน']);
 
@@ -31,10 +35,10 @@ exports.ImportStudent = async (req, res) => {
     // Process and save each student to the database
     const savedStudents = await Promise.all(
       students.map(async (studentData) => {
-        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName, date } = studentData;
+        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName, 'รหัสผ่าน': password, } = studentData;
 
-
-        const hashedPassword = await hashPassword(date);
+     
+        const hashedPassword = await hashPassword(password);
 
         // Find the existing student with the given username
         const existingStudent = existingStudents.find(student => student.username === username);
@@ -136,6 +140,45 @@ exports.teacherList = async (req, res) => {
   }
 }
 
+exports.removeStudent = async (req, res) => {
+    const { idStudent, id } = req.params;
+  
+    try {
+      const courseRoom = await CourseRoom.updateOne(
+        { _id: id },
+        { $pull: { studentId: idStudent } }
+      );
+    
+      if (courseRoom.nModified === 0) {
+        return res.status(404).json({ error: "Student not found in the course room" });
+      }
+    
+      res.json({ message: "Student removed from the course room successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error: Failed to remove student." });
+    }
+}
+
+exports.UpdateStudent = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    const updated = await User.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    }).exec();
+
+    console.log("update", updated);
+    res.json(updated); // Send the updated document as the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+
 exports.getQuizScoreCourse = async (req, res) => {
   try {
     const { courseId } = req.params;  // Destructure to get courseId
@@ -149,6 +192,30 @@ exports.getQuizScoreCourse = async (req, res) => {
   }
 };
 
+exports.getQuizScoreRoom = async (req, res) => {
+  try {
+    const { roomId } = req.params;  // Destructure to get courseId
+
+    const quizScoreRoom = await QuizScore.find({ courseRoomId: roomId })
+      .exec();
+    res.json(quizScoreRoom);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getAssignmentRoom = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const assignmentRoom = await Submission.find({ roomId: id })
+      .exec();
+    res.json(assignmentRoom);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
 exports.averageScores = async (req, res) => {
@@ -181,6 +248,38 @@ exports.averageScores = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+exports.averageScoresRoom = async (req, res) => {
+  const { courseYearId, courseRoomId } = req.params; // Adjusted to match the router parameters
+
+  try {
+    const sections = await Section.find({ courseYearId }).lean();
+    const room = await CourseRoom.findById(courseRoomId).lean(); // Matched to the route parameter
+
+    let allScores = [];
+
+    for (let section of sections) {
+      let scores = await QuizScore.find({
+        sectionId: section._id,
+        courseRoomId: room._id, // Now correctly using the variable from parameters
+      }).lean();
+
+      let averageScore = scores.reduce((acc, { score }) => acc + score, 0) / scores.length || 0;
+      allScores.push({
+        section: section.sectionName,
+        score: averageScore, // It's not an array of scores, it's a single average score
+      });
+    }
+
+    res.json(allScores);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 exports.addStudent = async (req, res) => {
   //courseRoomId
@@ -221,6 +320,26 @@ exports.addStudent = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Server Error!");
+  }
+};
+
+exports.getStudentData = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).send('User not found');
+    res.send(user);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+exports.getSectionData = async (req, res) => {
+  try {
+    const section = await Section.findById(req.params.sectionId);
+    if (!section) return res.status(404).send('Section not found');
+    res.send(section);
+  } catch (e) {
+    res.status(500).send(e);
   }
 };
 

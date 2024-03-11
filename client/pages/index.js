@@ -61,7 +61,6 @@ const index = () => {
             } else if (data.payload.user.role === 'admin') {
                 router.push('/admin/home');
             }
-            router.push("/teacher/home")
 
         } catch (err) {
             setLoading(false); // Set loading state to false after error
@@ -119,19 +118,16 @@ const index = () => {
                                         type='password'
                                     />
                                 </div>
-                                <div className='mt-8 flex justify-between items-center'>
+                                {/* <div className='mt-8 flex justify-between items-center'>
                                     <div>
-
                                     </div>
-
                                     <Link href="/forgot-password" >
                                         <div
                                             className='font-medium text-base text-blue-500'
                                         >ลืมรหัสผ่าน ?
                                         </div>
                                     </Link>
-
-                                </div>
+                                </div> */}
                                 <div className='mt-8 flex flex-col gap-y-4 '>
                                     <Button size='lg' onClick={handleSubmit} color="primary" isLoading={loading} >
                                         {loading ? "กำลังโหลด..." : "เข้าสู่ระบบ"}

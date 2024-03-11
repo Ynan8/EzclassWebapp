@@ -19,6 +19,8 @@ const  {
     stdSubmitQuiz,
     markExercise,
     listExercise,
+    getCourseRoomStd,
+    listCompletedExercises,
  } = require ('../controllers/student')
 
 
@@ -43,5 +45,11 @@ router.get("/quizScore/", auth, stdSubmitQuiz);
 //exercise lesson
 router.post('/mark-exercise',auth, markExercise)
 router.post('/list-exercise',auth, listExercise)
+router.post('/list-completedExercises',auth, listCompletedExercises)
+
+
+
+
+router.get("/courseRoomStd/:id/:studentId", getCourseRoomStd);
 
 module.exports = router;

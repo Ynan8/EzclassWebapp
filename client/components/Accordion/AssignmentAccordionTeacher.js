@@ -31,7 +31,7 @@ const AssignmentAccordionTeacher = ({
                             <ListboxItem
                                 key="delete"
                                 title={
-                                    <Link key={index} href={`/teacher/course/assignment/check/${assignment._id}?courseYear=${courseYearId}`}>
+                                    <Link key={index} href={`/teacher/course/room/assignment/check/${assignment._id}?courseYearId=${courseYearId}`}>
 
                                         <div className='flex items-center text-lg' >
                                             <p>

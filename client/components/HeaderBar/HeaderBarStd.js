@@ -80,15 +80,16 @@ const HeaderBarStd = () => {
 
                             <Dropdown placement="bottom-start">
                                 <DropdownTrigger>
-                                    <User
+                                <User
                                         as="button"
                                         avatarProps={{
                                             isBordered: true,
-                                            src: user && user.image,
+                                            src: user?.image,
                                         }}
-                                        className="transition-transform"
-                                        description={user && user.role}
-                                        name={user && user.firstName + ' ' + user && user.lastName}
+                                        className="uppercase transition-transform"
+                                        description={user?.role}
+
+                                        name={`${user?.firstName} ${user?.lastName}`}
                                     />
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="User Actions" variant="flat">

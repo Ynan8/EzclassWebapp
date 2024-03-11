@@ -1,12 +1,16 @@
 import { BreadcrumbItem, Breadcrumbs, Link } from '@nextui-org/react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import SectionAccordionStd from '../../../../components/Accordion/SectionAccordionStudent';
 import HeaderBarStd from '../../../../components/HeaderBar/HeaderBarStd';
 import SideBarStudent from '../../../../components/Sidebar/SideBarStudent';
+import { Context } from '../../../../context';
 
 const LessonStudent = () => {
+    const { state: { user },
+    dispatch,
+} = useContext(Context);
     // Load course 
     const [course, setCourse] = useState({});
     const [loading, setLoading] = useState(true);
@@ -48,8 +52,27 @@ const LessonStudent = () => {
         }
     }
 
+    // Show Course Year
+    const [courseYear, setCourseYear] = useState({});
+
+    useEffect(() => {
+        if (courseYearId) {
+            loadCourseYear();
+        }
+    }, [courseYearId]);
+
+    const loadCourseYear = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseYear/single/${courseYearId}`);
+            const firstElement = data && data.length > 0 ? data[0] : {};
+            setCourseYear(firstElement);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+        }
+    };
 
 
+    console.log(courseYear)
 
 
     // Show section
@@ -117,6 +140,42 @@ const LessonStudent = () => {
         }
     };
 
+    
+    // Show Course Room
+    const [courseRoomStd, setCourseRoomStd] = useState({})
+    useEffect(() => {
+        loadCourseRoomStd()
+    }, [id])
+
+    const loadCourseRoomStd = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+              axios.defaults.headers.common['authtoken'] = token;
+            }
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseRoomStd/${id}/${user._id}`);
+            setCourseRoomStd(data);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+        }
+    };
+
+
+    const [checkSubmit, setCheckSubmit] = useState({})
+
+    useEffect(() => {
+        loadCheckSubmit();
+    }, [id]);
+
+    const loadCheckSubmit = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/check-submit/${id}`);
+            setCheckSubmit(data)
+            console.log(data)
+        } catch (error) {
+            console.error('Error loading assignment submit:', error);
+        }
+    };
 
 
     return (
@@ -129,7 +188,7 @@ const LessonStudent = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName}</BreadcrumbItem>
+                            <BreadcrumbItem>{course.courseName} {courseRoomStd.roomName}</BreadcrumbItem>
                             <BreadcrumbItem>บทเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -155,8 +214,8 @@ const LessonStudent = () => {
                                     </h3>
                                     <p className="md:text-lg text-gray-600 text-base">{course.detail}</p>
                                     <div className="flex mt-4">
-                                        <p className="md:text-lg  text-base"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' >มัธยมศึกษาปีที่ {course.level}</span>  </p>
-                                        <p className="ml-4 md:text-lg  text-base"><span className='font-black' >ปีการศึกษา :</span> <span className='text-gray-600' >2567</span>  </p>
+                                        <p className="md:text-lg  text-base"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' > {courseRoomStd.roomName}</span>  </p>
+                                        <p className="ml-4 md:text-lg  text-base"><span className='font-black' >ปีการศึกษา :</span> <span className='text-gray-600' >{courseYear.year}</span>  </p>
 
                                     </div>
                                     <Link href={`/student/course/lesson/view/${id}`}>
@@ -192,6 +251,9 @@ const LessonStudent = () => {
                                 <SectionAccordionStd
                                     section={section}
                                     id={id}
+                                    courseRoomStd={courseRoomStd}
+                                    checkSubmit={checkSubmit}
+                                    
                                 />
                             </div>
                         </div>

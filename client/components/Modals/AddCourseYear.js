@@ -45,11 +45,11 @@ const AddCourseYear = ({
                     onChange={handleYearChange}
                     placeholder="เช่น 2567"
                     variant="bordered"
-                    maxLength={6}
+                    maxLength={4}
                     value={values.year}
                 />
                 <div className="ml-auto flex  space-x-4 mt-1">
-                    <p className="text-gray-500 text-xs">{values.year.length}/6</p>
+                    <p className="text-gray-500 text-xs">{values.year.length}/4</p>
                 </div>
             </ModalBody>
             <ModalFooter>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import HeaderBarAdmin from '../../components/HeaderBar/HeaderBarAdmin';
@@ -7,12 +7,26 @@ import AdminTeacherCard from '../../components/Cards/AdminTeacherCard';
 import axios from 'axios';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import InfoTeacher from '../../components/Modals/InfoTeacher';
+import { Context } from '../../context';
+import { useRouter } from 'next/router';
 
 
 const home = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+    const { state: { user } } = useContext(Context);
+  
+    const router = useRouter();
 
+    useEffect(() => {
+      if (user !== null && user.role === 'teacher') {
+        router.push('/teacher/home')
+      } else if (user !== null && user.role === 'student') {
+        router.push('/student/home')
+      } else if (user !== null && user.role === 'admin') {
+        router.push('/admin/home')
+      }
+    }, [user])
     //list student
     const [studentList, setStudentList] = useState([]);
     useEffect(() => {

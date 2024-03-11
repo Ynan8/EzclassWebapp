@@ -110,14 +110,14 @@ const AssignmentCheck = () => {
     const calculateSubmissionPercentage = (assignmentId) => {
         // Filter students who have submitted the assignment
         const studentsWithSubmission = studentSubmit.filter((submission) => submission.assignmentId === assignmentId);
-    
+
         // Calculate the percentage
         const totalStudents = student.length;
         const percentage = totalStudents > 0 ? (studentsWithSubmission.length / totalStudents) * 100 : 0;
-    
+
         return percentage.toFixed(2); // Round to two decimal places
     };
-    
+
 
 
 
@@ -207,6 +207,7 @@ const AssignmentCheck = () => {
                                 </div>
                             ))}
                         </div>
+                        
                     </div>
                 </div>
             </div >

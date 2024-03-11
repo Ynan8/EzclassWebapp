@@ -92,6 +92,7 @@ function Example({
       data: section.scores,
       backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
       borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+      borderWidth: 2,
     }));
 
     const chart = new Chart(ctx, {

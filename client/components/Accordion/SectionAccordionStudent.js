@@ -8,7 +8,12 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const SectionAccordionStd = ({ section, id }) => {
+const SectionAccordionStd = ({
+    section,
+    id,
+    courseRoomStd,
+    checkSubmit
+}) => {
     return (
         <>
             <Accordion selectionMode="multiple" variant="splitted">
@@ -32,12 +37,15 @@ const SectionAccordionStd = ({ section, id }) => {
                                         className='mb-2'
                                         key={lessonIndex}
                                         title={
-                                            <div className='flex items-center text-lg' >
-                                                <p>
-                                                    <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
-                                                </p>
+                                            <Link href={`/student/course/lesson/view/${id}`}>
 
-                                            </div>
+                                                <div className='flex items-center text-lg' >
+                                                    <p>
+                                                        <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
+                                                    </p>
+
+                                                </div>
+                                            </Link>
                                         }
                                         startContent={
                                             <div className="bg-primary/10 text-primary p-2 rounded-md">
@@ -54,12 +62,13 @@ const SectionAccordionStd = ({ section, id }) => {
                                     <ListboxItem
                                         key={quizIndex}
                                         title={
-                                            <div className='flex items-center text-lg' >
-                                                <p>
-                                                    <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
-                                                </p>
-
-                                            </div>
+                                            <Link href={`/student/course/lesson/view/${id}`}>
+                                                <div className='flex items-center text-lg' >
+                                                    <p>
+                                                        <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
+                                                    </p>
+                                                </div>
+                                            </Link>
                                         }
                                         startContent={
                                             <div className="bg-danger/10 text-danger p-2 rounded-md">
@@ -73,27 +82,46 @@ const SectionAccordionStd = ({ section, id }) => {
 
                             <ListboxSection title="งานที่มอบหมาย" showDivider>
                                 {item.AssignmentData?.map((assignment, assignmentIndex) => (
-
-                                    <ListboxItem
-                                        key={assignmentIndex}
-                                        title={
-                                            <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
-
+                                    assignment.courseRoom.includes(courseRoomStd._id) ? (
+                                        <ListboxItem
+                                            key={assignmentIndex}
+                                            title={
                                                 <div className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
-                                                    </p>
-                                                </div>
-                                            </Link>
 
-                                        }
-                                        startContent={
-                                            <div className="bg-warning/10 text-warning p-2 rounded-md">
-                                                <MdAssignment size={25} className="text-warning" />
-                                            </div>
-                                        }
-                                    >
-                                    </ListboxItem>
+                                                    <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
+
+                                                        <div className='flex items-center text-lg' >
+                                                            <p>
+                                                                <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
+                                                        <Chip
+                                                            className="capitalize"
+                                                            color={checkSubmit ? "success" : "default"}
+                                                            size="md"
+                                                            variant="flat"
+                                                        >
+                                                            {checkSubmit ? "ส่งงานแล้ว" : "ยังไม่ส่งงาน"}
+                                                        </Chip>
+                                                    </div>
+                                                </div>
+
+
+                                            }
+                                            startContent={
+                                                <div className="bg-warning/10 text-warning p-2 rounded-md">
+                                                    <MdAssignment size={25} className="text-warning" />
+
+                                                </div>
+
+                                            }
+                                        >
+                                        </ListboxItem>
+                                    ) : (
+                                        null
+                                    )
                                 ))}
                             </ListboxSection>
 

@@ -11,13 +11,27 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 
 const Home = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [courseImgLoading, setCourseImgLoading] = useState(false);
+  const router = useRouter();
 
   const { state: { user } } = useContext(Context);
+
+  useEffect(() => {
+    if (user !== null && user.role === 'teacher') {
+      router.push('/teacher/home')
+    } else if (user !== null && user.role === 'student') {
+      router.push('/student/home')
+    } else if (user !== null && user.role === 'admin') {
+      router.push('/admin/home')
+    }
+  }, [user])
+
+
 
   const [courses, setCourses] = useState([]);
 
@@ -109,151 +123,97 @@ const Home = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-4 mb-4">
-                  <Tabs size="lg" aria-label="Options">
-                    <Tab key="active" title="รายวิชาที่สอน">
-                      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                        {courseImgLoading ? (
-                          Array.from({ length: 4 }).map((_, index) => (
-                            <Skeleton key={index} className="rounded-lg h-64" />
-                          ))
-                        ) : (
-                          courses && courses
-                            .filter(course => course.status === true)
-                            .map(course => (
-                              <Card key={course._id} className="py-8">
-                                <div className="absolute top-0 right-0 m-2">
-                                  <Dropdown>
-                                    <DropdownTrigger>
-                                      <Button
-                                        size='sm'
-                                        variant="light"
-                                        startContent={<BsThreeDotsVertical size={20} />}
-                                      />
-                                    </DropdownTrigger>
-                                    <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
-                                      <DropdownItem onClick={() => handleArchivedCourse(course._id)} key="new">
-                                        <p >จัดเก็บรายวิชา</p>
-                                      </DropdownItem>
-                                      <DropdownItem key="edit">
-                                        <Link
-                                          href={`/teacher/course/edit/[id]`}
-                                          as={`/teacher/course/edit/${course._id}`}
-                                        >
-                                          <p>แก้ไขรายวิชา</p>
-                                        </Link>
-                                      </DropdownItem>
-                                      <DropdownItem onPress={onOpen} key="delete" className="text-danger" color="danger">
-                                        <p
-                                          onClick={() => openDeleteModal(course._id)}
-                                        >ลบรายวิชา</p>
-                                      </DropdownItem>
-                                    </DropdownMenu>
-                                  </Dropdown>
+                  <h1 className=" text-2xl font-semibold text-gray-700"
+                  >
+                    รายวิชาทั้งหมด
+                  </h1>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                    {courseImgLoading ? (
+                      Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton key={index} className="rounded-lg h-64" />
+                      ))
+                    ) : (
+                      courses && courses.length > 0 ? (
+                        courses.filter(course => course.status === true).map(course => (
+                          <Card key={course._id} className="py-8">
+                            <div className="absolute top-0 right-0 m-2">
+                              <Dropdown>
+                                <DropdownTrigger>
+                                  <Button
+                                    size='sm'
+                                    variant="light"
+                                    startContent={<BsThreeDotsVertical size={20} />}
+                                  />
+                                </DropdownTrigger>
+                                <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
+                                  <DropdownItem key="edit">
+                                    <Link
+                                      href={`/teacher/course/edit/[id]`}
+                                      as={`/teacher/course/edit/${course._id}`}
+                                    >
+                                      <p>แก้ไขรายวิชา</p>
+                                    </Link>
+                                  </DropdownItem>
+                                  <DropdownItem onPress={onOpen} key="delete" className="text-danger" color="danger">
+                                    <p
+                                      onClick={() => openDeleteModal(course._id)}
+                                    >ลบรายวิชา</p>
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </Dropdown>
+                            </div>
+                            <Link href={`/teacher/course/year/[id]`} as={`/teacher/course/year/${course._id}`}>
+                              <CardBody className="overflow-visible">
+                                <div className="w-full grid place-items-center">
+                                  <img
+                                    className="object-cover rounded"
+                                    src={course.image.Location}
+                                    alt={course.courseName}
+                                  />
                                 </div>
-                                <Link href={`/teacher/course/year/[id]`} as={`/teacher/course/year/${course._id}`}>
-                                  <CardBody className="overflow-visible">
-                                    <div className="w-full grid place-items-center">
-                                      <img
-                                        className="object-cover rounded"
-                                        src={course.image.Location}
-                                        alt={course.courseName}
-                                      />
-                                    </div>
-                                  </CardBody>
-                                </Link>
-                                <CardFooter className="pb-0 px-4 flex-col items-start">
-                                  <h4 className="font-bold text-large">
-                                    {course.courseName.length > 30
-                                      ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
-                                      : `${course.courseNo} : ${course.courseName}`
-                                    }
-                                  </h4>
-                                  <p className="text-lg font-bold">
-                                    {course.level.length > 30
-                                      ? `${course.level.substring(0, 60)}...`
-                                      : `มัธยมศึกษาปีที่ ${course.level}`
-                                    }
-                                  </p>
-                                </CardFooter>
-                              </Card>
-                            ))
-                        )}
-                      </div>
-                    </Tab>
-                    <Tab key="archived" title="รายวิชาที่จัดเก็บ">
-                      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                        {courseImgLoading ? (
-                          Array.from({ length: 4 }).map((_, index) => (
-                            <Skeleton key={index} className="rounded-lg h-64" />
-                          ))
-                        ) : (
-                          courses && courses
-                            .filter(course => course.status === false)
-                            .map(course => (
-                              <Card key={course._id} className="py-8">
-                                <div className="absolute top-0 right-0 m-2">
-                                  <Dropdown>
-                                    <DropdownTrigger>
-                                      <Button
-                                        size='sm'
-                                        variant="light"
-                                        startContent={<BsThreeDotsVertical size={20} />}
-                                      />
-                                    </DropdownTrigger>
-                                    <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
-                                      <DropdownItem onClick={() => handleCancelArchivedCourse(course._id)} key="new">
-                                        <p >ยกเลิกการจัดเก็บ</p>
-                                      </DropdownItem>
-                                      <DropdownItem key="edit">
-                                        <Link
-                                          href={`/teacher/course/edit/[id]`}
-                                          as={`/teacher/course/edit/${course._id}`}
-                                        >
-                                          <p>แก้ไขรายวิชา</p>
-                                        </Link>
-                                      </DropdownItem>
-                                      <DropdownItem onPress={onOpen} key="delete" className="text-danger" color="danger">
-                                        <p
-                                          onClick={() => openDeleteModal(course._id)}
-                                        >ลบรายวิชา</p>
-                                      </DropdownItem>
-                                    </DropdownMenu>
-                                  </Dropdown>
-                                </div>
-                                <Link href={`/teacher/course/year/[id]`} as={`/teacher/course/year/${course._id}`}>
-                                  <CardBody className="overflow-visible">
-                                    <div className="w-full grid place-items-center">
-                                      <img
-                                        className="object-cover rounded"
-                                        src={course.image.Location}
-                                        alt={course.courseName}
-                                      />
-                                    </div>
-                                  </CardBody>
-                                </Link>
-                                <CardFooter className="pb-0 px-4 flex-col items-start">
-                                  <h4 className="font-bold text-large">
-                                    {course.courseName.length > 30
-                                      ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
-                                      : `${course.courseNo} : ${course.courseName}`
-                                    }
-                                  </h4>
-                                  <p className="text-tiny uppercase font-bold">
-                                    {course.level.length > 30
-                                      ? `${course.level.substring(0, 60)}...`
-                                      : `มัธยมศึกษาปีที่ ${course.level}`
-                                    }
-                                  </p>
-                                </CardFooter>
-                              </Card>
-                            ))
-                        )}
-                      </div>
-                    </Tab>
-                  </Tabs>
+                              </CardBody>
+                            </Link>
+                            <CardFooter className="pb-0 px-4 flex-col items-start">
+                              <h4 className="font-bold text-large">
+                                {course.courseName.length > 30
+                                  ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
+                                  : `${course.courseNo} : ${course.courseName}`
+                                }
+                              </h4>
+                              <p className="text-lg font-bold">
+                                {course.level.length > 30
+                                  ? `${course.level.substring(0, 60)}...`
+                                  : `มัธยมศึกษาปีที่ ${course.level}`
+                                }
+                              </p>
+                            </CardFooter>
+                          </Card>
+                        ))
+                      ) : (
+                        <div className="text-center w-full h-full flex items-center justify-center">
+                          <p></p>
+                        </div>
+
+                      )
+                    )}
+                  </div>
+
+
                 </div>
               </div>
             </div>
+          </div>
+          <div className="flex flex-col text-center">
+            {courses.length === 0 ? (
+              <>
+                <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีรายวิชา</h1>
+                <p className="text-gray-600">
+                  คุณยังไม่มีรายวิชา คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างเรียนวิชา</span> เพื่อเพิ่มรายวิชา
+                </p>
+              </>
+            ) : (
+              ''
+            )}
           </div>
         </main>
       </div>

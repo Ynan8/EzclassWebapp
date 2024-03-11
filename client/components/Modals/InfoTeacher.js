@@ -6,8 +6,6 @@ import Link from "next/link";
 
 
 const InfoTeacher = ({ teacher }) => {
-
-
     // Show Course
     const [courses, setCourses] = useState([])
     useEffect(() => {

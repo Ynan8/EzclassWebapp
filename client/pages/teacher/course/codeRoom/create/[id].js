@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
+import { Avatar } from '@nextui-org/react'
 
 const createCodeRoom = () => {
     const router = useRouter();
@@ -100,17 +101,14 @@ const createCodeRoom = () => {
 
     const handleSubmit = async (e) => {
         try {
-            console.log(values)
-            console.log(selectedPublish)
-            console.log(selectedDifficulty)
             // e.preventDefault();
-            // const response = await axios.post(`/api/codeRoom/${id}/${courseYear}`, {
-            //     ...values,
-            //     Published: selectedPublish,
-            //     Difficulty: selectedDifficulty,
-            // });
-            // toast.success("สร้างห้องเรียนเขียนโค้ดสำเร็จ")
-            // router.push(`/teacher/course/codeRoom/${courseYear}`)
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/codeRoom/${id}/${courseYear}`, {
+                ...values,
+                Published: selectedPublish,
+                Difficulty: selectedDifficulty,
+            });
+            toast.success("สร้างห้องเรียนเขียนโค้ดสำเร็จ")
+            router.push(`/teacher/course/codeRoom/${courseYear}`)
         } catch (error) {
             console.log(error)
         }
@@ -162,27 +160,35 @@ const createCodeRoom = () => {
                     <div class="max-w-4xl mx-auto bg-white p-16">
                         <ul className="flex justify-between w-full mb-16">
                             <li className={`relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <div className={`${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
-                                    <span className="text-2xl">1</span>
-                                </div>
+                                <Avatar 
+                                name='1'
+                                className={` text-lg ${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
+                                >
+                                    <span className="text-2xl p-2 ">1</span>
+                                </Avatar>
                                 <span className={`${page === 0 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
                                     ข้อมูลทั่วไป
                                 </span>
                             </li>
 
                             <li className={`relative flex items-center ${page === 1 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300 py-4 px-14'}`}>
-                                <div className={`${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
+                                <Avatar 
+                                name='2'
+                                className={`text-lg ${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
+                                >
                                     <span className="text-2xl">2</span>
-                                </div>
+                                </Avatar>
                                 <span className={`${page === 1 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
                                     ตัวอย่างโจทย์
                                 </span>
                             </li>
 
                             <li className={`relative flex items-center ${page === 2 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <div className={`${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
+                                <Avatar 
+                                name='3'
+                                className={`text-lg ${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
                                     <span className="text-2xl">3</span>
-                                </div>
+                                </Avatar>
                                 <span className={`${page === 2 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300 cursor-pointer'}`}>
                                     การเผยแพร่
                                 </span>

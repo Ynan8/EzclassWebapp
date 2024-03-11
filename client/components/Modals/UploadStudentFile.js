@@ -19,34 +19,25 @@ const UploadStudentFile = ({
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         setUploadButtonText(file.name);
-
+    
         if (!file) {
             return;
         }
-
+    
         setLoading(true);
-
+    
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-
+    
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
-                const jsonData = XLSX.utils.sheet_to_json(sheet, { raw: false, dateNF: 'DD-MM-YYYY' });
-
-                const transformedData = jsonData.map((student) => {
-                    const rawDate = student.date;
-                    const formattedDate = rawDate
-                        .split('/')
-                        .map((part) => part.padStart(2, '0'))
-                        .join('');
-
-                    return { ...student, date: formattedDate };
-                });
-
-                setStudents(transformedData);
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { raw: false });
+    
+    
+                setStudents(jsonData); 
                 setLoading(false);
             } catch (error) {
                 console.error('Error parsing Excel file:', error);
@@ -54,10 +45,10 @@ const UploadStudentFile = ({
                 setLoading(false);
             }
         };
-
+    
         reader.readAsArrayBuffer(file);
     };
-
+    
     const importStudents = async () => {
         try {
             setLoading(true);

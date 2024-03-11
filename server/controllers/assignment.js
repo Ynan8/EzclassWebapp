@@ -171,12 +171,13 @@ exports.updateAssignment = async (req, res) => {
 
 exports.submitAssignment = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, courseRoomId } = req.params;
     const studentId = req.user._id;
 
     const submission = new Submission({
       studentId,
       assignmentId: id,
+      roomId: courseRoomId,
       ...req.body
     });
     await submission.save();
@@ -244,5 +245,67 @@ exports.CheckSubmit = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error fetching assignment submit.' });
+  }
+};
+
+
+
+
+exports.getStdSubmit = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the assignment by its _id using findById
+    const stdSubmits = await Submission.find({ assignmentId: id });
+
+    // Check if any submissions were found
+    if (!stdSubmits || stdSubmits.length === 0) {
+      return res.status(404).json({ error: 'Assignment submit not found' });
+    }
+
+    // Use Promise.all to perform parallel queries to fetch student details
+    const studentDetailsPromises = stdSubmits.map(async (submission) => {
+      const student = await User.findById(submission.studentId);
+      return {
+        ...submission.toObject(), // Convert Mongoose document to plain JavaScript object
+        studentName: student ? `${student.firstName} ${student.lastName}` : 'Unknown',
+        image: student ? `${student.image}` : 'Unknown',
+      };
+    });
+
+    // Wait for all promises to resolve
+    const stdSubmitsWithStudentDetails = await Promise.all(studentDetailsPromises);
+
+    res.json(stdSubmitsWithStudentDetails);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching assignment submit.' });
+  }
+
+}
+
+exports.updateScore = async (req, res) => {
+  try {
+    const { assignmentId, studentId } = req.params;
+    const { newScore, status } = req.body;
+
+    // Find the submission based on assignmentId and studentId
+    const submission = await Submission.findOne({ assignmentId, studentId });
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+
+    // Update the score
+    submission.score = newScore;
+    submission.status = status;
+
+    // Save the updated submission
+    await submission.save();
+
+    res.status(200).json({ message: 'Score updated successfully', submission });
+  } catch (error) {
+    console.error('Error updating score:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

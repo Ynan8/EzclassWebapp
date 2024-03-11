@@ -44,7 +44,29 @@ const LessonCourse = () => {
         }
     };
 
-    const courseId = courseYear.courseId
+
+    const courseId = courseYear.courseId;
+
+    const [course, setCourse] = useState({});
+
+
+    useEffect(() => {
+        if (id) {
+            loadCourse();
+        }
+    }, [courseId]);
+
+
+    const loadCourse = async () => {
+        if (id) {
+            try {
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
+                setCourse(data);
+            } catch (error) {
+                console.error("Error loading course:", error);
+            }
+        }
+    }
 
     const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onOpenChange: onOpenChangeModalCreate } = useDisclosure();
     const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
@@ -178,8 +200,8 @@ const LessonCourse = () => {
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>การเขียนโปรแกรม ด้วยภาษาไพธอนเบื้องต้น</BreadcrumbItem>
-                            <BreadcrumbItem>2566</BreadcrumbItem>
+                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
+                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
                             <BreadcrumbItem>บทเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -209,6 +231,18 @@ const LessonCourse = () => {
                             </div>
                         </div>
                     </div>
+                    <div className="flex flex-col text-center">
+                            {section.length === 0 ? (
+                                <>
+                                    <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีบทเรียน</h1>
+                                    <p className="text-gray-600">
+                                        คุณยังไม่มีบทเรียนในรายวิชานี้ คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างบทเรียน</span> เพื่อเพิ่มบทเรียนใหม่
+                                    </p>
+                                </>
+                            ) : (
+                                ''
+                            )}
+                        </div>
                 </div>
             </div>
 

@@ -16,6 +16,76 @@ const ManageUser = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  // Load CourseRoom
+  const [courseRoomSingle, setCourseRoomSingle] = useState({});
+
+  const courseYearId = courseRoomSingle.courseYearId
+  console.log(courseYearId)
+
+
+  useEffect(() => {
+    if (id) {
+      loadCourseRoom();
+    }
+  }, [id]);
+
+
+  const loadCourseRoom = async () => {
+    if (id) {
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseRoomSingle/${id}`);
+        setCourseRoomSingle(data);
+      } catch (error) {
+        console.error("Error loading course:", error);
+      }
+    }
+  }
+
+  // Show Course Year
+  const [courseYear, setCourseYear] = useState({});
+
+  useEffect(() => {
+    if (courseYearId) {
+      loadCourseYear();
+    }
+  }, [courseYearId]);
+
+  const loadCourseYear = async () => {
+    try {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseYear/single/${courseYearId}`);
+      const firstElement = data && data.length > 0 ? data[0] : {};
+      setCourseYear(firstElement);
+
+    } catch (error) {
+      console.error('Error loading courses:', error);
+    }
+  };
+
+
+  const courseId = courseYear.courseId;
+
+  const [course, setCourse] = useState({});
+
+
+  useEffect(() => {
+    if (id) {
+      loadCourse();
+    }
+  }, [courseId]);
+
+
+  const loadCourse = async () => {
+    if (id) {
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
+        setCourse(data);
+      } catch (error) {
+        console.error("Error loading course:", error);
+      }
+    }
+  }
+
+
   const { isOpen: isOpenModalExcel, onOpen: onOpenModalExcel, onOpenChange: onOpenChangeModalExcel } = useDisclosure();
   const { isOpen: isOpenModalStudent, onOpen: onOpenModalStudent, onOpenChange: onOpenChangeModalStudent } = useDisclosure();
   const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
@@ -47,6 +117,10 @@ const ManageUser = () => {
   const loadStudentCourse = async () => {
     if (id) {
       try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['authtoken'] = token;
+        }
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/studentRoom/${id}`);
         setStudent(data)
       } catch (error) {
@@ -64,11 +138,12 @@ const ManageUser = () => {
   // Update Student
   const [currentStd, setCurrentStd] = useState({});
 
-  const handleUpdateStd = async (e) => {
+  const handleUpdateStd = async () => {
     try {
+      // Include the fields you want to update in the PUT request body
       const { data } = await axios.put(
         `${process.env.NEXT_PUBLIC_API}/student/${currentStd._id}`,
-        currentRoom
+        currentStd
       );
       loadStudentCourse();
       toast.success("แก้ไขข้อมูลนักเรียนสำเร็จ");
@@ -78,6 +153,7 @@ const ManageUser = () => {
     }
   };
 
+
   // Delete Student
   const [stdId, setStdId] = useState("");
 
@@ -86,15 +162,15 @@ const ManageUser = () => {
     onOpenModalDelete();
   };
 
-  const handleDeleteStudent = async (roomId) => {
-    try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-student/${stdId}`);
 
-      toast.success('ลบนักเรียนสำเร็จ');
-      loadCourseRoom();
+  const handleDeleteStudent = async (idStudent) => {
+    try {
+      const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API}/courseRoom/${idStudent}/${id}`);
+      loadStudentCourse();
+      toast.success("ลบนักเรียนสำเร็จ");
     } catch (error) {
-      console.error('Error deleting course:', error);
-      toast.error('ไม่สามารถลบนักเรียนได้ ลองอีกครั้ง!!');
+      console.error(error); // Handle any errors that may occur during the deletion process
+      toast.error("ไม่สามารถลบนักเรียนได้");
     }
   };
 
@@ -106,10 +182,11 @@ const ManageUser = () => {
         <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
 
           <div className="px-10">
-            <Breadcrumbs size='lg'>
+            {/* Breadcrumbs */}
+            <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
               <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-              <BreadcrumbItem>ชื่อวิชา</BreadcrumbItem>
-              <BreadcrumbItem>ชื่อปีการศึกษา</BreadcrumbItem>
+              <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
+              <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
               <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
               <BreadcrumbItem>จัดการผู้ใช้</BreadcrumbItem>
             </Breadcrumbs>
@@ -173,7 +250,7 @@ const ManageUser = () => {
                             <div
                               onClick={() => {
                                 onOpenModalUpdate();
-                                // setCurrentRoom(courseRoom);
+                                setCurrentStd(student);
                               }}
                               className="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
                               <FaEdit size={25} />
@@ -188,6 +265,18 @@ const ManageUser = () => {
                       ))}
                     </tbody>
                   </table>
+                  <div className="flex flex-col text-center mt-4">
+                    {student.length === 0 ? (
+                      <>
+                        <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีนักเรียนในห้องเรียน</h1>
+                        <p className="text-gray-600">
+                          คุณยังไม่มีนักเรียนในห้องเรียนนี้ คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>เพิ่มนักเรียน</span> หรือ <span className='text-blue-800 font-semibold'>Import Excel</span>  เพื่อเพิ่มนักเรียน
+                        </p>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -244,7 +333,12 @@ const ManageUser = () => {
       >
         <ModalContent>
           {(onClose) => (
-            <UpdateStudent />
+            <UpdateStudent
+              currentStd={currentStd}
+              setCurrentStd={setCurrentStd}
+              handleUpdateStd={handleUpdateStd}
+              onClose={onClose}
+            />
           )}
         </ModalContent>
       </Modal>

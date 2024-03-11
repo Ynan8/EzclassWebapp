@@ -153,7 +153,7 @@ exports.duplicateCourseYear = async (req, res) => {
       // Create a new course year with the same data except for the year
       const duplicatedCourseYear = await new CourseYear({
           ...originalCourseYear.toObject(),
-          year: `${originalCourseYear.year} Copy`, // Append "Copy" to the old year name
+          year: `Copy`, // Append "Copy" to the old year name
           _id: new mongoose.Types.ObjectId() // Generate a new ID for the duplicated course year
       }).save();
 
