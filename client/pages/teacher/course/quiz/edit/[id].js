@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import { Button, Switch } from '@nextui-org/react';
-import UpdateQuizLesson from '../../../../../components/Form/UpdateQuizLesson';
+import UpdateQuizLesson from '../../../../../components/form/UpdateQuizLesson';
 
 
 
