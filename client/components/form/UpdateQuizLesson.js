@@ -202,7 +202,7 @@ const UpdateQuizLesson = ({
             return prevValues;
         });
     };
-    
+
     const moveQuestionDown = (index) => {
         setValues((prevValues) => {
             if (index < prevValues.questions.length - 1) {
@@ -216,7 +216,7 @@ const UpdateQuizLesson = ({
             return prevValues;
         });
     };
-    
+
     const deleteQuestion = (index) => {
         setValues((prevValues) => {
             const updatedQuestions = [...prevValues.questions];
@@ -227,7 +227,7 @@ const UpdateQuizLesson = ({
             };
         });
     };
-    
+
 
 
     return (
@@ -261,6 +261,7 @@ const UpdateQuizLesson = ({
                                             label="คะแนน"
                                             value={question.score}
                                             onChange={(e) => handleScoreChange(e, index)}
+                                            step="1"
                                         />
                                         <div className="relative">
                                             <Dropdown>

@@ -138,7 +138,7 @@ function editprofile() {
       console.log("Updated Data:", data);
       setUserData(data);
       toast.success("แก้ไขข้อมูลสำเร็จ");
-      router.push('/teacher/home');
+      router.push('/admin/home');
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -195,7 +195,7 @@ function editprofile() {
   <>
     <div className="pl-20 flex items-center text-black  w-96 md:w-96 h-12  border-none pt-10">
       <button
-        onClick={() => router.push("/teacher/home")}
+        onClick={() => router.push("/admin/home")}
         className=" text-lg"
       >
         <AiOutlineLeft
@@ -268,18 +268,7 @@ function editprofile() {
                       />
                     </td>
                   </tr>
-                  <tr>
-                    <td className="text-end">รหัสผู้สอน :</td>
-                    <td>
-                      <Input
-                        isDisabled
-                        type="email"
-                        value={userData.username}
-                        defaultValue="junior@nextui.org"
-                        className="bg-gray-200 rounded-md  max-w-xl"
-                      />
-                    </td>
-                  </tr>
+                 
                 </tbody>
               </table>
               <div className="flex items-center justify-between">

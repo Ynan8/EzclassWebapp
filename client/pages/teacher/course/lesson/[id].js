@@ -75,6 +75,11 @@ const LessonCourse = () => {
 
     // Add section
     const handleAddSection = async (sectionName) => {
+        if (sectionName.trim().length === 0) {
+            toast.error('กรุณากรอกชื่อบทเรียน');
+            return;  // Exit the function if sectionName is not valid
+        }
+    
         try {
             const { data } = await axios.post(
                 `${process.env.NEXT_PUBLIC_API}/section/${id}/${courseId}`,
@@ -82,11 +87,13 @@ const LessonCourse = () => {
             );
             loadSection();
             toast.success('สร้างบทเรียนสำเร็จ');
+            onOpenChangeModalCreate(false);  // Close the modal after a successful submission
         } catch (error) {
             console.error('Error creating section:', error);
-            // Handle error, show toast, etc.
+            toast.error('ไม่สามารถสร้างบทเรียนได้');
         }
     };
+    
 
     // Show section
     useEffect(() => {
@@ -157,11 +164,16 @@ const LessonCourse = () => {
 
     const handleUpdateSection = async (e) => {
         e.preventDefault();
+        if (currentSection.sectionName.trim().length === 0) {
+            toast.error('กรุณากรอกชื่อบทเรียน');
+            return;  // Exit the function if sectionName is not valid
+        }
         try {
             const { data } = await axios.put(
                 `${process.env.NEXT_PUBLIC_API}/section/${courseId}/${currentSection._id}`,
                 currentSection
             );
+            onOpenChangeModalUpdate(false);  // Close the modal after a successful submission
             loadSection();
             toast.success('อัปเดตบทเรียนสำเร็จ');
         } catch (err) {

@@ -6,7 +6,11 @@ import { AiOutlineAppstore } from 'react-icons/ai';
 import { LuUsers2 } from 'react-icons/lu';
 
 
-const SideBarAdmin = ({ id }) => {
+const SideBarAdmin = ({
+    id,
+    mobileSidebarOpen,
+    setMobileSidebarOpen,
+}) => {
 
 
     const currentPath = useRouter().asPath;
@@ -16,8 +20,8 @@ const SideBarAdmin = ({ id }) => {
     };
 
     return (
-        <div className="fixed flex flex-col top-[60px]  left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
-            <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
+        <div className={`fixed flex flex-col top-[60px] left-0 w-20 hover:w-64 md:w-64 bg-blue-500 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+            <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
                 <ul className="flex flex-col py-8 space-y-1">
                     <li className="my-px py-2 ">
                         <Link

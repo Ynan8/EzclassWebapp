@@ -97,11 +97,17 @@ const CourseRoom = () => {
     const [currentRoom, setCurrentRoom] = useState({});
 
     const handleUpdateRoom = async (e) => {
+        if (!currentRoom.roomName.trim()) {
+            toast.error("กรุณากรอกชื่อห้องเรียน");
+            return;
+        }
+
         try {
             const { data } = await axios.put(
                 `${process.env.NEXT_PUBLIC_API}/courseRoom/${currentRoom._id}`,
                 currentRoom
             );
+            onClose(); // Close the modal only if the request is successful
             loadCourseRoom();
             toast.success("แก้ไขห้องเรียนสำเร็จ");
         } catch (error) {

@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const CourseRoom = require("../models/courseRoom");
 const { hashPassword } = require("../utils/auth");
 
 exports.addTeacher = async (req, res) => {
@@ -101,3 +102,25 @@ exports.addTeacher = async (req, res) => {
     }
   };
   
+  exports.getCourseYearId = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const courseRoom = await CourseRoom.findOne({
+        courseId: id,
+      });
+  
+      if (!courseRoom) {
+        return res
+          .status(404)
+          .json({ error: "No course room found for the user" });
+      }
+  
+      const courseYearId = courseRoom.courseYearId.toString();
+  
+      // Send the courseYearId as a string directly without wrapping it in an object
+      res.json(courseYearId);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };

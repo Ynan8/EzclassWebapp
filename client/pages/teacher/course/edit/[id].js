@@ -137,7 +137,7 @@ const CourseEdit = () => {
             return;
         }
 
-        if (name === 'courseNo' && value.length > 20) {
+        if (name === 'courseNo' && value.length > 6) {
             return;
         }
 
@@ -156,7 +156,26 @@ const CourseEdit = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log("Update Course>>>", values)
+        if (!values.courseNo || values.courseNo.length > 6) {
+            toast.error("กรุณากรอกรหัสวิชาให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.courseName || values.courseName.length > 100) {
+            toast.error("กรุณากรอกชื่อรายวิชาให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.detail || values.detail.length > 200) {
+            toast.error("กรุณากรอกรายละเอียดให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.level) {
+            toast.error("กรุณาเลือกระดับการศึกษา");
+            return;
+        }
+
         try {
             const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API}/course/${id}`, {
                 ...values,

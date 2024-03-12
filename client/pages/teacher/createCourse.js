@@ -143,18 +143,46 @@ const createCourse = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic validation
+        if (!values.courseNo || values.courseNo.length > 6) {
+            toast.error("กรุณากรอกรหัสวิชาให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.courseName || values.courseName.length > 100) {
+            toast.error("กรุณากรอกชื่อรายวิชาให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.detail || values.detail.length > 200) {
+            toast.error("กรุณากรอกรายละเอียดให้ถูกต้อง");
+            return;
+        }
+
+        if (!values.level) {
+            toast.error("กรุณาเลือกระดับการศึกษา");
+            return;
+        }
+
+        if (!preview) {
+            toast.error("กรุณาเพิ่มรูปรายวิชา");
+            return;
+        }
+
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/course`, {
                 ...values,
                 image,
             });
             toast.success('สร้างรายวิชาสำเร็จ');
-             router.push("/teacher/home");
+            router.push("/teacher/home");
         } catch (err) {
             console.log(err)
             toast.error("ไม่สามารถสร้างรายวิชาได้ กรุณาลองอีกครั้ง!");
         }
     };
+
 
 
     return (

@@ -26,7 +26,7 @@ const AddSection = ({
                 <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button onClick={() => handleAddSection(sectionName)} color="primary" onPress={onClose}>
+                <Button onClick={() => handleAddSection(sectionName)} color="primary" >
                     บันทึก
                 </Button>
             </ModalFooter>

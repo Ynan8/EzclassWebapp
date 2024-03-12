@@ -138,7 +138,7 @@ function editprofile() {
       console.log("Updated Data:", data);
       setUserData(data);
       toast.success("แก้ไขข้อมูลสำเร็จ");
-      router.push('/teacher/home');
+      router.push('/student/home');
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -195,7 +195,7 @@ function editprofile() {
   <>
     <div className="pl-20 flex items-center text-black  w-96 md:w-96 h-12  border-none pt-10">
       <button
-        onClick={() => router.push("/teacher/home")}
+        onClick={() => router.push("/student/home")}
         className=" text-lg"
       >
         <AiOutlineLeft
@@ -269,7 +269,7 @@ function editprofile() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-end">รหัสผู้สอน :</td>
+                    <td className="text-end">รหัสนักเรียน :</td>
                     <td>
                       <Input
                         isDisabled

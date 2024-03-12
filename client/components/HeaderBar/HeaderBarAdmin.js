@@ -13,7 +13,7 @@ import axios from 'axios';
 
 
 
-const HeaderBarAdmin = () => {
+const HeaderBarTeacher = () => {
 
     // state
     const [hidden, setHidden] = useState(true);
@@ -22,6 +22,29 @@ const HeaderBarAdmin = () => {
     const { state: { user },
         dispatch,
     } = useContext(Context);
+
+    const [userData, setUserData] = useState({});
+
+    useEffect(() => {
+        getUser();
+    }, [user])
+
+    const getUser = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
+            if (user && user._id) {
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/user/${user._id}`);
+                setUserData(data);
+                setLoading(false);
+            }
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
+        }
+    };
 
 
 
@@ -80,24 +103,26 @@ const HeaderBarAdmin = () => {
 
                             <Dropdown placement="bottom-start">
                                 <DropdownTrigger>
-                                <User
+                                    <User
                                         as="button"
                                         avatarProps={{
                                             isBordered: true,
-                                            src: user?.image,
+                                            src: userData.image ? userData.image.Location : '/profile.png'
                                         }}
                                         className="uppercase transition-transform"
-                                        description={user?.role}
-
-                                        name={`${user?.firstName} ${user?.lastName}`}
+                                        description={userData?.role}
+                                        name={`${userData?.firstName} ${userData?.lastName}`}
                                     />
+
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="User Actions" variant="flat">
 
                                     <DropdownItem
                                         key="settings"
                                     >
-                                        แก้ไขโปรไฟล์
+                                        <Link href={'/admin/editProfile'}>
+                                            <p>แก้ไขโปรไฟล์</p>
+                                        </Link>
                                     </DropdownItem>
                                     <DropdownItem
                                         key="logout"
@@ -116,4 +141,4 @@ const HeaderBarAdmin = () => {
     )
 }
 
-export default HeaderBarAdmin
+export default HeaderBarTeacher

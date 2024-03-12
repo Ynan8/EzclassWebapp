@@ -9,6 +9,7 @@ import HeaderBarAdmin from "../../components/HeaderBar/HeaderBarAdmin";
 
 
 const personAns = () => {
+  const  router = useRouter()
   return (
     <>
       <div class="min-h-screen flex flex-col flex-auto bg-gray-50 text-black">
@@ -88,7 +89,7 @@ const personAns = () => {
             </button>
           </div>
 
-          <div className="main-content  flex flex-col flex-grow  container">
+          <div className="main-content  flex flex-col flex-grow mx-auto container">
             <div className="flex flex-wrap justify-center ">
               <div className="flex w-full flex-col mt-14">
                 <div className="table-container overflow-x-auto w-full ">

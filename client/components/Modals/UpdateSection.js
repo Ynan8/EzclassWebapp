@@ -26,7 +26,7 @@ const UpdateSection = ({
                 <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button onClick={handleUpdateSection} color="primary" onPress={onClose}>
+                <Button onClick={handleUpdateSection} color="primary" >
                     บันทึก
                 </Button>
             </ModalFooter>

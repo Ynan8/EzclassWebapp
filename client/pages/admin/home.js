@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import HeaderBarAdmin from '../../components/HeaderBar/HeaderBarAdmin';
@@ -7,26 +7,16 @@ import AdminTeacherCard from '../../components/Cards/AdminTeacherCard';
 import axios from 'axios';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import InfoTeacher from '../../components/Modals/InfoTeacher';
-import { Context } from '../../context';
-import { useRouter } from 'next/router';
 
 
 const home = () => {
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    const { state: { user } } = useContext(Context);
-  
-    const router = useRouter();
-
-    useEffect(() => {
-      if (user !== null && user.role === 'teacher') {
-        router.push('/teacher/home')
-      } else if (user !== null && user.role === 'student') {
-        router.push('/student/home')
-      } else if (user !== null && user.role === 'admin') {
-        router.push('/admin/home')
-      }
-    }, [user])
     //list student
     const [studentList, setStudentList] = useState([]);
     useEffect(() => {
@@ -73,8 +63,11 @@ const home = () => {
     return (
         <div>
             <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 bg-gray-50  text-black ">
-                <SideBarAdmin />
-                <HeaderBarAdmin />
+                <SideBarAdmin
+                    mobileSidebarOpen={mobileSidebarOpen}
+                    setMobileSidebarOpen={setMobileSidebarOpen}
+                />
+                <HeaderBarAdmin handleSidebarToggle={toggleSidebar} />
                 <div class="h-full ml-14 mt-28 mb-10 md:ml-80">
                     {/* <div className="px-10">
                         <nav className="text-gray-500" aria-label="Breadcrumb">

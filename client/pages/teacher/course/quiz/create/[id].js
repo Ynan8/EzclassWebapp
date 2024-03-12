@@ -19,13 +19,49 @@ const CreateQuiz = () => {
 
 
   const handleAddQuizData = async () => {
+    // Validate quiz data
+    if (!quizName.trim()) {
+      toast.error('กรุณากรอกชื่อแบบทดสอบ');
+      return;
+    }
+    if (!timeLimit || timeLimit <= 0) {
+      toast.error('กรุณากรอกเวลาที่กำหนด');
+      return;
+    }
+    if (!passingGrade || passingGrade < 0 || passingGrade > 100) {
+      toast.error('กรุณากรอกเกณฑ์การผ่าน');
+      return;
+    }
+    if (!questions.length) {
+      toast.error('กรุณาเพิ่มอย่างน้อยหนึ่งคำถาม');
+      return;
+    }
+
+    // Validate each question
+    for (const question of questions) {
+      if (!question.questionText.trim()) {
+        toast.error('กรุณากรอกคำถาม');
+        return;
+      }
+      if (question.questionType === 'multiple-choice' || question.questionType === 'single-choice') {
+        if (question.options.length < 2) {
+          toast.error('กรุณาเพิ่มอย่างน้อยสองตัวเลือก');
+          return;
+        }
+        if (question.correctOptionIndex.length === 0) {
+          toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
+          return;
+        }
+      }
+    }
+
     try {
       const quizData = {
-        quizName: quizName,
+        quizName,
         maxAttempts: attemptAllowance,
         passingThreshold: passingGrade,
         timeLimitMinutes: timeLimit,
-        questions: questions,
+        questions,
         published: status
       };
 
@@ -34,15 +70,15 @@ const CreateQuiz = () => {
         quiz: quizData,
       };
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/section/addQuiz`, formData);
-
+      await axios.post(`${process.env.NEXT_PUBLIC_API}/section/addQuiz`, formData);
       toast.success('เพิ่มแบบทดสอบสำเร็จ');
-      router.push(`/teacher/course/lesson/${courseYear}`)
-    }
-    catch (error) {
-      console.error("Error adding content lesson:", error);
+      router.push(`/teacher/course/lesson/${courseYear}`);
+    } catch (error) {
+      console.error("Error adding quiz:", error);
+      toast.error('ไม่สามารถเพิ่มแบบทดสอบได้');
     }
   };
+
 
   const handleAttemptAllowanceChange = (e) => {
     const selectedValue = e.target.value;
@@ -82,7 +118,7 @@ const CreateQuiz = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  
+
   return (
     <div>
       <div className="flex min-h-screen bg-white">

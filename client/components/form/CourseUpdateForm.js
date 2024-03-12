@@ -41,7 +41,7 @@ const CourseUpdateForm = ({
                                 </div>
                             </div>
                             <div className="flex  space-x-4 mt-1">
-                                <p className="text-gray-500 text-xs">{characterCounts.courseNo}/20</p>
+                                <p className="text-gray-500 text-xs">{characterCounts.courseNo}/6</p>
                             </div>
                         </div>
 

@@ -22,7 +22,13 @@ const SectionAccordion = ({
     const { isOpen: isOpenModalDeleteLesson, onOpen: onOpenModalDeleteLesson, onClose: onCloseModalDeleteLesson } = useDisclosure();
     const { isOpen: isOpenModalDeleteSection, onOpen: onOpenModalDeleteSection, onClose: onCloseModalDeleteSection } = useDisclosure();
 
+    const handleNoLessonsToast = () => {
+        toast.error('ยังไม่มีบทเรียนย่อย กรุณาเพิ่มบทเรียนย่อย');
+    };
 
+    const handleQuizExistsToast = () => {
+        toast.error('มีแบบทดสอบท้ายบทแล้ว');
+    };
 
 
     const handleSetCurrentSection = (sectionId) => {
@@ -271,16 +277,36 @@ const SectionAccordion = ({
                                             บทเรียนย่อย
                                         </Button>
                                     </Link>
-                                    <Link href={`/teacher/course/quiz/create/${item._id}?courseYear=${courseYearId}`}>
-                                        <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
+                                    {item.lessonData?.length === 0 ? (
+                                        <Button onClick={handleNoLessonsToast} className='text-base' startContent={<FaPlus />} color="default" variant="faded">
                                             แบบทดสอบท้ายบทเรียน
                                         </Button>
-                                    </Link>
-                                    <Link href={`/teacher/course/assignment/create/${item._id}?courseYear=${courseYearId}`}>
-                                        <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
+                                    ) : item.quizData?.length > 0 ? (
+                                        <Button onClick={handleQuizExistsToast} className='text-base' startContent={<FaPlus />} color="default" variant="faded">
+                                            แบบทดสอบท้ายบทเรียน
+                                        </Button>
+                                    ) : (
+                                        <Link href={`/teacher/course/quiz/create/${item._id}?courseYear=${courseYearId}`}>
+                                            <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
+                                                แบบทดสอบท้ายบทเรียน
+                                            </Button>
+                                        </Link>
+                                    )}
+
+
+                                    {item.lessonData?.length === 0 ? (
+                                        <Button onClick={handleNoLessonsToast} className='text-base' startContent={<FaPlus />} color="default" variant="faded">
                                             มอบหมายงาน
                                         </Button>
-                                    </Link>
+                                    ) : (
+                                        <Link href={`/teacher/course/assignment/create/${item._id}?courseYear=${courseYearId}`}>
+                                            <Button className='text-base' startContent={<FaPlus />} color="primary" variant="ghost">
+                                                มอบหมายงาน
+                                            </Button>
+                                        </Link>
+                                    )}
+
+
                                 </div>
                             </ListboxItem>
 

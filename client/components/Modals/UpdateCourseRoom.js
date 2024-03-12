@@ -19,6 +19,7 @@ const UpdateCourseRoom = ({
             <ModalHeader className="flex flex-col gap-1">แก้ไขห้องเรียน</ModalHeader>
             <ModalBody>
                 <Input
+                    maxLength={10}
                     autoFocus
                     value={currentRoom.roomName}
                     onChange={(e) => setCurrentRoom({ ...currentRoom, roomName: e.target.value })}
@@ -26,12 +27,15 @@ const UpdateCourseRoom = ({
                     placeholder="เช่น ม.1/1"
                     variant="bordered"
                 />
+                <div className="text-right text-xs text-gray-500 mt-1">
+                    {currentRoom.roomName.length}/10
+                </div>
             </ModalBody>
             <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button onClick={handleUpdateRoom} color="primary" onPress={onClose}>
+                <Button onClick={handleUpdateRoom} color="primary" >
                     ยืนยัน
                 </Button>
             </ModalFooter>

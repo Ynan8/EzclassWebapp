@@ -70,6 +70,12 @@ const TeacherCourse = () => {
     const [currentCourseYear, setCurrentCourseYear] = useState({});
 
     const handleUpdateCourseYear = async (e) => {
+        // Basic validation
+        if (!currentCourseYear.year || currentCourseYear.year.length !== 4) {
+            toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง (4 ตัวอักษร)");
+            return;
+        }
+    
         try {
             const { data } = await axios.put(
                 `${process.env.NEXT_PUBLIC_API}/courseYear/${currentCourseYear._id}`,
@@ -77,11 +83,13 @@ const TeacherCourse = () => {
             );
             loadCourseYear();
             toast.success("แก้ไขปีการศึกษาสำเร็จ");
+            onClose(); // Close the modal only if the request is successful
         } catch (error) {
-            console.error(error); // Handle any errors that may occur during the deletion process
+            console.error(error);
             toast.error("ไม่สามารถแก้ไขปีการศึกษาได้");
         }
     };
+    
 
     // Delete Course Year
     const [courseYearId, setCourseYearId] = useState("");

@@ -4,151 +4,134 @@ import { LinearScale } from 'chart.js';
 
 Chart.register(LinearScale);
 
-function Example() {
+function Example({
+  QuizScoreCourse,
+  courseRoom,
+  section,
+  averageScores,
+
+}) {
+
+  const sectionToRoomMap = {};
+  courseRoom.forEach((room) => {
+    // Here, we're assuming the room ID is the same as the section ID
+    const sectionId = room._id;
+    sectionToRoomMap[sectionId] = room.roomName.trim();
+  });
+
+  const quizToLessonMap = {};
+  section.forEach((lesson) => {
+    // Here, we're assuming the room ID is the same as the section ID
+    const lessonId = lesson._id;
+    quizToLessonMap[lessonId] = lesson.sectionName.trim();
+  });
+
+  console.log(quizToLessonMap)
+
+  const processData = (quizScoreData) => {
+    const lessonData = {};
+
+    // Check if quizScoreData is an array before iterating
+    if (Array.isArray(quizScoreData)) {
+      quizScoreData.forEach((scoreEntry) => {
+        const roomName = sectionToRoomMap[scoreEntry.sectionId];
+        const lessonName = quizToLessonMap[scoreEntry.lessonId] || "Unknown Lesson";
+
+
+        if (!lessonData[lessonName]) {
+          lessonData[lessonName] = {};
+        }
+
+        if (!lessonData[lessonName][roomName]) {
+          lessonData[lessonName][roomName] = [];
+        }
+
+        lessonData[lessonName][roomName].push(scoreEntry.score);
+      });
+    }
+
+    return lessonData;
+  };
+
+  const lessonData = processData(QuizScoreCourse);
+
+
+
+  const roomNames = Object.values(sectionToRoomMap);
+
+  // const lessons = [
+  //   {
+  //     name: "SectionName 1",
+  //     scores: [3.5, 5, 5,] // Average scores for each room in Lesson 1
+  //   },
+  //   {
+  //     name: "SectionName 2",
+  //     scores: [4, 5, 5,] // Average scores for each room in Lesson 2
+  //   },
+  //   {
+  //     name: "SectionName 3",
+  //     scores: [4.5, 5, 3] // Average scores for each room in Lesson 3
+  //   }
+  // ];
+
   const [myChart, setMyChart] = useState(null);
-  const dataList = {
-    // ...
+
+
+  const destroyChart = () => {
+    if (myChart) {
+      myChart.destroy();
+      setMyChart(null);
+    }
   };
 
   useEffect(() => {
     const ctx = document.getElementById('barChartTch').getContext('2d');
+    destroyChart();
+
+    const datasets = averageScores.map(section => ({
+      label: section.section,
+      data: section.scores ,
+      backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
+      borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+    }));
 
     const chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['ชั้นม.4/1', 'ชั้นม.4/2', 'ชั้นม.4/3', 'ชั้นม.4/4', 'ชั้นม.4/5'],
-        datasets: [
-          {
-            label: 'บทที่1',
-            data: [2, 8, 2, 9, 7],
-            backgroundColor: 'rgba(255, 26, 104, 0.2)',
-            borderColor: 'rgba(255, 26, 104, 1)',
-            borderWidth: 2,
-          },
-          {
-            label: "บทที่2",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 2,
-            data: [4,3,7,7,8],
-          },
-          {
-            label: "บทที่3",
-            backgroundColor: "rgba(255, 206, 86, 0.2)",
-            borderColor: "rgba(255, 206, 86, 1)",
-            borderWidth: 2,
-            data: [3,6,2,5,4],
-          },
-          {
-            label: "บทที่4",
-            backgroundColor: "rgba(118, 215, 196, 0.2)",
-            borderColor: "rgba(118, 215, 196, 1)",
-            borderWidth: 2,
-            data: [9,7,10,5,10],
-          },
-          {
-            label: "บทที่5",
-            backgroundColor: "rgba(93, 109, 126 , 0.2)",
-            borderColor: "rgba(93, 109, 126 , 1)",
-            borderWidth: 2,
-            data: [8,6,1,4,10],
-          },
-          {
-            label: "บทที่6",
-            backgroundColor: "rgba(175, 122, 197, 0.2)",
-            borderColor: "rgba(175, 122, 197 , 1)",
-            borderWidth: 2,
-            data: [1,3,8,6,5],
-          },
-          {
-            label: "บทที่7",
-            backgroundColor: "rgba(19, 141, 117  , 0.2)",
-            borderColor: "rgba(19, 141, 117  , 1)",
-            borderWidth: 2,
-            data: [9,2,9,4,8],
-          },
-          {
-            label: "บทที่8",
-            backgroundColor: "rgba(186, 74, 0, 0.2)",
-            borderColor: "rgba(186, 74, 0 , 1)",
-            borderWidth: 2,
-            data: [5,2,5,8,1],
-          },
-          {
-            label: "บทที่9",
-            backgroundColor: "rgba(63, 81, 181 , 0.2)",
-            borderColor: "rgba(63, 81, 181 , 1)",
-            borderWidth: 2,
-            data: [3,4,2,4,1],
-          },
-          {
-            label: "บทที่10",
-            backgroundColor: "rgba(205, 220, 57 , 0.2)",
-            borderColor: "rgba(205, 220, 57 , 1)",
-            borderWidth: 2,
-            data: [6,9,3,5,6],
-          },
-        ],
+        labels: courseRoom.map(room => room.roomName), // labels should be the names of the rooms
+        datasets: datasets
       },
       options: {
         responsive: true,
         scales: {
           y: {
-            type: 'linear',
-            ticks: {
-              beginAtZero: true,
-            },
-          },
-          x: {
-            type: 'category',
-          },
-        },
-      },
+            beginAtZero: true
+          }
+        }
+      }
     });
 
     setMyChart(chart);
-  }, []);
 
-  function changeGradeClass() {
-    const gradeClass = document.getElementById('gradeClass').value;
+    return () => {
+      destroyChart();
+    };
+  }, [averageScores, courseRoom]);
 
-    if (chart) {
-      const newData = chart.data.datasets.map((dataset) => {
-        let updatedData = [];
 
-        updatedData = dataList[gradeClass][dataset.label];
-
-        return {
-          ...dataset,
-          data: updatedData,
-        };
-      });
-
-      chart.data.datasets = newData;
-      chart.update();
+  // Function to calculate average scores for an array of scores
+  function calculateAverageScores(scores) {
+    if (!scores || scores.length === 0) {
+      return 0; // Return 0 if there are no scores
     }
+    const average = scores.reduce((acc, score) => acc + score, 0) / scores.length;
+    return average;
   }
+
 
   return (
     <>
-    {/* Bar chart */}
       <div className="flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-700">
-        <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
-          <div className="flex flex-wrap items-center justify-between">
-            <div className="relative">
-              <h2 className="text-back text-xl font-semibold">คะแนนเฉลี่ยแบบทดสอบ จำแนกตามชั้นปี</h2>
-            </div>
-            <div className="relative h-350-px flex items-center">
-              <div className="ml-2">
-                <select id="gradeClass" onChange={changeGradeClass}>
-                  <option value="m4">มัธยมศึกษาชั้นปีที่ 4</option>
-                  <option value="m5">มัธยมศึกษาชั้นปีที่ 5</option>
-                  <option value="m6">มัธยมศึกษาชั้นปีที่ 6</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="p-4 flex-auto">
           <div className="relative h-350-px">
             <canvas width="" height="60vh" id="barChartTch"></canvas>

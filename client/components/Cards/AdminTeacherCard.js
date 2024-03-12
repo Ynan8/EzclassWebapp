@@ -18,10 +18,10 @@ const AdminTeacherCard = ({ name, subject, imageUrl, teacher }) => {
         size="lg"
         isBordered
         className="w-40 h-40"
-        color="primary"
-        src={teacher.image ? teacher.image.Location : "/profile.png"}
-        name={teacher.firstName}
+        src={teacher.image ? teacher.image.Location : null}
+        text={!teacher.image ? teacher.firstName : null}
       />
+
       {/* <User
         as="button"
         avatarProps={{

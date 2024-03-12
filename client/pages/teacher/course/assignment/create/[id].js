@@ -63,18 +63,41 @@ const createAssignment = () => {
 
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Form validation
+    if (!values.assignmentName.trim()) {
+      toast.error('กรุณากรอกชื่องาน');
+      return;
+    }
+    if (!values.assignmentDetail.trim()) {
+      toast.error('กรุณากรอกรายละเอียดงาน');
+      return;
+    }
+    if (!values.assignmentDue) {
+      toast.error('กรุณาเลือกกำหนดส่ง');
+      return;
+    }
+    if (!values.weight || values.weight <= 0) {
+      toast.error('กรุณากรอกสัดส่วนคะแนนให้ถูกต้อง');
+      return;
+    }
+    if (!selectedCourseRooms.length) {
+      toast.error('กรุณาเลือกห้องเรียนอย่างน้อยหนึ่งห้อง');
+      return;
+    }
+
     try {
-      e.preventDefault();
       setValues({ ...values, loading: true });
 
       let assignmentData = {
         ...values,
-        assignmentFile: assignmentFile ? {
+        assignmentFile: {
           originalName: originalFileName,
           location: assignmentFile.Location,
           bucket: assignmentFile.Bucket,
           key: assignmentFile.Key,
-        } : null,
+        },
       };
 
       const formData = {
@@ -83,16 +106,17 @@ const createAssignment = () => {
         selectedCourseRooms: selectedCourseRooms,
       };
 
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment`, formData);
+      await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment`, formData);
       toast.success('มอบหมายงานสำเร็จ');
       router.push(`/teacher/course/lesson/${courseYear}`);
     } catch (error) {
-      console.log(error);
+      console.error('Error submitting assignment:', error);
       toast.error('ไม่สามารถมอบหมายงานได้');
     } finally {
       setValues({ ...values, loading: false });
     }
   };
+
 
 
   // select corse room
@@ -218,8 +242,9 @@ const createAssignment = () => {
                   value={values.assignmentDue}
                   onChange={handleChange}
                   type="datetime-local"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={new Date().toISOString().slice(0, 16)} // Set the minimum value to the current date and time
                 />
+
               </div>
             </div>
           </div>
@@ -267,7 +292,9 @@ const createAssignment = () => {
                     const newValue = Math.max(1, parseInt(e.target.value, 10));
                     handleChange({ target: { name: 'weight', value: newValue } });
                   }}
+                  step="1"  
                 />
+
               </div>
             </div>
           </div>
@@ -287,7 +314,7 @@ const createAssignment = () => {
                 const newValue = Math.max(1, parseInt(e.target.value, 10));
                 handleChange({ target: { name: 'scoreLimit', value: newValue } });
               }}
-
+              step="1"  
             />
           </div>
         </div>

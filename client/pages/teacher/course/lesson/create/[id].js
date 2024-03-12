@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Input, Listbox, ListboxItem, ListboxSection, Switch } from "@nextui-org/react";
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
-import { BsBlockquoteRight, BsFileCodeFill, BsFileEarmarkTextFill,  BsYoutube } from 'react-icons/bs';
+import { BsBlockquoteRight, BsFileCodeFill, BsFileEarmarkTextFill, BsYoutube } from 'react-icons/bs';
 import { useRouter } from 'next/router';
 import ContentLesson from '../../../../../components/form/ContentLesson';
 import toast from 'react-hot-toast';
@@ -11,7 +11,7 @@ const CreateContentLesson = () => {
   const router = useRouter();
   const { id, courseYear } = router.query;
 
-  const [status, setStatus] = useState(true); 
+  const [status, setStatus] = useState(true);
 
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
@@ -131,36 +131,84 @@ const CreateContentLesson = () => {
 
   const moveContentUp = (index) => {
     if (index > 0) {
-        setContentLessons((prevSections) => {
-            const updatedSections = [...prevSections];
-            [updatedSections[index], updatedSections[index - 1]] = [updatedSections[index - 1], updatedSections[index]];
-            return updatedSections;
-        });
-    }
-};
-
-const moveContentDown = (index) => {
-    setContentLessons((prevSections) => {
-        if (index < prevSections.length - 1) {
-            const updatedSections = [...prevSections];
-            [updatedSections[index], updatedSections[index + 1]] = [updatedSections[index + 1], updatedSections[index]];
-            return updatedSections;
-        }
-        return prevSections;
-    });
-};
-
-const deleteContent = (index) => {
-    setContentLessons((prevSections) => {
+      setContentLessons((prevSections) => {
         const updatedSections = [...prevSections];
-        updatedSections.splice(index, 1);
+        [updatedSections[index], updatedSections[index - 1]] = [updatedSections[index - 1], updatedSections[index]];
         return updatedSections;
+      });
+    }
+  };
+
+  const moveContentDown = (index) => {
+    setContentLessons((prevSections) => {
+      if (index < prevSections.length - 1) {
+        const updatedSections = [...prevSections];
+        [updatedSections[index], updatedSections[index + 1]] = [updatedSections[index + 1], updatedSections[index]];
+        return updatedSections;
+      }
+      return prevSections;
     });
-};
+  };
+
+  const deleteContent = (index) => {
+    setContentLessons((prevSections) => {
+      const updatedSections = [...prevSections];
+      updatedSections.splice(index, 1);
+      return updatedSections;
+    });
+  };
 
 
   const handleAddContentLesson = async () => {
+    // Validate lesson name
+    if (!values.lessonName.trim()) {
+      toast.error('กรุณากรอกชื่อเนื้อหาบทเรียน');
+      return;
+    }
 
+    // Ensure there is at least one content lesson
+    if (contentLessons.length < 1) {
+      toast.error('กรุณาเพิ่มเนื้อหาบทเรียนอย่างน้อยหนึ่งรายการ');
+      return;
+    }
+
+    // Validate content sections
+    for (const lesson of contentLessons) {
+      switch (lesson.type) {
+        case 'article':
+          if (!lesson.article.trim()) {
+            toast.error('กรุณากรอกเนื้อหาบทความ');
+            return;
+          }
+          break;
+        case 'video':
+          if (!lesson.video.trim()) {
+            toast.error('กรุณาใส่ URL วิดีโอ');
+            return;
+          }
+          break;
+        case 'code':
+          if (!lesson.code.trim()) {
+            toast.error('กรุณาใส่โค้ดตัวอย่าง');
+            return;
+          }
+          break;
+        case 'exercise':
+          if (!lesson.questionText.trim()) {
+            toast.error('กรุณากรอกคำถามแบบฝึกหัด');
+            return;
+          }
+          if (!lesson.answers || lesson.answers.length === 0 || lesson.answers.some(answer => !answer.text.trim())) {
+            toast.error('กรุณาใส่คำตอบสำหรับแบบฝึกหัด');
+            return;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Proceed with submission if validation passes
     try {
       const lessons = {
         lessonName: values.lessonName,
@@ -180,8 +228,6 @@ const deleteContent = (index) => {
             };
           }
 
-
-
           return {
             type,
             article: type === 'article' ? article || '' : undefined,
@@ -199,13 +245,13 @@ const deleteContent = (index) => {
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/section/addContentLesson`, formData);
 
-
       toast.success('เพิ่มเนื้อหาบทเรียนสำเร็จ');
       router.push(`/teacher/course/lesson/${courseYear}`)
     } catch (error) {
       console.error("Error adding content lesson:", error);
     }
   };
+
 
   return (
     <div>

@@ -8,6 +8,8 @@ import { AiOutlineLeft } from "react-icons/ai";
 import HeaderBarAdmin from "../../components/HeaderBar/HeaderBarAdmin";
 
 const std = () => {
+  const  router = useRouter()
+
     return (
         <>
             <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-gray-50 text-black dark:text-white">
@@ -70,7 +72,7 @@ const std = () => {
                             ย้อนกลับ
                         </button>
                     </div>
-                    <div className="main-content  flex flex-col flex-grow  container">
+                    <div className="main-content  flex flex-col flex-grow mx-auto  container">
                         <div className="flex flex-wrap justify-center ">
                             <div className="flex w-full flex-col mt-14">
                                 {/* chart */}

@@ -33,7 +33,7 @@ const UpdateCourseYear = ({
                 <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button onClick={handleUpdateCourseYear} color="primary" onPress={onClose}>
+                <Button onClick={handleUpdateCourseYear} color="primary" >
                     เพิ่ม
                 </Button>
             </ModalFooter>

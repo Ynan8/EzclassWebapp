@@ -98,6 +98,13 @@ const ManageUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Basic validation
+    if (!firstName || !lastName || !username || !password) {
+      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+  
     try {
       const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
         firstName,
@@ -106,14 +113,15 @@ const ManageUser = () => {
         password,
       });
       toast.success("เพิ่มนักเรียนสำเร็จ");
-      loadStudentCourse()
+      loadStudentCourse();
+      onClose(); // Close the modal after successful submission
     } catch (err) {
       toast.error(err.response.data);
     }
   };
+  
 
   const [student, setStudent] = useState([]);
-
   const loadStudentCourse = async () => {
     if (id) {
       try {

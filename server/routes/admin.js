@@ -15,6 +15,7 @@ const {
     getTeacher,
     UpdateTeacher,
     removeTeacher,
+    getCourseYearId,
     
 } = require("../controllers/admin")
 
@@ -23,6 +24,7 @@ router.get("/teacher-courses/:teacherId", auth, TeacherCoursesAll);
 router.get("/teacher/:teacherId", auth, getTeacher);
 router.put("/teacher/:tchId", auth, UpdateTeacher);
 router.delete('/delete-teacher/:id', auth, removeTeacher);
+router.get("/admin/getCourseYearId/:id", auth, getCourseYearId);
 
 
 
