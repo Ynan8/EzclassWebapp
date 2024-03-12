@@ -37,6 +37,9 @@ exports.ImportStudent = async (req, res) => {
       students.map(async (studentData) => {
         const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName,  password, } = studentData;
 
+          if (!password) {
+          return { message: 'Password is required for student', username };
+        }
      
         const hashedPassword = await hashPassword(password);
 
