@@ -114,7 +114,11 @@ const ManageUser = () => {
       });
       toast.success("เพิ่มนักเรียนสำเร็จ");
       loadStudentCourse();
+<<<<<<< HEAD
       onOpenChangeModalStudent(false); // Close the modal after successful submission
+=======
+      isOpenModalStudent(false); // Close the modal after successful submission
+>>>>>>> c9de179371a6aeabae86ff3ace0fd7037fc7e42b
     } catch (err) {
       toast.error(err.response.data);
     }
