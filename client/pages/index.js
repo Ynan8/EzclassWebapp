@@ -13,8 +13,8 @@ import { useRouter } from 'next/router'
 import { Button } from "@nextui-org/react";
 
 const index = () => {
-    const [username, setUsername] = useState("3001");
-    const [password, setPassword] = useState("020145");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     // state

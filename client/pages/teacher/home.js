@@ -130,7 +130,22 @@ const Home = () => {
                   <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
                     {courseImgLoading ? (
                       Array.from({ length: 4 }).map((_, index) => (
-                        <Skeleton key={index} className="rounded-lg h-64" />
+                        <Card className="w-[200px] space-y-5 p-4" radius="lg">
+                          <Skeleton className="rounded-lg">
+                            <div className="h-24 rounded-lg bg-default-300"></div>
+                          </Skeleton>
+                          <div className="space-y-3">
+                            <Skeleton className="w-3/5 rounded-lg">
+                              <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                            </Skeleton>
+                            <Skeleton className="w-4/5 rounded-lg">
+                              <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                            </Skeleton>
+                            <Skeleton className="w-2/5 rounded-lg">
+                              <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                            </Skeleton>
+                          </div>
+                        </Card>
                       ))
                     ) : (
                       courses && courses.length > 0 ? (

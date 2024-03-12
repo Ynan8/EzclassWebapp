@@ -84,7 +84,7 @@ const AddTeacher = ({
                     <Button color="danger" variant="light" onPress={onClose}>
                         ยกเลิก
                     </Button>
-                    <Button onClick={handleSubmit} color="primary" onPress={onClose}>
+                    <Button onClick={handleSubmit} color="primary">
                         บันทึก
                     </Button>
                 </ModalFooter>

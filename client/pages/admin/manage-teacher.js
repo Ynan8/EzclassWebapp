@@ -15,13 +15,19 @@ const ManageTeacher = () => {
     const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onOpenChange: onOpenChangeModalCreate } = useDisclosure();
     const { isOpen: isOpenModalUpdate, onOpen: onOpenModalUpdate, onOpenChange: onOpenChangeModalUpdate } = useDisclosure();
     const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
-    const [firstName, setFirstName] = useState("test");
-    const [lastName, setLastName] = useState("lastN");
-    const [username, setUsername] = useState("30103");
-    const [password, setPassword] = useState("11111111");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic validation
+        if (!firstName || !lastName || !username || !password) {
+            return toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+        }
+
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-teacher`, {
                 firstName,
@@ -30,11 +36,18 @@ const ManageTeacher = () => {
                 password,
             });
             toast.success("เพิ่มผู้สอนสำเร็จ");
-            loadDataTch()
+            // Clear form fields
+            setFirstName("");
+            setLastName("");
+            setUsername("");
+            setPassword("");
+            onOpenChangeModalCreate(false); 
+            loadDataTch();
         } catch (err) {
             toast.error(err.response.data);
         }
     };
+
 
 
 
@@ -101,7 +114,7 @@ const ManageTeacher = () => {
 
     const getFilteredTeachers = () => {
         if (!searchTerm) return teacherList; // If no search term, return all teachers
-    
+
         return teacherList.filter(
             (teacher) =>
                 teacher.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||

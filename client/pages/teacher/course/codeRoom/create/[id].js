@@ -17,21 +17,19 @@ const createCodeRoom = () => {
     const formLength = formList.length;
 
     const initiaValues = {
-        codeRoomName: "คำนวณเกรด",
-        detailCodeRoom: "โดยการคำนวณเกรดนั้นจะมีการให้คะแนนตามเกรดแต่ละช่วงเป็น 80- 100 ได้เกรด A , 70 - 79 ได้เกรด B , 60 - 69 ได้เกรด C , 50 - 59 ได้เกรด D และ ต่ำกว่า 50 จะได้เกรด F โดยผู้ใช้จะต้องกรอกเป็นตัวเลขจำนวนเต็มเท่านั้น",
+        codeRoomName: "",
+        detailCodeRoom: "",
         detailInput: "",
         detailOutput: "",
         consTraints: "",
-        input1: '99',
-        output1: 'A',
-        input2: '72',
-        output2: 'B',
-        input3: '40',
-        output3: 'F',
+        input1: '',
+        output1: '',
+        input2: '',
+        output2: '',
+        input3: '',
+        output3: '',
     }
     const [values, setValues] = useState(initiaValues)
-
-
 
     const [page, setPage] = useState(0);
 
