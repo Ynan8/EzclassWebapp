@@ -170,7 +170,6 @@ const ManageUser = () => {
     onOpenModalDelete();
   };
 
-
   const handleDeleteStudent = async (idStudent) => {
     try {
       const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API}/courseRoom/${idStudent}/${id}`);

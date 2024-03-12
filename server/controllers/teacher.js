@@ -35,7 +35,7 @@ exports.ImportStudent = async (req, res) => {
     // Process and save each student to the database
     const savedStudents = await Promise.all(
       students.map(async (studentData) => {
-        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName, 'รหัสผ่าน': password, } = studentData;
+        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName,  password, } = studentData;
 
      
         const hashedPassword = await hashPassword(password);
