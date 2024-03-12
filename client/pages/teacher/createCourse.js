@@ -10,6 +10,8 @@ import { useRouter } from 'next/router';
 
 const createCourse = () => {
     const [selectedLevel, setSelectedLevel] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
     const [values, setValues] = useState({
         courseNo: '',
         courseName: '',
@@ -170,6 +172,8 @@ const createCourse = () => {
             return;
         }
 
+        setIsLoading(true);
+
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/course`, {
                 ...values,
@@ -180,6 +184,9 @@ const createCourse = () => {
         } catch (err) {
             console.log(err)
             toast.error("ไม่สามารถสร้างรายวิชาได้ กรุณาลองอีกครั้ง!");
+        }
+        finally {
+            setIsLoading(false);
         }
     };
 
@@ -210,6 +217,7 @@ const createCourse = () => {
                     preview={preview}
                     handleImage={handleImage}
                     handleImageRemove={handleImageRemove}
+                    isLoading={isLoading}
                 />
             </div>
         </div>

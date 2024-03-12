@@ -69,26 +69,7 @@ const TeacherCourse = () => {
     // Update courseYear
     const [currentCourseYear, setCurrentCourseYear] = useState({});
 
-    const handleUpdateCourseYear = async (e) => {
-        // Basic validation
-        if (!currentCourseYear.year || currentCourseYear.year.length !== 4) {
-            toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง (4 ตัวอักษร)");
-            return;
-        }
-    
-        try {
-            const { data } = await axios.put(
-                `${process.env.NEXT_PUBLIC_API}/courseYear/${currentCourseYear._id}`,
-                currentCourseYear
-            );
-            loadCourseYear();
-            toast.success("แก้ไขปีการศึกษาสำเร็จ");
-            onClose(); // Close the modal only if the request is successful
-        } catch (error) {
-            console.error(error);
-            toast.error("ไม่สามารถแก้ไขปีการศึกษาได้");
-        }
-    };
+  
     
 
     // Delete Course Year
@@ -299,13 +280,12 @@ const TeacherCourse = () => {
                                                                 </div>
                                                             </CardBody>
                                                         </Link>
-
                                                     </Card>
                                                 ))}
                                         </div>
-
                                     </Tab>
-                                    <Tab key="music" title="ปีการศึกษาที่จัดเก็บ" >
+
+                                    <Tab key="courseYear" title="ปีการศึกษาที่จัดเก็บ" >
                                         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
                                             {courseYear && courseYear
                                                 .filter(courseYear => courseYear.status === false)
@@ -412,7 +392,6 @@ const TeacherCourse = () => {
                             loadCourseYear={loadCourseYear}
                             currentCourseYear={currentCourseYear}
                             setCurrentCourseYear={setCurrentCourseYear}
-                            handleUpdateCourseYear={handleUpdateCourseYear}
                         />
                     )}
                 </ModalContent>
@@ -538,7 +517,6 @@ const TeacherCourse = () => {
                                     ทุกข้อมูลของปีการศึกษาต้นฉบับ จะถูกคัดลอกมาไว้ในการ์ดปีการศึกษา ยกเว้นข้อมูลของนักเรียน
                                     ในห้องเรียน ดังนั้นต้องทำการ เพิ่มนักเรียนใหม่ เข้ารายวิชาทุกครั้ง
                                 </p>
-
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
@@ -552,7 +530,6 @@ const TeacherCourse = () => {
                     )}
                 </ModalContent>
             </Modal>
-
         </div >
     )
 }

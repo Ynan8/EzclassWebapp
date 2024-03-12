@@ -12,10 +12,13 @@ import toast from 'react-hot-toast';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
+import noCourse from '../../public/noCourse.png'
 
 
 const Home = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isLoading, setIsLoading] = useState(false);
   const [courseImgLoading, setCourseImgLoading] = useState(false);
   const router = useRouter();
 
@@ -88,6 +91,8 @@ const Home = () => {
   };
 
   const handleDeleteCourse = async (courseId) => {
+
+    setIsLoading(true);
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-course/${courseId}`);
 
@@ -96,6 +101,9 @@ const Home = () => {
     } catch (error) {
       console.error('Error deleting course:', error);
       toast.error('Failed to delete course. Please try again.');
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,22 +123,21 @@ const Home = () => {
                   </div>
                   <div className="flex items-center">
                     <Link href={'/teacher/createCourse'} >
-                      <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
+                      <Button className='px-10' color="primary" variant="shadow" size='lg' radius="lg" startContent={<FaPlus />}>
                         สร้างรายวิชา
                       </Button>
                     </Link>
                   </div>
                 </div>
-
+                <h1 className=" text-2xl mb-2 font-semibold text-gray-800"
+                >
+                  รายวิชาทั้งหมด
+                </h1>
                 <div className="flex flex-wrap gap-4 mb-4">
-                  <h1 className=" text-2xl font-semibold text-gray-700"
-                  >
-                    รายวิชาทั้งหมด
-                  </h1>
-                  <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                    {courseImgLoading ? (
-                      Array.from({ length: 4 }).map((_, index) => (
-                        <Card className="w-[200px] space-y-5 p-4" radius="lg">
+                  {courseImgLoading ? (
+                    <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                      {Array.from({ length: 4 }).map((_, index) => (
+                        <Card className="w-[340px] h-[300px] space-y-5 p-4" radius="lg" key={index}>
                           <Skeleton className="rounded-lg">
                             <div className="h-24 rounded-lg bg-default-300"></div>
                           </Skeleton>
@@ -146,90 +153,92 @@ const Home = () => {
                             </Skeleton>
                           </div>
                         </Card>
-                      ))
-                    ) : (
-                      courses && courses.length > 0 ? (
-                        courses.filter(course => course.status === true).map(course => (
-                          <Card key={course._id} className="py-8">
-                            <div className="absolute top-0 right-0 m-2">
-                              <Dropdown>
-                                <DropdownTrigger>
-                                  <Button
-                                    size='sm'
-                                    variant="light"
-                                    startContent={<BsThreeDotsVertical size={20} />}
-                                  />
-                                </DropdownTrigger>
-                                <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
-                                  <DropdownItem key="edit">
-                                    <Link
-                                      href={`/teacher/course/edit/[id]`}
-                                      as={`/teacher/course/edit/${course._id}`}
-                                    >
-                                      <p>แก้ไขรายวิชา</p>
-                                    </Link>
-                                  </DropdownItem>
-                                  <DropdownItem onPress={onOpen} key="delete" className="text-danger" color="danger">
-                                    <p
-                                      onClick={() => openDeleteModal(course._id)}
-                                    >ลบรายวิชา</p>
-                                  </DropdownItem>
-                                </DropdownMenu>
-                              </Dropdown>
-                            </div>
-                            <Link href={`/teacher/course/year/[id]`} as={`/teacher/course/year/${course._id}`}>
-                              <CardBody className="overflow-visible">
-                                <div className="w-full grid place-items-center">
-                                  <img
-                                    className="object-cover rounded"
-                                    src={course.image.Location}
-                                    alt={course.courseName}
-                                  />
-                                </div>
-                              </CardBody>
-                            </Link>
-                            <CardFooter className="pb-0 px-4 flex-col items-start">
-                              <h4 className="font-bold text-large">
-                                {course.courseName.length > 30
-                                  ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
-                                  : `${course.courseNo} : ${course.courseName}`
-                                }
-                              </h4>
-                              <p className="text-lg font-bold">
-                                {course.level.length > 30
-                                  ? `${course.level.substring(0, 60)}...`
-                                  : `มัธยมศึกษาปีที่ ${course.level}`
-                                }
-                              </p>
-                            </CardFooter>
-                          </Card>
-                        ))
-                      ) : (
-                        <div className="text-center w-full h-full flex items-center justify-center">
-                          <p></p>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      {courses && courses.length > 0 ? (
+                        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                          {courses.filter(course => course.status === true).map(course => (
+                            <Card key={course._id} className="py-8">
+                              <div className="absolute top-0 right-0 m-2">
+                                <Dropdown>
+                                  <DropdownTrigger>
+                                    <Button
+                                      size='sm'
+                                      variant="light"
+                                      startContent={<BsThreeDotsVertical size={20} />}
+                                    />
+                                  </DropdownTrigger>
+                                  <DropdownMenu variant="faded" aria-label="Dropdown menu with icons">
+                                    <DropdownItem key="edit">
+                                      <Link
+                                        href={`/teacher/course/edit/[id]`}
+                                        as={`/teacher/course/edit/${course._id}`}
+                                      >
+                                        <p>แก้ไขรายวิชา</p>
+                                      </Link>
+                                    </DropdownItem>
+                                    <DropdownItem onPress={onOpen} key="delete" className="text-danger" color="danger">
+                                      <p
+                                        onClick={() => openDeleteModal(course._id)}
+                                      >ลบรายวิชา</p>
+                                    </DropdownItem>
+                                  </DropdownMenu>
+                                </Dropdown>
+                              </div>
+                              <Link href={`/teacher/course/year/[id]`} as={`/teacher/course/year/${course._id}`}>
+                                <CardBody className="overflow-visible">
+                                  <div className="w-full grid place-items-center">
+                                    <img
+                                      className="object-cover rounded"
+                                      src={course.image.Location}
+                                      alt={course.courseName}
+                                    />
+                                  </div>
+                                </CardBody>
+                              </Link>
+                              <CardFooter className="pb-0 px-4 flex-col items-start">
+                                <h4 className="font-bold text-large">
+                                  {course.courseName.length > 30
+                                    ? `${course.courseNo} : ${course.courseName.substring(0, 25)}...`
+                                    : `${course.courseNo} : ${course.courseName}`
+                                  }
+                                </h4>
+                                <p className="text-lg font-bold">
+                                  {course.level.length > 30
+                                    ? `${course.level.substring(0, 60)}...`
+                                    : `มัธยมศึกษาปีที่ ${course.level}`
+                                  }
+                                </p>
+                              </CardFooter>
+                            </Card>
+                          ))}
                         </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center w-full h-[600px]">
+                          <div className="flex flex-col items-center justify-center w-full h-[600px]">
+                            <Image
+                              width={250}
+                              height={150}
+                              alt="No course"
+                              src={noCourse}
+                            />
 
-                      )
-                    )}
-                  </div>
-
-
+                            <p className="text-lg text-gray-800">ไม่มีรายวิชาในขณะนี้</p>
+                            <p className="text-gray-600">
+                              คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างรายวิชา</span> เพื่อสร้างห้องเรียนเขียนโค้ด
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col text-center">
-            {courses.length === 0 ? (
-              <>
-                <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีรายวิชา</h1>
-                <p className="text-gray-600">
-                  คุณยังไม่มีรายวิชา คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างเรียนวิชา</span> เพื่อเพิ่มรายวิชา
-                </p>
-              </>
-            ) : (
-              ''
-            )}
-          </div>
+
         </main>
       </div>
       <Modal
@@ -256,8 +265,13 @@ const Home = () => {
                 <Button color="danger" variant="light" onPress={onClose}>
                   ยกเลิก
                 </Button>
-                <Button color="danger" onPress={onClose} onClick={() => handleDeleteCourse(courseId)}>
-                  ยืนยัน
+                <Button
+                  isLoading={isLoading}
+                  color="danger"
+                  onPress={onClose}
+                  onClick={() => handleDeleteCourse(courseId)}
+                >
+                  {isLoading ? "กำลังโหลด..." : "ยืนยัน"}
                 </Button>
               </ModalFooter>
             </>

@@ -297,18 +297,6 @@ const CourseRoom = () => {
                                         </TableBody>
 
                                     </Table>
-                                    <div className="flex flex-col text-center mt-4">
-                                        {courseRoom.length === 0 ? (
-                                            <>
-                                                <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีห้องเรียน</h1>
-                                                <p className="text-gray-600">
-                                                    คุณยังไม่มีห้องเรียน คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างห้องเรียน</span> เพื่อเพิ่มห้องเรียน
-                                                </p>
-                                            </>
-                                        ) : (
-                                            ''
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </div>

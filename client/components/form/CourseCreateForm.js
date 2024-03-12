@@ -16,6 +16,7 @@ const CourseCreateForm = ({
     preview,
     handleImage,
     handleImageRemove,
+    isLoading,
 }) => {
     return (
         <div>
@@ -146,14 +147,21 @@ const CourseCreateForm = ({
 
                 <div>
                 </div>
-                <div className="flex justify-end mt-6">
+                <div className="flex sm:justify-end justify-center mt-6">
                     <Button
+                        className='px-24 '
+                        radius='lg'
                         size='lg'
                         onClick={handleSubmit}
                         color="primary"
-                        isLoading={values.loading}
+                        isLoading=
+                        {
+                            values.loading ||
+                            isLoading
+
+                        }
                     >
-                        {values.loading ? "กำลังโหลด..." : "บันทึก"}
+                        {values.loading || isLoading ? "กำลังโหลด..." : "บันทึก"}
                     </Button>
                 </div>
             </form >

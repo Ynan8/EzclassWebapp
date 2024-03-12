@@ -9,10 +9,25 @@ const UpdateCourseYear = ({
     loadCourseYear,
     currentCourseYear,
     setCurrentCourseYear,
-    handleUpdateCourseYear,
 
 }) => {
 
+    const handleUpdateCourseYear = async (e) => {
+    
+        try {
+            const { data } = await axios.put(
+                `${process.env.NEXT_PUBLIC_API}/courseYear/${currentCourseYear._id}`,
+                currentCourseYear
+            );
+            loadCourseYear();
+            toast.success("แก้ไขปีการศึกษาสำเร็จ");
+            onClose(); 
+
+        } catch (error) {
+            console.error(error);
+            toast.error("ไม่สามารถแก้ไขปีการศึกษาได้");
+        }
+    };
     return (
         <div>
             <ModalHeader className="flex flex-col gap-1">แก้ไขปีการศึกษา</ModalHeader>
@@ -34,7 +49,7 @@ const UpdateCourseYear = ({
                     ยกเลิก
                 </Button>
                 <Button onClick={handleUpdateCourseYear} color="primary" >
-                    เพิ่ม
+                    บันทึก
                 </Button>
             </ModalFooter>
         </div>

@@ -19,13 +19,12 @@ const AddCourseYear = ({
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         // Basic validation
         if (!values.year || values.year.length !== 4) {
-            toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง (4 ตัวอักษร)");
+            toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง 4 ตัว");
             return;
         }
-    
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-courseYear`, {
                 courseId,
@@ -36,14 +35,14 @@ const AddCourseYear = ({
                 year: "",
             });
             loadCourseYear();
-            onClose(); // Close the modal only if the request is successful
+            onClose();
         } catch (error) {
             console.error("Error adding course year:", error);
             toast.error("ไม่สามารถเพิ่มปีการศึกษาได้");
         }
     };
-    
-    
+
+
 
     return (
         <div>
@@ -62,11 +61,14 @@ const AddCourseYear = ({
                 </div>
             </ModalBody>
             <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                    color="danger"
+                    variant="light"
+                    onPress={onClose}>
                     ยกเลิก
                 </Button>
                 <Button onClick={handleSubmit} color="primary" >
-                    เพิ่ม
+                    บันทึก
                 </Button>
             </ModalFooter>
         </div>
