@@ -48,10 +48,7 @@ const CreateQuiz = () => {
           toast.error('กรุณาเพิ่มอย่างน้อยสองตัวเลือก');
           return;
         }
-        if (question.correctOptionIndex.length === 0) {
-          toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
-          return;
-        }
+        
       }
     }
 

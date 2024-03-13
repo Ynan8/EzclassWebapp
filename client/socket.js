@@ -1,3 +1,4 @@
+const {io} = require('socket.io-client');
 export const initSocket = async () => {
     const options = {
         'force new connection': true,

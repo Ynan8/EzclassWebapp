@@ -98,13 +98,24 @@ const ManageUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Basic validation
     if (!firstName || !lastName || !username || !password) {
       toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
-  
+
+    // Additional validation
+    if (!username.trim()) {
+      toast.error("กรุณากรอกรหัสนักเรียน");
+      return;
+    }
+
+    if (password.length < 4) {
+      toast.error("รหัสผ่านต้องมีอย่างน้อย 4 ตัว");
+      return;
+    }
+
     try {
       const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
         firstName,
@@ -112,15 +123,21 @@ const ManageUser = () => {
         username,
         password,
       });
+      setFirstName('')
+      setLastName('')
+      setUsername('')
+      setPassword('')
       toast.success("เพิ่มนักเรียนสำเร็จ");
       loadStudentCourse();
-      isOpenModalStudent(false); 
+      isOpenModalStudent(false);
     } catch (err) {
-      toast.error(err.response.data);
+      toast.error("ไม่สามารถเพิ่มนักเรียนได้");
     }
   };
-  
-  
+
+
+
+
 
   const [student, setStudent] = useState([]);
   const loadStudentCourse = async () => {
