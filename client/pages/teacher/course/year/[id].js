@@ -499,6 +499,7 @@ const TeacherCourse = () => {
             </Modal>
             {/* Duplicate  */}
             <Modal
+            size='lg'
                 isOpen={isOpenModalDuplicate}
                 onOpenChange={onOpenChangeModalDuplicate}
                 placement="top-center"

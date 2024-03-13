@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
-import { Avatar } from '@nextui-org/react'
+import { Avatar, Button } from '@nextui-org/react'
 
 const createCodeRoom = () => {
     const router = useRouter();
@@ -115,8 +115,6 @@ const createCodeRoom = () => {
 
 
 
-
-
     const setForm = (e) => {
         const name = e.target.innerText;
         switch (name) {
@@ -157,10 +155,10 @@ const createCodeRoom = () => {
                     </nav>
                     <div class="max-w-4xl mx-auto bg-white p-16">
                         <ul className="flex justify-between w-full mb-16">
-                            <li className={`relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <Avatar 
-                                name='1'
-                                className={` text-lg ${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
+                            <li className={`rounded-lg relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
+                                <Avatar
+                                    name='1'
+                                    className={` text-lg ${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
                                 >
                                     <span className="text-2xl p-2 ">1</span>
                                 </Avatar>
@@ -169,10 +167,10 @@ const createCodeRoom = () => {
                                 </span>
                             </li>
 
-                            <li className={`relative flex items-center ${page === 1 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300 py-4 px-14'}`}>
-                                <Avatar 
-                                name='2'
-                                className={`text-lg ${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
+                            <li className={`rounded-lg relative flex items-center ${page === 1 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300 py-4 px-14'}`}>
+                                <Avatar
+                                    name='2'
+                                    className={`text-lg ${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
                                 >
                                     <span className="text-2xl">2</span>
                                 </Avatar>
@@ -181,10 +179,10 @@ const createCodeRoom = () => {
                                 </span>
                             </li>
 
-                            <li className={`relative flex items-center ${page === 2 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <Avatar 
-                                name='3'
-                                className={`text-lg ${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
+                            <li className={`rounded-lg relative flex items-center ${page === 2 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
+                                <Avatar
+                                    name='3'
+                                    className={`text-lg ${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
                                     <span className="text-2xl">3</span>
                                 </Avatar>
                                 <span className={`${page === 2 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300 cursor-pointer'}`}>
@@ -197,30 +195,32 @@ const createCodeRoom = () => {
                         {handleForms()}
                     </div>
                     <div className="flex space-x-20 item-center justify-center">
-                        <button
+                        <Button
+                            className='px-12'
+                            size='md'
                             disabled={page === 0}
                             onClick={handlePrev}
-                            className={`flex text-lg border-2 border-blue-500 ${page === 0 ? 'disabled' : 'hover:bg-blue-500 hover:text-white'
-                                } disabled:text-gray-400 disabled:border-blue-300 duration-300 py-2 px-4 rounded`}
+                            color="primary"
+                            variant='bordered'
                         >
                             ย้อนกลับ
-                        </button>
+                        </Button>
                         {page === 2 ? (
-                            <button
+                            <Button
+                                className='px-12'
+                                size='md'
                                 onClick={handleSubmit}
-                                className="flex text-lg bg-blue-500 text-white hover:bg-blue-700 
-                     duration-300 py-2 px-4 rounded"
-                            >
+                                color="primary">
                                 เสร็จสิ้น
-                            </button>
+                            </Button>
                         ) : (
-                            <button
+                            <Button
+                                className='px-12'
+                                size='md'
                                 onClick={handleNext}
-                                className="flex text-lg bg-blue-500 text-white hover:bg-blue-700 
-                     duration-300 py-2 px-4 rounded"
-                            >
+                                color="primary">
                                 ดำเนินการต่อ
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

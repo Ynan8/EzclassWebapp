@@ -1,3 +1,4 @@
+import { Progress } from '@nextui-org/react';
 import Link from 'next/link';
 import React from 'react'
 import toast from 'react-hot-toast';
@@ -55,6 +56,7 @@ const Sidebar = ({
 
     const completedProgress = completedQuiz.length + completedLessons.length
 
+    const completionPercentage = (completedProgress / (totalLessonCount + totalQuizCount)) * 100;
 
     return (
         <div className={`w-1/5 border-r-2 border-gray-100 transition-all ${sidebarCollapsed ? '-ml-[20%]' : 'ml-0'} fixed top-0 left-0 bottom-0`}>
@@ -71,19 +73,22 @@ const Sidebar = ({
             <div >
                 <div className="px-2">
                     <div className="flex flex-col space-y-3 p-3 border-2 border-blue-500 rounded-md my-2">
-                            <div className="flex justify-between">
-                                <p className='mb-1 font-bold'>ความคืบหน้า</p>
-                                <p className='mb-1 font-medium text-blue-500'>{`${((completedProgress) / (totalLessonCount + totalQuizCount) * 100).toFixed(2)}%`}</p>
-                            </div>
-
-                            <div className="w-full bg-gray-300 rounded-full h-2.5">
-                                <div className=" bg-blue-600 h-2.5 rounded-full" style={{ width: `${(completedProgress / totalLessonCount) * 100}%` }}></div>
-                            </div>
-                            <div className="flex justify-between">
-                                <p className='mb-1 font-medium'>{course.courseName}</p>
-                                <p className='mb-1 font-medium'>{`${completedProgress}/${totalLessonCount + totalQuizCount}`}</p>
-                            </div>
+                        <div className="flex justify-between">
                         </div>
+                        <Progress
+                            size="md"
+                            radius="sm"
+                            label="ความคืบหน้า"
+                            value={completionPercentage}
+                            color="success"
+                            showValueLabel={true}
+                            className="max-w-md"
+                        />
+                        <div className="flex justify-between">
+                            <p className='mb-1 font-medium'>{course.courseName}</p>
+                            <p className='mb-1 font-medium'>{`${completedProgress}/${totalLessonCount + totalQuizCount}`}</p>
+                        </div>
+                    </div>
                 </div>
 
 
