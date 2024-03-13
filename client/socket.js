@@ -8,4 +8,8 @@ export const initSocket = async () => {
         transports: ['websocket'],
     };
     return io( "http://localhost:8000", options)
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5c2f2b3de74b1c9503188a00ae943e019ad87ccd
