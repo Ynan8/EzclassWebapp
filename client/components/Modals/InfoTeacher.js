@@ -24,6 +24,8 @@ const InfoTeacher = ({ teacher }) => {
         }
     };
 
+    
+
 
     return (
         <div style={{ height: '800px', overflowY: 'auto' }}>
@@ -72,13 +74,13 @@ const InfoTeacher = ({ teacher }) => {
                                             ระดับชั้น <span >:</span>มัธยมศึกษาปีที่ {course.level}
                                         </label>
                                     </div>
-                                    <div class="w-full ">
+                                    {/* <div class="w-full ">
                                         <label
                                             class="block uppercase tracking-wide  text-gray-600 text-xl  "
                                         >
                                             จำนวนห้อง <span >:</span> 5 ห้อง
                                         </label>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         ))
