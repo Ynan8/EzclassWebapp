@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, ModalHeader, ModalBody, ModalFooter, Skeleton } from "@nextui-org/react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, getKeyValue } from "@nextui-org/react";
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
 import { FaPlus } from 'react-icons/fa';
@@ -17,7 +17,14 @@ import toast from 'react-hot-toast';
 
 
 const CourseRoom = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
 
     const router = useRouter();
     const { id } = router.query;
@@ -79,19 +86,17 @@ const CourseRoom = () => {
     }, [id])
 
     const loadCourseRoom = async () => {
+        setIsLoading(true); // Start loading
         try {
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseRoom/${id}`);
-            if (Array.isArray(data)) {
-                setCourseRoom(data);
-            } else {
-                console.error('Expected an array, but received:', data);
-                setCourseRoom([]); // Set to empty array if data is not an array
-            }
+            setCourseRoom(data);
         } catch (error) {
             console.error('Error loading courses:', error);
-            setCourseRoom([]); // Set to empty array in case of error
+        } finally {
+            setIsLoading(false); // Stop loading
         }
     };
+
 
     // Update Room
     const [currentRoom, setCurrentRoom] = useState({});
@@ -236,9 +241,10 @@ const CourseRoom = () => {
     return (
         <div>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-                <SideBarTeacher courseYearId={id} />
-                <HeaderBarTeacher />
-                <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
+                <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
+                <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+
+                <div className="h-full  mt-28 mb-10 md:ml-64">
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
@@ -253,13 +259,10 @@ const CourseRoom = () => {
 
                         <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
                             <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
-                                <div className="flex justify-between gap-3 items-end">
+                                <div className="flex flex-col sm:flex-row justify-between gap-3 items-end">
                                     <Input
                                         isClearable
-                                        classNames={{
-                                            base: "w-full sm:max-w-[30%]",
-                                            inputWrapper: "border-1",
-                                        }}
+                                        className="w-full sm:w-auto sm:flex-grow"
                                         placeholder="ค้นหาชื่อห้องเรียน..."
                                         size="sm"
                                         value={searchQuery}
@@ -268,35 +271,53 @@ const CourseRoom = () => {
                                         variant="bordered"
                                     />
 
-                                    <div className="flex gap-3">
-                                        <Button onPress={onOpenModalCreate} className='ml-auto' color="primary" variant="bordered" size='md' radius="sm" startContent={<FaPlus />}>
-                                            สร้างห้องเรียน
-                                        </Button>
-                                    </div>
+                                    <Button
+                                        onPress={onOpenModalCreate}
+                                        color="primary"
+                                        variant="bordered"
+                                        size="lg"
+                                        radius="sm"
+                                        className="mt-2 sm:mt-0 sm:ml-auto"
+                                        startContent={<FaPlus />}
+                                    >
+                                        สร้างห้องเรียน
+                                    </Button>
                                 </div>
 
-                                <div className="mt-7 overflow-x-auto">
-                                    <Table >
-                                        <TableHeader columns={columns}>
-                                            {(column) => (
-                                                <TableColumn className='text-base ' key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
-                                                    {column.name}
-                                                </TableColumn>
-                                            )}
-                                        </TableHeader>
-                                        <TableBody>
-                                            {courseRoom && courseRoom
-                                                .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
-                                                .map((item, index) => (
-                                                    <TableRow key={item._id}>
-                                                        {columns.map((column) => (
-                                                            <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
-                                                        ))}
-                                                    </TableRow>
-                                                ))}
-                                        </TableBody>
 
-                                    </Table>
+                                <div className="mt-7 overflow-x-auto">
+                                    {isLoading ? (
+                                        <div className="mt-7 overflow-x-auto">
+                                            <div className="w-full flex items-center p-4 gap-3">
+                                                <div className="w-full flex flex-col gap-4">
+                                                    <Skeleton className="h-3 w-3/5 rounded-lg" />
+                                                    <Skeleton className="h-3 w-4/5 rounded-lg" />
+                                                    <Skeleton className="h-3 w-5/5 rounded-lg" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Table >
+                                            <TableHeader columns={columns}>
+                                                {(column) => (
+                                                    <TableColumn className='text-base ' key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+                                                        {column.name}
+                                                    </TableColumn>
+                                                )}
+                                            </TableHeader>
+                                            <TableBody>
+                                                {courseRoom && courseRoom
+                                                    .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                    .map((item, index) => (
+                                                        <TableRow key={item._id}>
+                                                            {columns.map((column) => (
+                                                                <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
+                                                            ))}
+                                                        </TableRow>
+                                                    ))}
+                                            </TableBody>
+                                        </Table>
+                                    )}
                                 </div>
                             </div>
                         </div>

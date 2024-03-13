@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
-import CourseUpdateForm from '../../../../components/form/CourseUpdateForm';
+import CourseUpdateForm from '../../../../components/Form/CourseUpdateForm';
 import { Link } from '@nextui-org/react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import Resizer from "react-image-file-resizer"
@@ -157,17 +157,17 @@ const CourseEdit = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!values.courseNo || values.courseNo.length > 6) {
-            toast.error("กรุณากรอกรหัสวิชาให้ถูกต้อง");
+            toast.error("กรุณากรอกรหัสวิชา");
             return;
         }
 
         if (!values.courseName || values.courseName.length > 100) {
-            toast.error("กรุณากรอกชื่อรายวิชาให้ถูกต้อง");
+            toast.error("กรุณากรอกชื่อรายวิชา");
             return;
         }
 
         if (!values.detail || values.detail.length > 200) {
-            toast.error("กรุณากรอกรายละเอียดให้ถูกต้อง");
+            toast.error("กรุณากรอกรายละเอียด");
             return;
         }
 

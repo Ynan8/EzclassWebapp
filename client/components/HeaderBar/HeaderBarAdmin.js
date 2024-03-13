@@ -10,10 +10,11 @@ import { Context } from '../../context';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { AiOutlineMenu } from 'react-icons/ai';
 
 
 
-const HeaderBarTeacher = () => {
+const HeaderBaAdmin= () => {
 
     // state
     const [hidden, setHidden] = useState(true);
@@ -95,6 +96,7 @@ const HeaderBarTeacher = () => {
                             <div className="flex justify-center items-center space-x-10">
                                 <p className="hidden md:block text-3xl font-medium text-blue-500">EZCLASS</p>
                                 {/* <SearchCourse setSearch={setSearch} /> */}
+                                <AiOutlineMenu />
                             </div>
                         </div>
                     </Link>
@@ -141,4 +143,4 @@ const HeaderBarTeacher = () => {
     )
 }
 
-export default HeaderBarTeacher
+export default HeaderBaAdmin

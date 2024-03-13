@@ -13,7 +13,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import noCourse from '../../public/noCourse.png'
+import find from '../../public/find.png'
 
 
 const Home = () => {
@@ -216,20 +216,17 @@ const Home = () => {
                           ))}
                         </div>
                       ) : (
-                        <div className="flex flex-col items-center justify-center w-full h-[600px]">
-                          <div className="flex flex-col items-center justify-center w-full h-[600px]">
-                            <Image
-                              width={250}
-                              height={150}
-                              alt="No course"
-                              src={noCourse}
-                            />
-
-                            <p className="text-lg text-gray-800">ไม่มีรายวิชาในขณะนี้</p>
-                            <p className="text-gray-600">
-                              คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างรายวิชา</span> เพื่อสร้างห้องเรียนเขียนโค้ด
-                            </p>
-                          </div>
+                        <div className="flex flex-col items-center justify-center w-full h-[400px]">
+                          <Image
+                            width={250}
+                            height={200}
+                            alt="No course"
+                            src={find}
+                          />
+                          <p className="md:text-2xl sm:text-lg text-gray-800">ยังไม่มีรายวิชาในขณะนี้</p>
+                          <p className="md:text-lg  sm:text-text-base text-gray-600">
+                            คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างรายวิชา</span> เพื่อเริ่มสร้างรายวิชากันเถอะ
+                          </p>
                         </div>
                       )}
                     </>

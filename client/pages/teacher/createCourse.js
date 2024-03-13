@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react'
-import CourseCreateForm from '../../components/form/CourseCreateForm'
+import CourseCreateForm from '../../components/Form/CourseCreateForm'
 import Link from 'next/link'
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import axios from 'axios';
@@ -148,17 +148,17 @@ const createCourse = () => {
 
         // Basic validation
         if (!values.courseNo || values.courseNo.length > 6) {
-            toast.error("กรุณากรอกรหัสวิชาให้ถูกต้อง");
+            toast.error("กรุณากรอกรหัสวิชา");
             return;
         }
 
         if (!values.courseName || values.courseName.length > 100) {
-            toast.error("กรุณากรอกชื่อรายวิชาให้ถูกต้อง");
+            toast.error("กรุณากรอกชื่อรายวิชา");
             return;
         }
 
         if (!values.detail || values.detail.length > 200) {
-            toast.error("กรุณากรอกรายละเอียดให้ถูกต้อง");
+            toast.error("กรุณากรอกรายละเอียด");
             return;
         }
 

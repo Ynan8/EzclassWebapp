@@ -93,6 +93,7 @@ const CourseUpdateForm = ({
                     <div className="flex space-y-1 mt-4">
                         <div className="w-full">
                             <Select
+                                variant='bordered'
                                 isRequired
                                 name="level"
                                 value={values.level} // Use the `value` prop to control the selected item

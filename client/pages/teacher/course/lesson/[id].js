@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
-import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Tooltip, Chip } from "@nextui-org/react";
+import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Tooltip, Chip, Skeleton } from "@nextui-org/react";
 import { FaPlus, FaRegEdit, FaTrash } from 'react-icons/fa';
 import { MdAssignment, MdLibraryBooks, MdQuiz } from 'react-icons/md';
 import { Accordion, AccordionItem } from "@nextui-org/react";
@@ -20,6 +20,7 @@ import SectionAccordionTeacher from '../../../../components/Accordion/SectionAcc
 import UpdateSection from '../../../../components/Modals/UpdateSection';
 
 const LessonCourse = () => {
+    const [isLoading, setIsLoading] = useState(true);
 
     const router = useRouter();
     const { id } = router.query;
@@ -79,7 +80,7 @@ const LessonCourse = () => {
             toast.error('กรุณากรอกชื่อบทเรียน');
             return;  // Exit the function if sectionName is not valid
         }
-    
+
         try {
             const { data } = await axios.post(
                 `${process.env.NEXT_PUBLIC_API}/section/${id}/${courseId}`,
@@ -93,7 +94,7 @@ const LessonCourse = () => {
             toast.error('ไม่สามารถสร้างบทเรียนได้');
         }
     };
-    
+
 
     // Show section
     useEffect(() => {
@@ -103,6 +104,7 @@ const LessonCourse = () => {
     }, [courseId]);
     const [section, setSection] = useState([])
     const loadSection = async () => {
+        setIsLoading(true);
         try {
             const { data: sections } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section`, {
                 params: {
@@ -156,6 +158,8 @@ const LessonCourse = () => {
             setSection(sectionsWithData);
         } catch (error) {
             console.error('Error loading sections:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -207,7 +211,7 @@ const LessonCourse = () => {
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
                 <SideBarTeacher courseYearId={id} />
                 <HeaderBarTeacher />
-                <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
+                <div className="h-full mt-28 mb-10 md:ml-64">
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
@@ -227,10 +231,23 @@ const LessonCourse = () => {
 
                     </div>
                     <div className="px-12 w-full">
-                        <div className="px-[40px] flex flex-col item-center justify-center">
+                        <div className=" flex flex-col item-center justify-center">
                             {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
                             {/* SectionAccordion */}
-                            <div className="flex flex-col space-y-4">
+                            {isLoading ? (
+                                <div className="flex flex-col space-y-4">
+                                    {/* Render skeletons for each accordion item */}
+                                    {Array.from({ length: 3 }).map((_, index) => (
+                                        <div key={index} className="p-4 w-full flex items-center gap-3">
+                                            <Skeleton className="flex rounded-full w-12 h-12" />
+                                            <div className="w-full flex flex-col gap-3">
+                                                <Skeleton className="h-3 w-3/5 rounded-lg" />
+                                                <Skeleton className="h-3 w-4/5 rounded-lg" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
                                 <SectionAccordionTeacher
                                     onOpenModalUpdate={onOpenModalUpdate}
                                     section={section}
@@ -240,21 +257,10 @@ const LessonCourse = () => {
                                     courseYearId={id}
                                     loadSection={loadSection}
                                 />
-                            </div>
+                            )}
+
                         </div>
                     </div>
-                    <div className="flex flex-col text-center">
-                            {section.length === 0 ? (
-                                <>
-                                    <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีบทเรียน</h1>
-                                    <p className="text-gray-600">
-                                        คุณยังไม่มีบทเรียนในรายวิชานี้ คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างบทเรียน</span> เพื่อเพิ่มบทเรียนใหม่
-                                    </p>
-                                </>
-                            ) : (
-                                ''
-                            )}
-                        </div>
                 </div>
             </div>
 

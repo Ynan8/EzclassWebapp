@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
-import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input } from "@nextui-org/react";
+import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Card, Skeleton } from "@nextui-org/react";
 
 import { HiOutlineUserGroup } from 'react-icons/hi';
 import { BsBook, BsJournalCheck } from 'react-icons/bs';
@@ -13,6 +13,13 @@ import axios from 'axios';
 
 
 const OverviewCourse = () => {
+    const [isCourseLoading, setIsCourseLoading] = useState(true);
+    const [isSectionsLoading, setIsSectionsLoading] = useState(true);
+    const [isCourseRoomLoading, setIsCourseRoomLoading] = useState(true);
+    const [isQuizScoreLoading, setIsQuizScoreLoading] = useState(true);
+    const [isAverageScoresLoading, setIsAverageScoresLoading] = useState(true);
+
+
     const router = useRouter();
     const { id } = router.query;
 
@@ -52,15 +59,17 @@ const OverviewCourse = () => {
 
 
     const loadCourse = async () => {
-        if (id) {
-            try {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
-                setCourse(data);
-            } catch (error) {
-                console.error("Error loading course:", error);
-            }
+        setIsCourseLoading(true);
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${courseId}`);
+            setCourse(data);
+        } catch (error) {
+            console.error("Error loading course:", error);
+        } finally {
+            setIsCourseLoading(false);
         }
-    }
+    };
+
 
     // Show section
     useEffect(() => {
@@ -175,14 +184,17 @@ const OverviewCourse = () => {
     const [averageScores, setAverageScores] = useState([]);
 
     const loadAverageScores = async () => {
+        setIsAverageScoresLoading(true);
         try {
-
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/average-scores/${id}`);
             setAverageScores(data);
         } catch (error) {
             console.error('Error loading average scores:', error);
+        } finally {
+            setIsAverageScoresLoading(false);
         }
     };
+
 
 
 
@@ -203,29 +215,50 @@ const OverviewCourse = () => {
                         </Breadcrumbs>
                     </div>
                     <div className="px-12 w-full">
+
                         {/* Card */}
-                        {/* <pre>{JSON.stringify(QuizScoreCourse, null, 4)}</pre> */}
-                        <CardOverviewCourse
-                            section={section}
-                            courseRoom={courseRoom}
-                            totalAssignments={totalAssignments}
-                            totalStudents={totalStudents}
-                            id={id}
-                        />
+                        {isCourseLoading ? (
+                            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                                {Array.from({ length: 4 }).map((_, index) => (
+                                    <Card className="w-[340px] h-[200] space-y-5 p-4" radius="lg" key={index}>
+                                        <Skeleton className="rounded-lg">
+                                            <div className="h-24 rounded-lg bg-default-300"></div>
+                                        </Skeleton>
+                                    </Card>
+                                ))}
+                            </div>
+                        ) : (
+                            <CardOverviewCourse
+                                section={section}
+                                courseRoom={courseRoom}
+                                totalAssignments={totalAssignments}
+                                totalStudents={totalStudents}
+                                id={id}
+                            />
+                        )}
+
 
 
                         {/* Chart */}
                         <div className="flex items-center justify-center flex-wrap ">
-                            <AverageScoreCourse
-                                QuizScoreCourse={QuizScoreCourse}
-                                courseRoom={courseRoom}
-                                section={section}
-                                averageScores={averageScores}
-                            />
+                            {isAverageScoresLoading ? (
+                                <Card className="w-full h-[350px] space-y-5 p-4 mt-4" radius="lg">
+                                    <Skeleton className="rounded-lg">
+                                        <div className="h-80 rounded-lg bg-default-300"></div>
+                                    </Skeleton>
+                                </Card>
+                            ) : (
+                                <AverageScoreCourse
+                                    QuizScoreCourse={QuizScoreCourse}
+                                    courseRoom={courseRoom}
+                                    section={section}
+                                    averageScores={averageScores}
+                                />
+                            )}
                         </div>
-                        <div>
-                            {/* <h2>Average Scores</h2> */}
-                            {/* {averageScores.map((lesson) => (
+
+                        {/* <h2>Average Scores</h2> */}
+                        {/* {averageScores.map((lesson) => (
                                 <div key={lesson.name}>
                                     <h3>{lesson.name}</h3>
                                     <ul>
@@ -235,8 +268,7 @@ const OverviewCourse = () => {
                                     </ul>
                                 </div>
                             ))} */}
-                            {/* <pre>{JSON.stringify(averageScores, null, 4)}</pre> */}
-                        </div>
+                        {/* <pre>{JSON.stringify(averageScores, null, 4)}</pre> */}
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 //react icon
 import { BsCodeSquare, BsBook, BsJournalCheck } from "react-icons/bs";
@@ -8,7 +8,12 @@ import { SiGoogleclassroom } from "react-icons/si"
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const SideBarTeacher = ({ courseYearId }) => {
+const SideBarTeacher = ({ 
+    courseYearId,
+    mobileSidebarOpen,
+}) => {
+
+  
 
     const menu = {
         id: courseYearId
@@ -20,7 +25,7 @@ const SideBarTeacher = ({ courseYearId }) => {
     };
 
     return (
-        <div className="fixed flex flex-col  left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
+        <div className={`fixed top-[60px] left-0 w-64 bg-blue-500 h-full text-white transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
                 <ul className="flex flex-col py-8 space-y-1">
                     <p className=' text-sm sm:text-center md:text-left md:px-3 md:text-lg lg:text-xl'>แดชบอร์ด</p>

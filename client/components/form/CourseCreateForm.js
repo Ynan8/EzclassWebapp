@@ -33,6 +33,7 @@ const CourseCreateForm = ({
                                     onChange={handleChange}
                                     variant={"bordered"}
                                     label="รหัสวิชา"
+                                    size='lg'
                                 />
                             </div>
                         </div>
@@ -51,7 +52,9 @@ const CourseCreateForm = ({
                                     onChange={handleChange}
                                     type="text"
                                     variant={"bordered"}
-                                    label="ชื่อรายวิชา" />
+                                    label="ชื่อรายวิชา"
+                                    size='lg'
+                                />
                             </div>
                         </div>
                         <div className="flex space-x-4 mt-1">
@@ -69,9 +72,8 @@ const CourseCreateForm = ({
                                 name="detail"
                                 value={values.detail}
                                 onChange={handleChange}
-                                label="รายละเอียด"
+                                label={<span className="text-lg">รายละเอียด</span>} 
                                 variant="bordered"
-                                placeholder="เพิ่มคำอธิบายเกี่ยวกับรายวิชา"
                                 disableAnimation
                                 disableAutosize
                                 classNames={{
@@ -79,6 +81,7 @@ const CourseCreateForm = ({
                                     input: "resize-y min-h-[60px]",
                                 }}
                             />
+
 
                         </div>
                     </div>
@@ -94,6 +97,7 @@ const CourseCreateForm = ({
                     <div className="w-full">
                         <Select
                             isRequired
+                            variant='bordered'
                             name="level"
                             items={levels}
                             label="ระดับการศึกษา"
@@ -119,6 +123,7 @@ const CourseCreateForm = ({
                         </Button>
                         <input
                             type="file"
+                            accept="image/*"
                             ref={fileInputRef}
                             style={{ display: 'none' }}
                             onChange={handleImage}
