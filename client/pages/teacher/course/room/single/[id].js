@@ -281,7 +281,7 @@ const SingleRoom = () => {
                                                         <td className="text-center">
                                                             {matchingAverageScore ? (
                                                                 <>
-                                                                    คะแนนเฉลี่ย <span className="font-bold">{matchingAverageScore.averageScore} คะแนน</span>
+                                                                    คะแนนเฉลี่ย <span className="font-bold">{matchingAverageScore.averageScore.toFixed(2)} คะแนน</span>
                                                                 </>
                                                             ) : (
                                                                 "ยังไม่ทำแบบทดสอบ"
