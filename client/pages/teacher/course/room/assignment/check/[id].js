@@ -33,7 +33,7 @@ const CheckAssignment = () => {
 
     const router = useRouter();
 
-    const { id, courseYearId } = router.query;
+    const { id, courseRoomId } = router.query;
 
 
     // Show assignment
@@ -77,7 +77,7 @@ const CheckAssignment = () => {
     };
 
     const handleEditAssignment = (id) => {
-        router.push(`/teacher/course/assignment/edit/${id}?courseYearId=${courseYearId}`);
+        router.push(`/teacher/course/assignment/edit/${id}?courseRoomId=${courseRoomId}`);
     };
 
     // Delete assignment
@@ -195,7 +195,7 @@ const CheckAssignment = () => {
     return (
         <>
             <div>
-                <Link href={`/teacher/course/room/assignment/${courseYearId}`} >
+                <Link href={`/teacher/course/room/assignment/${courseRoomId}`} >
                     <div className="p-2 m-2">
                         <AiOutlineArrowLeft size={30} />
                     </div>

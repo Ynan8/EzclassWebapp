@@ -4,7 +4,10 @@ import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeach
 import AssignmentAccordionTeacher from '../../../../../components/Accordion/AssignmentAccordionTeacher'
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Listbox, ListboxItem, ListboxSection } from '@nextui-org/react';
+import { RiCodeBoxFill } from 'react-icons/ri';
+import { MdAssignment } from 'react-icons/md';
+import Link from 'next/link';
 
 const AssignmentRoom = () => {
   const router = useRouter();
@@ -150,7 +153,33 @@ const AssignmentRoom = () => {
                 {/* <pre>{JSON.stringify(section, null, 4)}</pre> */}
               </div>
               <div className="flex flex-col text-center mt-4">
-                {section.some((sec) => sec.assignmentData.length > 0) ? (
+                {section.map((sec, index) => (
+                  <Listbox key={index} variant="flat" aria-label="Listbox menu with sections">
+                    {sec.AssignmentData.map((assignment, assignmentIndex) => (
+                      <ListboxItem
+                        className="mb-2 p-3"
+                        key={assignment._id}
+                        title={
+                          <Link key={assignment._id} href={`/teacher/course/room/assignment/check/${assignment._id}?courseRoomId=${id}`}>
+                            <div className="flex items-center text-lg">
+                              <p>
+                                <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
+                              </p>
+                              <div className="flex items-center space-x-4 mr-4 ml-auto"></div>
+                            </div>
+                          </Link>
+                        }
+                        startContent={
+                          <div className="bg-warning/10 text-warning p-2 rounded-md">
+                            <MdAssignment size={25} className="text-warning" />
+                          </div>
+                        }
+                      ></ListboxItem>
+                    ))}
+                  </Listbox>
+                ))}
+
+                {/* {section.some((sec) => sec.assignmentData.length > 0) ? (
                   // If there is at least one section with non-empty assignmentData, render the accordion
                   <AssignmentAccordionTeacher
                     section={section}
@@ -164,14 +193,14 @@ const AssignmentRoom = () => {
                       คุณยังไม่มีงานที่มอบหมายในรายวิชานี้ สร้างงานที่มอบหมายเมนู <span className='text-blue-800 font-semibold'>บทเรียน</span> ที่เมนูหลักเพื่อสร้างงานที่มอบหมาย
                     </p>
                   </>
-                )}
+                )} */}
               </div>
 
             </div>
           </main>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
 

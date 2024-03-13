@@ -4,7 +4,7 @@ import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacher
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher';
 import axios from 'axios';
 import AverageScoreRoom from '../../../../../components/Charts/AverageScoreRoom';
-import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Pagination } from '@nextui-org/react';
 
 
 const SingleRoom = () => {
@@ -60,7 +60,7 @@ const SingleRoom = () => {
         }
     };
 
-    
+
     const courseId = courseYear.courseId;
 
     const [course, setCourse] = useState({});
@@ -83,10 +83,6 @@ const SingleRoom = () => {
             }
         }
     }
-
-
-
-
 
     const [quizScoreRoom, setQuizScoreRoom] = useState([]);
 
@@ -128,11 +124,7 @@ const SingleRoom = () => {
         }
     };
 
-
-
     const [averageScoresRoom, setAverageScoresRoom] = useState([]);
-
-
 
     const loadAverageScores = async () => {
         try {
@@ -150,6 +142,8 @@ const SingleRoom = () => {
         }
         return acc;
     }, []);
+
+
 
 
     const highestScoresByStudent = quizScoreRoom.reduce((acc, current) => {
@@ -181,6 +175,33 @@ const SingleRoom = () => {
             averageScore,
         };
     });
+
+
+    const [student, setStudent] = useState([]);
+    const loadStudentCourse = async () => {
+        if (id) {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    axios.defaults.headers.common['authtoken'] = token;
+                }
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/studentRoom/${id}`);
+                setStudent(data)
+            } catch (error) {
+                console.error("Error loading course:", error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (id) {
+            loadStudentCourse();
+        }
+    }, [id]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil(student.length / itemsPerPage);
 
 
 
@@ -222,6 +243,7 @@ const SingleRoom = () => {
                             ))} */}
                             {/* <pre>{JSON.stringify(quizScoreRoom, null, 4)}</pre> */}
                         </div>
+                        <p className='text-xl font-semibold' >จำนวนนักเรียนทั้งหมด {student.length} คน</p>
                         <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                             <div className="table-container max-w-800 overflow-x-auto">
                                 <table className="w-full border-b border-gray-200">
@@ -233,7 +255,7 @@ const SingleRoom = () => {
                                             {quizzes.map((quiz, index) => (
                                                 <td key={index} className="py-4 px-4 text-center">
                                                     <div className="flex flex-col items-center justify-center space-y-1">
-                                                        <span className="text-center font-bold">แบบทดสอบ {quiz.quizName}</span>
+                                                        <span className="text-center font-bold">{quiz.quizName}</span>
                                                         <button className="text-center">คะแนนเต็ม {quiz.maxScore}</button>
                                                     </div>
                                                 </td>
@@ -243,40 +265,70 @@ const SingleRoom = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {
-                                            highestScoresByStudent.map((score, index) => (
-                                                <tr key={score._id} className="hover:bg-gray-100 transition-colors group">
-                                                    <td className="text-center py-4">{index + 1}</td>
-                                                    <td className="text-center">{score.studentName}</td>
-                                                    <td className="text-center">
-                                                        {/* Calculate and display average score here if needed */}
-                                                    </td>
-                                                    {/* Render score cells */}
-                                                    <td className="text-center">
-                                                        {score.score} {/* Assuming this is the score for quiz 1 */}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        }
+                                        {student
+                                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                                            .map((student, index) => {
+                                                const matchingScore = highestScoresByStudent.find(
+                                                    (score) => score.studentId === student._id
+                                                );
+                                                const matchingAverageScore = highestAndAverageScoresByStudent.find(
+                                                    (score) => score.studentId === student._id
+                                                );
+                                                return (
+                                                    <tr key={student._id} className="hover:bg-gray-100 transition-colors group">
+                                                        <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                                        <td className="text-center">{student.firstName} {student.lastName}</td>
+                                                        <td className="text-center">
+                                                            {matchingAverageScore ? (
+                                                                <>
+                                                                    คะแนนเฉลี่ย <span className="font-bold">{matchingAverageScore.averageScore} คะแนน</span>
+                                                                </>
+                                                            ) : (
+                                                                "ยังไม่ทำแบบทดสอบ"
+                                                            )}
+                                                        </td>
+                                                        {/* Render score cells */}
+                                                        <td className="text-center">
+                                                            {matchingScore ? (
+                                                                <>
+                                                                    คะแนนที่ได้มากที่สุด <span className="font-bold">{matchingScore.score} คะแนน</span>
+                                                                </>
+                                                            ) : (
+                                                                "ยังไม่ทำแบบทดสอบ"
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                     </tbody>
-                                 
                                 </table>
+                                <div className="flex justify-center mt-2">
+                                    <Pagination
+                                        size='lg'
+                                        total={totalPages}
+                                        initialPage={1}
+                                        page={currentPage}
+                                        onChange={(page) => setCurrentPage(page)}
+                                    />
+
+                                </div>
+                                {/* <pre>{JSON.stringify(highestScoresByStudent, null, 4)}</pre>
+                                <pre>{JSON.stringify(student, null, 4)}</pre> */}
+                                {/* <pre>{JSON.stringify(averageScoresRoom, null, 4)}</pre> */}
                                 <div className="flex flex-col text-center mt-4">
-                                        {highestScoresByStudent.length === 0 ? (
-                                            <>
-                                                <h1 className='text-4xl font-bold text-gray-500 mt-4' >ยังไม่มีข้อมูลแบบทดสอบนักเรียน</h1>
-                                                <p className="text-gray-600">
-                                                    คุณยังไม่มีมูลแบบทดสอบนักเรียน คลิกที่เมนู <span className='text-blue-800 font-semibold'>จัดการผู้ใช้</span> เพื่อเพิ่มนักเรียน
-                                                </p>
-                                            </>
-                                        ) : (
-                                            ''
-                                        )}
-                                    </div>
+                                    {/* {highestScoresByStudent.length === 0 ? (
+                                        <>
+                                            <h1 className='text-4xl font-bold text-gray-500 mt-4' >ยังไม่มีข้อมูลแบบทดสอบนักเรียน</h1>
+                                            <p className="text-gray-600">
+                                                คุณยังไม่มีมูลแบบทดสอบนักเรียน คลิกที่เมนู <span className='text-blue-800 font-semibold'>จัดการผู้ใช้</span> เพื่อเพิ่มนักเรียน
+                                            </p>
+                                        </>
+                                    ) : (
+                                        ''
+                                    )} */}
+                                </div>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>

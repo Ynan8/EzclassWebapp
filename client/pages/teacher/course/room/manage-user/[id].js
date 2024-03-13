@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacherRoom';
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from 'react-icons/fa';
-import { BreadcrumbItem, Breadcrumbs, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Pagination, useDisclosure } from '@nextui-org/react';
 import UploadStudentFile from '../../../../../components/Modals/UploadStudentFile';
 import axios from 'axios';
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher';
@@ -199,6 +199,11 @@ const ManageUser = () => {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(student.length / itemsPerPage);
+
+
   return (
     <div>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
@@ -264,32 +269,44 @@ const ManageUser = () => {
                       </tr>
                     </thead>
                     <tbody className='text-lg'>
-                      {student.map((student, index) => (
-                        <tr className=" h-16 transition-colors group">
-                          <td className="text-center py-2">{index + 1}</td>
-                          <td className="text-center py-2">{student.username}</td>
-                          <td className="text-center py-2">{student.firstName} {student.lastName}</td>
-                          <td className="text-center py-2">ยังไม่เข้าเรียน</td>
+                      {student
+                        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                        .map((student, index) => (
+                          <tr className=" h-16 transition-colors group">
+                          <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                            <td className="text-center py-2">{student.username}</td>
+                            <td className="text-center py-2">{student.firstName} {student.lastName}</td>
+                            <td className="text-center py-2">ยังไม่เข้าเรียน</td>
 
-                          <td className="flex justify-center items-center text-center">
-                            <div
-                              onClick={() => {
-                                onOpenModalUpdate();
-                                setCurrentStd(student);
-                              }}
-                              className="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
-                              <FaEdit size={25} />
-                            </div>
-                            <div
-                              onClick={() => openDeleteModal(student._id)}
-                              className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
-                              <FaTrash size={23} />
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            <td className="flex justify-center items-center text-center">
+                              <div
+                                onClick={() => {
+                                  onOpenModalUpdate();
+                                  setCurrentStd(student);
+                                }}
+                                className="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
+                                <FaEdit size={25} />
+                              </div>
+                              <div
+                                onClick={() => openDeleteModal(student._id)}
+                                className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
+                                <FaTrash size={23} />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
+                  <div className="flex justify-center mt-2">
+                    <Pagination
+                      size='lg'
+                      total={totalPages}
+                      initialPage={1}
+                      page={currentPage}
+                      onChange={(page) => setCurrentPage(page)}
+                    />
+
+                  </div>
                   <div className="flex flex-col text-center mt-4">
                     {student.length === 0 ? (
                       <>
