@@ -133,6 +133,7 @@ function Example({
     <>
       <div className="flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-700">
         <div className="p-4 flex-auto">
+          <p className="text-xl font-semibold" >คะแนนเฉลี่ยแบบทดสอบแต่ละบทเรียน</p>
           <div className="relative h-350-px">
             <canvas width="" height="60vh" id="barChartTch"></canvas>
           </div>

@@ -90,7 +90,7 @@ function Example({
 
     const datasets = averageScores.map(section => ({
       label: section.section,
-      data: section.scores ,
+      data: section.scores,
       backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
       borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
     }));
@@ -133,6 +133,7 @@ function Example({
     <>
       <div className="flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-700">
         <div className="p-4 flex-auto">
+          <p className="text-xl font-semibold" >คะแนนเฉลี่ยแบบทดสอบแต่ละบทเรียน</p>
           <div className="relative h-350-px">
             <canvas width="" height="60vh" id="barChartTch"></canvas>
           </div>
