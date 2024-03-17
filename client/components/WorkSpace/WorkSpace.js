@@ -39,10 +39,11 @@ const WorkSpace = ({
             socketRef.current = await initSocket();
             socketRef.current.on('connect_error', (err) => handleError(err));
             socketRef.current.on('connect_failed', (err) => handleError(err));
-            const handleError = (e) => {
-                console.log('socket err=>', e);
-                toast.error('Socket connection failed!!');
-            };
+           const handleError = (err) => {
+    console.log('Socket error:', err.message);
+    toast.error(`Socket connection failed: ${err.message}`);
+};
+
 
             socketRef.current.emit('join', {
                 roomId,
