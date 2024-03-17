@@ -7,5 +7,5 @@ export const initSocket = async () => {
         'timeout': 10000,
         'transports': ['websocket'],
     };
-    return io("http://localhost:8000", options);
+   return io(process.env.NEXT_PUBLIC_API, options)    ;
 }
