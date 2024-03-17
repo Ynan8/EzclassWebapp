@@ -7,5 +7,5 @@ export const initSocket = async () => {
         timeout: 10000,
         transports: ['websocket'],
     };
-   return io(process.env.NEXT_PUBLIC_API, options)    ;
+   return io("https://ezclass-webapp.vercel.app/", options)    ;
 }
