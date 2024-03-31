@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import { useRouter } from 'next/router';
 import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacherRoom';
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher';
 import axios from 'axios';
 import AverageScoreRoom from '../../../../../components/Charts/AverageScoreRoom';
 import { BreadcrumbItem, Breadcrumbs, Pagination } from '@nextui-org/react';
+import Link from 'next/link';
+import { HiOutlineUserGroup } from 'react-icons/hi';
+import { SiGoogleclassroom } from 'react-icons/si';
+import { FaTrophy } from 'react-icons/fa';
 
 
 const SingleRoom = () => {
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
     // Show Course Year
     const router = useRouter();
     const { id } = router.query;
@@ -137,11 +147,12 @@ const SingleRoom = () => {
     };
 
     const quizzes = quizScoreRoom.reduce((acc, item) => {
-        if (!acc.some(quiz => quiz.quizName === item.quizName)) {
-            acc.push({ quizName: item.quizName, maxScore: item.maxScore });
+        if (!acc.some(quiz => quiz.quizId === item.quizId)) {
+            acc.push({ quizName: item.quizName, maxScore: item.maxScore, quizId: item.quizId });
         }
         return acc;
     }, []);
+
 
 
 
@@ -177,6 +188,7 @@ const SingleRoom = () => {
     });
 
 
+
     const [student, setStudent] = useState([]);
     const loadStudentCourse = async () => {
         if (id) {
@@ -203,28 +215,79 @@ const SingleRoom = () => {
     const itemsPerPage = 5;
     const totalPages = Math.ceil(student.length / itemsPerPage);
 
+    const highestScoresByStudentAndQuiz = quizScoreRoom.reduce((acc, current) => {
+        const key = `${current.studentId}-${current.quizId}`;
+        if (!acc[key] || current.score > acc[key].score) {
+            acc[key] = { ...current };
+        }
+        return acc;
+    }, {});
+
+    const highestAverageScore = highestAndAverageScoresByStudent.reduce((max, score) => Math.max(max, score.averageScore), 0);
+    const studentWithHighestAverageScore = highestAndAverageScoresByStudent.find(score => score.averageScore === highestAverageScore);
+
+
+
 
 
 
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-                <SidebarTeacherRoom id={id} />
-                <HeaderBarTeacher />
-                <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
+                <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+                <HeaderBarTeacher mobileSidebarOpen={mobileSidebarOpen} />
+                <div className="h-full  mt-28 mb-10 md:ml-64">
                     {/* <pre>{JSON.stringify(courseRoomSingle,null,4)}</pre> */}
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    หน้าหลัก
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/room/${courseYearId}`}>
+                                    {course.courseName} {courseRoomSingle.roomName}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/year/${course._id}`}>
+                                    ปีการศึกษา {courseYear.year}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                             <BreadcrumbItem>ภาพรวมห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
                     <div className="px-12 w-full my-8">
+                        <div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 my-8">
+                                <div className="flex items-center p-4 bg-white shadow-md shadow-purple-500/50 rounded-lg">
+                                    <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-purple-600 bg-purple-100 rounded-full mr-4">
+                                        <HiOutlineUserGroup size={30} />
+                                    </div>
+                                    <div className='flex flex-col space-y-1'>
+                                        <span className="block text-2xl font-semibold">{student.length}</span>
+                                        <span className="block text-gray-500">นักเรียนทั้งหมด</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center p-4 bg-white shadow-md shadow-yellow-500/50 rounded-lg">
+                                    <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-yellow-500 bg-yellow-100 rounded-full mr-4">
+                                        <FaTrophy size={30} />
+                                    </div>
+
+                                    <div className='flex flex-col space-y-1'>
+                                        <span className="block text-2xl font-semibold">
+                                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'Loading...'}
+                                        </span>
+                                        <span className="block text-gray-500">นักเรียนที่ได้คะแนนสูงสุด</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                         <div className="flex items-center justify-center flex-wrap ">
                             <AverageScoreRoom
                                 averageScoresRoom={averageScoresRoom}
@@ -242,8 +305,8 @@ const SingleRoom = () => {
                                 </div>
                             ))} */}
                             {/* <pre>{JSON.stringify(quizScoreRoom, null, 4)}</pre> */}
+                            {/* <pre>{JSON.stringify(quizScoreRoom, null, 4)}</pre> */}
                         </div>
-                        <p className='text-xl font-semibold' >จำนวนนักเรียนทั้งหมด {student.length} คน</p>
                         <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                             <div className="table-container max-w-800 overflow-x-auto">
                                 <table className="w-full border-b border-gray-200">
@@ -260,17 +323,12 @@ const SingleRoom = () => {
                                                     </div>
                                                 </td>
                                             ))}
-
-
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {student
                                             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                                             .map((student, index) => {
-                                                const matchingScore = highestScoresByStudent.find(
-                                                    (score) => score.studentId === student._id
-                                                );
                                                 const matchingAverageScore = highestAndAverageScoresByStudent.find(
                                                     (score) => score.studentId === student._id
                                                 );
@@ -281,27 +339,33 @@ const SingleRoom = () => {
                                                         <td className="text-center">
                                                             {matchingAverageScore ? (
                                                                 <>
-                                                                    คะแนนเฉลี่ย <span className="font-bold">{matchingAverageScore.averageScore.toFixed(2)} คะแนน</span>
+                                                                    <span className="font-bold">{matchingAverageScore.averageScore.toFixed(2)} คะแนน</span>
                                                                 </>
                                                             ) : (
                                                                 "ยังไม่ทำแบบทดสอบ"
                                                             )}
                                                         </td>
                                                         {/* Render score cells */}
-                                                        <td className="text-center">
-                                                            {matchingScore ? (
-                                                                <>
-                                                                    คะแนนที่ได้มากที่สุด <span className="font-bold">{matchingScore.score} คะแนน</span>
-                                                                </>
-                                                            ) : (
-                                                                "ยังไม่ทำแบบทดสอบ"
-                                                            )}
-                                                        </td>
+                                                        {quizzes.map(quiz => {
+                                                            const scoreKey = `${student._id}-${quiz.quizId}`;
+                                                            const scoreData = highestScoresByStudentAndQuiz[scoreKey];
+                                                            return (
+                                                                <td key={quiz.quizId} className="text-center">
+                                                                    {scoreData ? (
+                                                                        <span className="font-bold">{scoreData.score} คะแนน(ทำได้มากที่สุด)</span>
+                                                                    ) : (
+                                                                        "ยังไม่ทำแบบทดสอบ"
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+
                                                     </tr>
                                                 );
                                             })}
                                     </tbody>
                                 </table>
+
                                 <div className="flex justify-center mt-2">
                                     <Pagination
                                         size='lg'
@@ -314,7 +378,7 @@ const SingleRoom = () => {
                                 </div>
                                 {/* <pre>{JSON.stringify(highestScoresByStudent, null, 4)}</pre>
                                 <pre>{JSON.stringify(student, null, 4)}</pre> */}
-                                {/* <pre>{JSON.stringify(averageScoresRoom, null, 4)}</pre> */}
+                                {/* <pre>{JSON.stringify(highestScoresByStudentAndQuiz, null, 4)}</pre> */}
                                 <div className="flex flex-col text-center mt-4">
                                     {/* {highestScoresByStudent.length === 0 ? (
                                         <>
@@ -332,7 +396,7 @@ const SingleRoom = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </TeacherRoute>
     )
 }
 

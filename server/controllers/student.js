@@ -2,6 +2,7 @@ const CourseRoom = require('../models/courseRoom');
 const Course = require('../models/course');
 const User = require('../models/user');
 const CompletedLesson = require('../models/completedLesson');
+const Completed = require('../models/completed');
 const CompletedQuiz = require('../models/completedQuiz');
 const QuizScore = require('../models/quizScore');
 const ExerciseAnswer = require('../models/exerciseAnswer');
@@ -95,52 +96,46 @@ exports.studentList = async (req, res) => {
 
 exports.markCompleted = async (req, res) => {
   const { courseId, lessonId } = req.body;
-  const studentId = req.user._id;
 
-  // console.log(req.body)
-  // console.log(studentId)
-  // return
-
-  // Check if the lesson is already marked as completed by the specific student
-  const existingLesson = await CompletedLesson.findOne({
-    studentId: studentId,
+  const existing = await Completed.findOne({
+    studentId: req.user._id,
     courseId: courseId,
-    lesson: lessonId,
   }).exec();
 
-  if (existingLesson) {
-    // The lesson is already completed by this student, no further action needed
-    res.json({ ok: true });
-  } else {
-    // Check if there's an existing document for this student and course
-    const existing = await CompletedLesson.findOne({
-      studentId: studentId,
-      courseId: courseId,
-    }).exec();
-
-    if (existing) {
-      // Update the existing document by adding the new lessonId to the 'lesson' array
-      const updated = await CompletedLesson.findOneAndUpdate(
-        { studentId: studentId, courseId: courseId },
-        { $addToSet: { lesson: lessonId } }
+  if (existing) {
+    // Check if the lessonId is already in the lesson array
+    if (!existing.lesson.includes(lessonId)) {
+      // Update
+      const updated = await Completed.findOneAndUpdate(
+        {
+          studentId: req.user._id,
+          courseId: courseId,
+        },
+        {
+          $addToSet: { lesson: lessonId },
+        }
       ).exec();
       res.json({ ok: true });
     } else {
-      // Create a new document for this student and course with the completed lesson
-      const created = await new CompletedLesson({
-        studentId: studentId,
-        courseId: courseId,
-        lesson: lessonId,
-      }).save();
-      res.json({ ok: true });
+      // LessonId is already in the lesson array, no need to update
+      res.json({ message: 'Lesson already completed' });
     }
+  } else {
+    // Create
+    const created = await new Completed({
+      studentId: req.user._id,
+      courseId: courseId,
+      lesson: [lessonId],
+    }).save();
+    res.json({ ok: true });
   }
 };
 
 
+
 exports.listCompleted = async (req, res) => {
   try {
-    const list = await CompletedLesson.findOne({
+    const list = await Completed.findOne({
       studentId: req.user._id,
       courseId: req.body.courseId,
     }).exec();
@@ -248,7 +243,6 @@ exports.getQuizScore = async (req, res) => {
     // Find the assignment by its _id using findById
     const stdQuizScore = await QuizScore.find({ studentId: studentId, quizId: quizId });
 
-    console.log(stdQuizScore);
 
     // Check if any submissions were found
     if (!stdQuizScore) {
@@ -270,7 +264,6 @@ exports.stdSubmitQuiz = async (req, res) => {
     // Find the assignment by its _id using findById
     const stdSubmit = await QuizScore.findOne({ studentId: studentId });
 
-    console.log(stdSubmit);
 
     // Check if any submissions were found
     if (!stdSubmit) {
@@ -342,7 +335,6 @@ exports.getCourseRoomStd = async (req, res) => {
 
     if (courseRoom) {
       res.json(courseRoom);
-      console.log(courseRoom);
     } else {
       res.status(403).json({ error: "Student is not enrolled in the course" });
     }

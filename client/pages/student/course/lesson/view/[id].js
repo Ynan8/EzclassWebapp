@@ -1,4 +1,5 @@
 import axios from 'axios';
+import StudentRoute from '../../../../../components/Routes/StudentRoute';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../../../../components/LessonStudentView/Sidebar';
@@ -6,8 +7,15 @@ import LessonContent from '../../../../../components/LessonStudentView/LessonCon
 import QuizContent from '../../../../../components/LessonStudentView/QuizContent';
 import Headerbar from '../../../../../components/LessonStudentView/Headerbar';
 import toast from 'react-hot-toast';
+import SideBarStudent from '../../../../../components/Sidebar/SideBarStudent';
+import HeaderBarStd from '../../../../../components/HeaderBar/HeaderBarStd';
 
 const LessonView = () => {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
   const [currentLessonIndex, setCurrentLessonIndex] = useState(null);
 
   // Load course 
@@ -52,21 +60,20 @@ const LessonView = () => {
     }
   }
 
-      // Get course Room 
-      const [courseRoom, setCourseRoom] = useState()
-      const loadCourseRoom = async () => {
-          if (id) {
-  
-              try {
-                  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/std/getCourseRoomId/${id}`);
-                  setCourseRoom(data);
-              } catch (error) {
-                  console.error("Error loading course:", error);
-              }
-          }
+  // Get course Room 
+  const [courseRoom, setCourseRoom] = useState()
+  const loadCourseRoom = async () => {
+    if (id) {
+
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/std/getCourseRoomId/${id}`);
+        setCourseRoom(data);
+      } catch (error) {
+        console.error("Error loading course:", error);
       }
-  
-      console.log("GET COURSE YEAR ID", courseRoom)
+    }
+  }
+
 
 
   // Show section
@@ -232,44 +239,43 @@ const LessonView = () => {
   const goToNextLesson = (lessonId) => {
     markCompleted(lessonId);
     if (selectedSectionIndex !== null) {
-        const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
-            (lesson) => lesson._id === activeLessonId
-        );
-        const totalLessons = section[selectedSectionIndex].lessonData.length;
-        if (currentLessonIndex < totalLessons - 1) {
-            // If there is a lesson after the current one, show it
-            const nextLessonId = section[selectedSectionIndex].lessonData[currentLessonIndex + 1]._id;
-            showLessonContent(selectedSectionIndex, nextLessonId);
-        } else {
-            // If there is no lesson after the current one, move to the next section
-            // goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
-            goToLessonQuiz()
-        }
+      const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
+        (lesson) => lesson._id === activeLessonId
+      );
+      const totalLessons = section[selectedSectionIndex].lessonData.length;
+      if (currentLessonIndex < totalLessons - 1) {
+        // If there is a lesson after the current one, show it
+        const nextLessonId = section[selectedSectionIndex].lessonData[currentLessonIndex + 1]._id;
+        showLessonContent(selectedSectionIndex, nextLessonId);
+      } else {
+        // If there is no lesson after the current one, move to the next section
+        // goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
+        goToLessonQuiz()
+      }
     }
-};
+  };
 
-  
+
 
   const [completedLessons, setCompletedLessons] = useState([]);
 
   const markCompleted = async (lessonId) => {
-    try {
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-completed`, {
-        courseId: id,
-        lessonId: lessonId, // Pass the lessonId to the function
-      });
-      console.log(data);
-      setCompletedLessons([...completedLessons, lessonId]);
-    } catch (error) {
-      console.error('Error marking lesson as completed:', error);
+    // console.log("Send This is lesson Id", lessonId)
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['authtoken'] = token;
     }
-  };
 
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-completed`, {
+      courseId: id,
+      lessonId, lessonId
+    });
+    setCompletedLessons([...completedLessons, lessonId]);
+  }
   // complete lesson
   useEffect(() => {
     if (id) loadCompletedLessons();
   }, [id]);
-
 
   const loadCompletedLessons = async () => {
     const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-completed`, {
@@ -281,6 +287,11 @@ const LessonView = () => {
   const [completedQuiz, setCompletedQuiz] = useState([]);
 
   const markCompletedQuiz = async (quizId) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['authtoken'] = token;
+    }
+     console.log("THIS IS QUIZ ID >>>", quizId)
     try {
       const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/mark-completedQuiz`, {
         courseId: id,
@@ -368,7 +379,6 @@ const LessonView = () => {
     setExerciseAnswer(data)
   }
 
-  console.log("ExExerciseAnswerer", ExerciseAnswer)
 
 
   const [stdSubmit, setStdSubmit] = useState({})
@@ -446,38 +456,38 @@ const LessonView = () => {
     const lastLessonId = section[totalSections - 1].lessonData[totalLessonsInLastSection - 1]._id;
 
     return selectedLesson?._id === lastLessonId;
-};
+  };
 
 
   return (
-    <div>
-      <div className="flex min-h-screen bg-white">
-        {/* Collapsible Sidebar */}
+    <StudentRoute>
+      <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
         <Sidebar
-         loading={loading}
-         sidebarCollapsed={sidebarCollapsed}
-         id={id}
-         section={section}
-         openSections={openSections}
-         toggleLesson={toggleLesson}
-         showLessonContent={showLessonContent}
-         showQuizContent={showQuizContent}
-         activeLessonId={activeLessonId}
-         activeQuizId={activeQuizId}
-         completedLessons={completedLessons}
-         completedQuiz={completedQuiz}
-         course={course}
-         stdSubmit={stdSubmit}
+          loading={loading}
+          sidebarCollapsed={sidebarCollapsed}
+          id={id}
+          section={section}
+          openSections={openSections}
+          toggleLesson={toggleLesson}
+          showLessonContent={showLessonContent}
+          showQuizContent={showQuizContent}
+          activeLessonId={activeLessonId}
+          activeQuizId={activeQuizId}
+          completedLessons={completedLessons}
+          completedQuiz={completedQuiz}
+          course={course}
+          stdSubmit={stdSubmit}
+          mobileSidebarOpen={mobileSidebarOpen}
 
         />
-        <div className={`flex-grow ${sidebarCollapsed ? 'ml-0' : 'ml-1/4'}`} style={{ overflowY: 'auto', paddingLeft: sidebarCollapsed ? 0 : '20%' }}>
-
-          {/* HeaderBar */}
-          <Headerbar
-            sidebarCollapsed={sidebarCollapsed}
-            setSidebarCollapsed={setSidebarCollapsed}
-          />
-
+        <Headerbar
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+          handleSidebarToggle={toggleSidebar}
+          id={id}
+        />
+        {/* <HeaderBarStd handleSidebarToggle={toggleSidebar} /> */}
+        <div className="h-full mt-28 mb-10 md:ml-64">
           {/* Lesson Content */}
           <LessonContent
             selectedLessonContent={selectedLessonContent}
@@ -490,10 +500,8 @@ const LessonView = () => {
             markExerciseAnswer={markExerciseAnswer}
             handleAnswerChange={handleAnswerChange}
             isLastLesson={isLastLesson}
+            markCompleted={markCompleted}
           />
-
-
-
           {/* Content Quiz */}
           {selectedQuizContent !== null && (
             <QuizContent
@@ -509,7 +517,7 @@ const LessonView = () => {
           )}
         </div>
       </div>
-    </div>
+    </StudentRoute>
   )
 }
 

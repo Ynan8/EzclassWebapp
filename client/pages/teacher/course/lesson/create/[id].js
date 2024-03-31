@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import { Input, Listbox, ListboxItem, ListboxSection, Switch } from "@nextui-org/react";
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import { BsBlockquoteRight, BsFileCodeFill, BsFileEarmarkTextFill, BsYoutube } from 'react-icons/bs';
 import { useRouter } from 'next/router';
-import ContentLesson from '../../../../../components/form/ContentLesson';
+import ContentLesson from '../../../../../components/Form/ContentLesson';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
@@ -182,24 +183,29 @@ const CreateContentLesson = () => {
           }
           break;
         case 'video':
-          if (!lesson.video.trim()) {
+          if (!lesson.video || !lesson.video.trim()) {
             toast.error('กรุณาใส่ URL วิดีโอ');
             return;
           }
+
           break;
         case 'code':
-          if (!lesson.code.trim()) {
+          if (!lesson.code || !lesson.code.trim()) {
             toast.error('กรุณาใส่โค้ดตัวอย่าง');
             return;
           }
           break;
         case 'exercise':
-          if (!lesson.questionText.trim()) {
+          if (!lesson.questionText || !lesson.questionText.trim()) {
             toast.error('กรุณากรอกคำถามแบบฝึกหัด');
             return;
           }
           if (!lesson.answers || lesson.answers.length === 0 || lesson.answers.some(answer => !answer.text.trim())) {
             toast.error('กรุณาใส่คำตอบสำหรับแบบฝึกหัด');
+            return;
+          }
+          if (!lesson.answers.some(answer => answer.isCorrect)) {
+            toast.error('กรุณาเลือกคำตอบที่ถูกต้องอย่างน้อยหนึ่งคำตอบ');
             return;
           }
           break;
@@ -254,7 +260,7 @@ const CreateContentLesson = () => {
 
 
   return (
-    <div>
+    <TeacherRoute>
       <div className="flex min-h-screen bg-white">
         <div class="fixed w-full flex items-center justify-between h-14 text-white z-10">
           <div class="flex-1 flex items-center h-16   bg-white w-full border-b border-gray-300">
@@ -426,7 +432,7 @@ const CreateContentLesson = () => {
           </div>
         </div>
       </div>
-    </div >
+    </TeacherRoute>
   )
 }
 

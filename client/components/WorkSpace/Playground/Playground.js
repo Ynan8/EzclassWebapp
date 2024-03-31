@@ -13,17 +13,40 @@ import { AiFillSetting } from 'react-icons/ai';
 import { FaUserFriends } from 'react-icons/fa';
 import { MdLeaderboard } from 'react-icons/md';
 import Client from '../Client';
-import { Button } from '@nextui-org/react';
+import { Tabs, Tab, Button, useDisclosure, ModalContent, ModalHeader, ModalBody, ModalFooter, Modal, Textarea, Accordion, AccordionItem, Chip } from '@nextui-org/react';
+import axios from 'axios';
+import { BiSolidPencil } from 'react-icons/bi';
+import { BsFillClipboardCheckFill } from 'react-icons/bs';
+import { TbAlertSquareFilled } from "react-icons/tb";
+
 
 
 const Playground = ({
     fetchedCode,
-    onCodeChange ,
+    onCodeChange,
     language,
+    setLanguage,
     theme,
+    setTheme,
     fontSize,
-    handleEditorDidMount
+    setFontSize,
+    editorRef,
+    languages,
+    onSelect,
+    executeCode,
+    problem,
+    showConfetti,
+    setShowConfetti,
 }) => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [activeTab, setActiveTab] = useState("playground");
+
+  const router = useRouter();
+
+  const { id, firstName } = router.query;
+
+  console.log("Room Id", id)
+
     const [activeSection, setActiveSection] = useState(null);
     const toggleSection = (section) => {
         if (activeSection === section) {
@@ -33,11 +56,187 @@ const Playground = ({
         }
     };
 
+    const onMount = (editor) => {
+        editorRef.current = editor
+        editor.focus();
+    }
+    const [input, setInput] = useState('');
+    const [output, setOutput] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const errorStyle = {
+        border: '2px solid red',
+        color: 'red',
+    };
+
+    const [percentPass, setPercentPass] = useState('');
+
+
+    const runCode = async () => {
+        const sourceCode = editorRef.current.getValue();
+        if (!sourceCode) return;
+        try {
+            setIsLoading(true);
+            const result = await executeCode(language, sourceCode, input); // Pass the input to the executeCode function
+            setOutput(result.run.output.split("\n"));
+            result.run.stderr ? setIsError(true) : setIsError(false);
+        } catch (error) {
+            console.log(error);
+            toast.error(
+                <div>
+                    <strong>An error occurred.</strong>
+                    <p>Unable to run code</p>
+                </div>
+            )
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const [testCases, setTestCases] = useState([]);
+
+    useEffect(() => {
+        if (problem) {
+            setTestCases([
+                { input: problem.input1, expectedOutput: problem.output1, status: '' },
+                { input: problem.input2, expectedOutput: problem.output2, status: '' },
+                { input: problem.input3, expectedOutput: problem.output3, status: '' },
+            ]);
+        }
+    }, [problem]);
+
+
+
+    const submitCode = async () => {
+        const sourceCode = editorRef.current.getValue();
+        if (!sourceCode) return;
+    
+        let passedCases = 0;
+        const updatedTestCases = testCases.map((testCase) => {
+            return { ...testCase };
+        });
+    
+        for (let i = 0; i < updatedTestCases.length; i++) {
+            try {
+                setIsLoadingSubmit(true);
+                const testCase = updatedTestCases[i];
+                const result = await executeCode(language, sourceCode, testCase.input);
+                if (result && result.run && result.run.output !== undefined) {
+                    const actualOutput = result.run.output.trim();
+                    if (actualOutput === testCase.expectedOutput) {
+                        passedCases++;
+                        updatedTestCases[i].status = 'passed';
+                    } else {
+                        updatedTestCases[i].status = 'failed';
+                    }
+                    result.run.stderr ? setIsError(true) : setIsError(false);
+                } else {
+                    setIsError(true);
+                    updatedTestCases[i].status = 'failed';
+                }
+            } catch (error) {
+                console.log(error);
+                toast.error(
+                    <div>
+                        <strong>An error occurred.</strong>
+                        <p>Unable to run code</p>
+                    </div>
+                );
+                updatedTestCases[i].status = 'failed';
+            } finally {
+                setIsLoadingSubmit(false);
+            }
+        }
+        setActiveTab("result");
+    
+        const score = ((passedCases / updatedTestCases.length) * 100).toFixed(2);
+        setPercentPass(score);
+        let finalScore = score === '100.00' ? 1 : 0;
+        if (score === '100.00') {
+            toast.success("ยินดีด้วย! คุณผ่านโจทย์ข้อนี้แล้ว.");
+            setShowConfetti(true);
+    
+            // You may want to reset the confetti after a certain duration
+            setTimeout(() => {
+                setShowConfetti(false);
+            }, 3000);
+        } else {
+            toast.error(`โค้ดยังไม่สมบูรณ์! กรุณาตรวจสอบที่ผลลัพธ์`);
+        }
+    
+        console.log(`Score: ${score}%`);
+        setTestCases(updatedTestCases); // Update the testCases state to trigger re-render
+    
+        // Submit the code and score to the server
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/codeRoom/submit`, {
+                codeRoomId: id,  
+                score: finalScore,
+                percentPass: parseFloat(score),
+                code: sourceCode,
+                status: score === '100.00' ? 'passed' : 'failed'
+            });
+            console.log('Submission response:', response.data);
+        } catch (error) {
+            console.error('Error submitting code:', error);
+            toast.error('Failed to submit code.');
+        }
+    };
+    
+    
+
+
+
+
+
 
     return (
-        <div className="flex bg-[#282827]  overflow-x-hidden">
+        <div className=" bg-[#282827] min-h-screen  overflow-x-hidden">
+            <nav className="flex justify-between items-center bg-[#1e1e1e] px-4 py-2">
+                <div className="text-white">
+                    <h1 className="text-xl font-bold">ห้องเรียนเขียนโค้ด</h1>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <div className="flex flex-col">
+                        <select
+                            value={language}
+                            onChange={(e) => {
+                                setLanguage(e.target.value);
+                                onSelect(e.target.value); // Call onSelect function when language is changed
+                            }}
+                            className="flex border-2 border-[#282827] cursor-pointer items-center rounded-md focus:outline-none  w-full px-2 py-2 font-medium"
+                        >
+                            {languages.map(([lang, version]) => (
+                                <option key={lang} value={lang}>
+                                    {lang} ({version})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <Button
+                        onPress={onOpen}
+                        size='sm'
+                        variant='faded'
+                        className='py-4'
+                        startContent={<AiFillSetting size={25} />}
+                    >
+                    </Button>
+                    {/* <Button
+                        color='success'
+                        variant='shadow'
+                        size='sm'
+                        className='text-sm px-6 py-3 sm:px-3 text-white'
+                        onPress={onOpen}
+                    >
+                        Submit
+                    </Button> */}
+                </div>
+
+            </nav>
             <Split className="h-[calc(100vh-90px)] w-[calc(100vh)]" direction="vertical" sizes={[60, 40]} minSize={60}>
                 <div className="w-full overflow-auto">
+                    {/* <pre>{JSON.stringify(problem, null, 4)}</pre> */}
                     <Editor
                         width={`100%`}
                         language={language}
@@ -45,43 +244,188 @@ const Playground = ({
                         value={fetchedCode}
                         onChange={onCodeChange}
                         options={{ fontSize: fontSize }}
-                        
+                        onMount={onMount}
+
                     />
                 </div>
                 <div className='text-white p-4 mt-2 rounded-b-md'>
-                    <div className="w-full overflow-auto">
-                        <div className='flex justify-between'>
-                            <p className='text-base font-semibold'>ทดสอบผลรันของคุณ</p>
-                            <Button
-                                color='success'
-                                variant='shadow'
-                                size='md'
-                                className='px-14 text-white'
-                            >
-                                Run
-                            </Button>
+                    <div className="w-full">
+                        <Tabs color='default' size='lg' variant="bordered" aria-label="Tabs variants" value={activeTab}>
+                            <Tab key="playground" title="ผลรันโค้ด" >
+                                <div className='ml-4 flex flex-col sm:flex-row justify-between items-start sm:items-center'>
+                                    <p className='text-base font-semibold mb-4 sm:mb-0'>ทดสอบผลรันของคุณ</p>
+                                    <div className="flex space-x-3">
 
-                        </div>
-                        <div className="mt-5 pb-7 w-full flex">
-                            <div className="w-1/2 mr-2">
-                                <p className="text-sm mb-1">Input:</p>
-                                <textarea
-                                    className='p-2 pt-3 pb-5 w-full h-60 text-black resize-none rounded-sm focus:outline-none'
-                                    placeholder='Input...'
-                                />
-                            </div>
-                            <div className="w-1/2 h-2/3 cursor-default">
-                                <p className="text-sm mb-1">Output:</p>
-                                <div className="p-2 pt-3 pb-5 w-full h-60 text-gray-500 bg-white whitespace-pre small-overflow overflow-y-hidden">
-                                    <p className="font-mono cursor-text">
-                                        output
-                                    </p>
+                                        <Button
+                                            color='warning'
+                                            size='md'
+                                            className='text-sm px-6 py-2 sm:px-14 text-white'
+                                            onClick={runCode}
+                                            isLoading={isLoading}
+                                        >
+                                            {isLoading ? "" : "Run"}
+                                        </Button>
+                                        <Button
+                                            color='success'
+                                            size='md'
+                                            className='text-sm px-6 py-2 sm:px-14 text-white'
+                                            onClick={submitCode}
+                                            isLoading={isLoadingSubmit}
+                                        >
+                                            {isLoadingSubmit ? "" : "Submit"}
+                                        </Button>
+                                    </div>
+
+
                                 </div>
-                            </div>
-                        </div>
+                                <div className="mt-5 pb-7 w-full flex flex-col sm:flex-row">
+                                    <div className="w-full sm:w-1/2 sm:mr-2 mb-4 sm:mb-0">
+                                        <p className="text-sm mb-1 ml-4">Input:</p>
+                                        <Textarea
+                                            variant="faded"
+                                            labelPlacement="outside"
+                                            className="w-full text-gray-500"
+                                            placeholder='Input...'
+                                            value={input}
+                                            onChange={(e) => setInput(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="w-full sm:w-1/2">
+                                        <p className="text-sm mb-1 ml-4">Output:</p>
+                                        <Textarea
+                                            isReadOnly
+                                            variant="faded"
+                                            labelPlacement="outside"
+                                            value={output ? output.join('\n') : 'กดปุ่ม "Run" เพื่อดูผลลัพธ์'}
+                                            className={`w-full text-gray-500 ${isError ? 'text-red-500' : ''}`}
+                                        />
+
+                                        {/* <div
+                                    className="p-2 pt-3 pb-5 w-full h-60 bg-white whitespace-pre overflow-y-auto rounded-sm"
+                                    style={isError ? errorStyle : {}}
+                                >
+                                    <p className="font-mono cursor-text" style={isError ? { color: 'red' } : {}}>
+                                        {output
+                                            ? output.map((line, i) => <p key={i}>{line}</p>)
+                                            : 'Click "Run Code" to see the output here'}
+                                    </p>
+                                </div> */}
+
+
+                                    </div>
+                                </div>
+                            </Tab>
+                            <Tab key="result" title={
+                                <div className='flex items-center space-x-2' >
+                                    <p>ผลลัพธ์</p>
+                                </div>
+                            }>
+                                <div className="flex items-center space-x-3 my-2">
+                                    <p className='p-3' >ผลลัพธ์</p>
+                                    <Chip size='lg' color='success' className='text-white' >ความถูกต้อง {percentPass}%</Chip>
+                                </div>
+                                <Accordion selectionMode="multiple" variant="splitted">
+                                    {testCases.map((testCase, index) => (
+                                        <AccordionItem
+                                            key={index}
+                                            aria-label={`Test Case ${index + 1}`}
+                                            title={`Test Case ${index + 1}`}
+                                            startContent={
+                                                testCase.status === 'passed' ?
+                                                <BsFillClipboardCheckFill size={25} className="text-success" /> :
+                                                <TbAlertSquareFilled size={25} className="text-danger" />
+                                            }
+                                            
+                                        >
+                                            <div className="mt-2  pb-7 w-full flex flex-col sm:flex-row">
+                                                <div className="w-full sm:w-1/2 sm:mr-2 mb-4 sm:mb-0">
+                                                    <p className="text-sm mb-1 ml-4">Input:</p>
+                                                    <Textarea
+                                                        variant="faded"
+                                                        labelPlacement="outside"
+                                                        className="w-full text-gray-500"
+                                                        value={testCase.input}
+                                                        readOnly
+                                                    />
+                                                </div>
+                                                <div className="w-full sm:w-1/2">
+                                                    <p className="text-sm mb-1 ml-4">Output:</p>
+                                                    <Textarea
+                                                        isReadOnly
+                                                        variant="faded"
+                                                        labelPlacement="outside"
+                                                        className={`w-full text-gray-500 ${isError ? 'text-red-500' : ''}`}
+                                                        value={testCase.expectedOutput}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
+
+                            </Tab>
+                        </Tabs>
+
                     </div>
                 </div>
+
             </Split>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement='top-center'>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">ตั้งค่า</ModalHeader>
+                            <ModalBody>
+                                <div className="flex flex-col space-y-3 p-2 ">
+                                    {/* <div className="flex flex-col">
+                                        <label className='text-lg mb-2' >เลือกภาษา</label>
+                                        <select
+                                            value={language}
+                                            onChange={(e) => {
+                                                setLanguage(e.target.value);
+                                                onSelect(e.target.value); // Call onSelect function when language is changed
+                                            }}
+                                            className="flex border-2 border-[#282827] cursor-pointer items-center rounded-md focus:outline-none  w-full px-2 py-2 font-medium"
+                                        >
+                                            {languages.map(([lang, version]) => (
+                                                <option key={lang} value={lang}>
+                                                    {lang} ({version})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div> */}
+                                    <div className="flex flex-col">
+                                        <label className='text-lg mb-2'>เลือกขนาดตัวอักษร</label>
+                                        <select
+                                            value={fontSize} onChange={(e) => setFontSize(e.target.value)}
+                                            className="flex border-2 border-[#282827] cursor-pointer items-center rounded-md focus:outline-none  w-full px-2 py-2 font-medium"
+                                        >
+                                            <option value="12">12 px</option>
+                                            <option value="14">14 px</option>
+                                            <option value="16">16 px</option>
+                                            <option value="18">18 px</option>
+                                            <option value="20">20 px</option>
+                                            {/* Add more font sizes as needed */}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex flex-col">
+                                        <label className='text-lg mb-2' >เลือกธีม</label>
+                                        <select
+                                            className="flex border-2 border-[#282827]  cursor-pointer items-center rounded-md focus:outline-none w-full px-2 py-2 font-medium"
+                                            value={theme} onChange={(e) => setTheme(e.target.value)}
+                                        >
+                                            <option value="vs-dark">Dark</option>
+                                            <option value="light">Light</option>
+                                            {/* Add more themes as needed */}
+                                        </select>
+                                    </div>
+                                </div>
+                            </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 };

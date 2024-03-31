@@ -10,10 +10,13 @@ import { Context } from '../../context';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { AiOutlineMenu } from 'react-icons/ai';
 
 
 
-const HeaderBarTeacher = () => {
+const HeaderBarTeacher = ({
+    handleSidebarToggle
+}) => {
 
     // state
     const [hidden, setHidden] = useState(true);
@@ -79,12 +82,18 @@ const HeaderBarTeacher = () => {
 
     return (
         <div>
-
-            <header className="header bg-white shadow pr-4 fixed top-0 left-0 w-full z-10">
+            <header className="header bg-white shadow pr-4 h-16 fixed top-0 left-0 w-full z-10">
                 <div className="header-content flex ">
+                    <div className="md:hidden flex items-center justify-between p-4 text-white">
+                        <AiOutlineMenu
+                            size={30}
+                            className="text-gray-500"
+                            onClick={handleSidebarToggle}
+                        />
+                    </div>
                     <Link href={'/student/home'}>
                         <div className="flex justify-center item-center">
-                            <div className="Logo">
+                            <div className="hidden md:block Logo">
                                 <Image
                                     src={Logo}
                                     alt="Logo"
@@ -92,10 +101,11 @@ const HeaderBarTeacher = () => {
                                     height={20}
                                 />
                             </div>
-                            <div className="flex justify-center items-center space-x-10">
-                                <p className="hidden md:block text-3xl font-medium text-blue-500">EZCLASS</p>
-                                {/* <SearchCourse setSearch={setSearch} /> */}
+                            <div
+                                className="flex justify-center items-center ml-2">
+                                <p className="hidden md:block text-3xl font-medium justify-center items-center text-blue-500">EZCLASS</p>
                             </div>
+
                         </div>
                     </Link>
                     <div className="flex gap-x-2 ml-auto">

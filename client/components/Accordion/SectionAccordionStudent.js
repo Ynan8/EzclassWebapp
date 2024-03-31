@@ -12,8 +12,8 @@ const SectionAccordionStd = ({
     section,
     id,
     courseRoomStd,
-    checkSubmit
 }) => {
+    
     return (
         <>
             <Accordion selectionMode="multiple" variant="splitted">
@@ -97,14 +97,11 @@ const SectionAccordionStd = ({
                                                         </div>
                                                     </Link>
                                                     <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                        <Chip
-                                                            className="capitalize"
-                                                            color={checkSubmit ? "success" : "default"}
-                                                            size="md"
-                                                            variant="flat"
-                                                        >
-                                                            {checkSubmit ? "ส่งงานแล้ว" : "ยังไม่ส่งงาน"}
-                                                        </Chip>
+                                                        {/* {assignmentSubmissions && assignmentSubmissions.fileSubmit ? (
+                                                            <p className="text-base font-semibold text-green-400">ส่งงานแล้ว</p>
+                                                        ) : (
+                                                            <p className="text-base font-semibold text-red-400">ยังไม่ส่งงาน</p>
+                                                        )} */}
                                                     </div>
                                                 </div>
 

@@ -192,16 +192,41 @@ exports.UpdatePassword = async (req, res) => {
 };
 
 
+exports.currentTeacher = async (req, res) => {
+  try {
+    let user = await User.findById(req.user._id).select("-password").exec();
+    if (!user.role.includes('teacher')) {
+      return res.sendStatus(403);
+    } else {
+      res.json({ ok: true });
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
 
-// exports.currentTeacher = async (req, res) => {
-//   try {
-//     let user = await User.findById(req.user._id).select("-password").exec();
-//     if (!user.role.includes('teacher')) {
-//       return res.sendStatus(403);
-//     } else {
-//       res.json({ ok: true });
-//     }
-//   } catch (err) {
-//     console.log(err)
-//   }
-// }
+exports.currentStudent = async (req, res) => {
+  try {
+    let user = await User.findById(req.user._id).select("-password").exec();
+    if (!user.role.includes('student')) {
+      return res.sendStatus(403);
+    } else {
+      res.json({ ok: true });
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+exports.currentAdmin = async (req, res) => {
+  try {
+    let user = await User.findById(req.user._id).select("-password").exec();
+    if (!user.role.includes('admin')) {
+      return res.sendStatus(403);
+    } else {
+      res.json({ ok: true });
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}

@@ -22,6 +22,8 @@ const {
     CheckSubmit,
     getStdSubmit,
     updateScore,
+    getStdSubmitAll,
+    cancelSubmission,
 } = require('../controllers/assignment')
 
 
@@ -35,13 +37,16 @@ router.put("/updateAssignment/:assignmentId", auth, updateAssignment);
 
 //std
 router.post("/assignment/submit/:id/:courseRoomId/",auth, submitAssignment );
+router.post("/assignment/cancel-submit/",auth, cancelSubmission );
 router.get("/assignment/submit/:id/",auth, getAssignmentSubmit);   
 router.post("/assignment/remove-submit",auth, removeSubmit );
 
 router.get('/check-submit/:id', auth, CheckSubmit);
 
+
 router.get('/student-submit/:id', auth, getStdSubmit);
 router.put('/update-score/:assignmentId/:studentId',auth, updateScore);
+router.get('/all/student-submit/:id', auth, getStdSubmitAll);
 
 
 

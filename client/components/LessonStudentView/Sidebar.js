@@ -21,6 +21,7 @@ const Sidebar = ({
     course,
     stdSubmit,
     completedQuiz,
+    mobileSidebarOpen,
 
 }) => {
     const totalLessonCount = section.reduce((total, currentSection) => total + currentSection.lessonData.length, 0);
@@ -59,8 +60,9 @@ const Sidebar = ({
     const completionPercentage = (completedProgress / (totalLessonCount + totalQuizCount)) * 100;
 
     return (
-        <div className={`w-1/5 border-r-2 border-gray-100 transition-all ${sidebarCollapsed ? '-ml-[20%]' : 'ml-0'} fixed top-0 left-0 bottom-0`}>
-            <div className="flex items-center h-14 bg-blue-500 ">
+        <div className={`fixed top-[60px] left-0 w-80 bg-white h-full transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+
+            {/* <div className="flex items-center h-14 bg-blue-500 ">
                 <Link href={`/student/course/lesson/${id}`} >
                     <div
                         className="text-white text-lg"
@@ -69,10 +71,10 @@ const Sidebar = ({
                         ย้อนกลับ
                     </div>
                 </Link>
-            </div>
+            </div> */}
             <div >
-                <div className="px-2">
-                    <div className="flex flex-col space-y-3 p-3 border-2 border-blue-500 rounded-md my-2">
+                <div className="px-2 border-b-2 border-gray-100">
+                    <div className="flex flex-col space-y-3 p-3  rounded-md my-2">
                         <div className="flex justify-between">
                         </div>
                         <Progress
@@ -86,7 +88,7 @@ const Sidebar = ({
                         />
                         <div className="flex justify-between">
                             <p className='mb-1 font-medium'>{course.courseName}</p>
-                            <p className='mb-1 font-medium'>{`${completedProgress}/${totalLessonCount + totalQuizCount}`}</p>
+                            {/* <p className='mb-1 font-medium'>{`${completedProgress}/${totalLessonCount + totalQuizCount}`}</p> */}
                         </div>
                     </div>
                 </div>

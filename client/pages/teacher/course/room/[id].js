@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, ModalHeader, ModalBody, ModalFooter, Skeleton } from "@nextui-org/react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, getKeyValue } from "@nextui-org/react";
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
@@ -8,7 +9,8 @@ import { GoTrash } from "react-icons/go";
 import { CiEdit, CiSearch } from "react-icons/ci";
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher';
 import { useRouter } from 'next/router';
-import { Modal, ModalContent, useDisclosure, Link } from "@nextui-org/react";
+import { Modal, ModalContent, useDisclosure, } from "@nextui-org/react";
+import Link from 'next/link';
 import AddCourseRoom from '../../../../components/Modals/AddCourseRoom';
 import axios from 'axios';
 import UpdateCourseRoom from '../../../../components/Modals/UpdateCourseRoom';
@@ -239,7 +241,7 @@ const CourseRoom = () => {
     }, []);
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
                 <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
@@ -248,9 +250,21 @@ const CourseRoom = () => {
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href='/teacher/home' >
+                                    <p>หน้าหลัก</p>
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href='/teacher/home' >
+                                    {course.courseName} ม.{course.level}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/year/${course._id}`}>
+                                    ปีการศึกษา {courseYear.year}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -396,7 +410,7 @@ const CourseRoom = () => {
                 </ModalContent>
             </Modal>
 
-        </div >
+        </TeacherRoute>
     )
 }
 

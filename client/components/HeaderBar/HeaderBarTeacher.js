@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { AiOutlineMenu } from 'react-icons/ai';
+import { LuUser2 } from "react-icons/lu";
 
 
 
@@ -118,11 +119,11 @@ const HeaderBarTeacher = ({
                                         as="button"
                                         avatarProps={{
                                             isBordered: true,
-                                            src: userData.image ? userData.image.Location : '/profile.png'
+                                            src: userData.image ? userData.image.Location : <LuUser2 />
                                         }}
                                         className="uppercase transition-transform"
                                         description={userData?.role}
-                                        name={`${userData?.firstName} ${userData?.lastName}`}
+                                        name={`${userData?.firstName}   `}
                                     />
 
                                 </DropdownTrigger>

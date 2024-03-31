@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import HeaderBarTeacher from '../../components/HeaderBar/HeaderBarTeacher';
+import TeacherRoute from '../../components/Routes/TeacherRoute';
 import { FaPlus } from "react-icons/fa";
 import { Button, CardFooter, Skeleton } from '@nextui-org/react';
 import { Card, CardBody } from "@nextui-org/react";
@@ -110,7 +111,7 @@ const Home = () => {
 
 
   return (
-    <>
+    <TeacherRoute>
       <div className="flex flex-col min-h-screen bg-gray-50">
         <HeaderBarTeacher />
         <main className="flex-1 pb-16 sm:pb-32">
@@ -121,13 +122,21 @@ const Home = () => {
                   <div className="flex space-x-2 justify-center item-center">
                     {/* <SearchCourse /> */}
                   </div>
-                  <div className="flex items-center">
-                    <Link href={'/teacher/createCourse'} >
-                      <Button className='px-10' color="primary" variant="shadow" size='lg' radius="lg" startContent={<FaPlus />}>
+                  <div className="flex items-center justify-center">
+                    <Link href="/teacher/createCourse">
+                      <Button
+                        className="px-4 sm:px-3 md:px-8 lg:px-10"
+                        color="primary"
+                        variant="shadow"
+                        size="lg"
+                        radius="lg"
+                        startContent={<FaPlus />}
+                      >
                         สร้างรายวิชา
                       </Button>
                     </Link>
                   </div>
+
                 </div>
                 <h1 className=" text-2xl mb-2 font-semibold text-gray-800"
                 >
@@ -275,7 +284,7 @@ const Home = () => {
           )}
         </ModalContent>
       </Modal>
-    </>
+    </TeacherRoute>
   );
 };
 

@@ -7,9 +7,5 @@ export const initSocket = async () => {
         timeout: 10000,
         transports: ['websocket'],
     };
-    return io( "http://localhost:8000", options)
-<<<<<<< HEAD
+   return io("http://localhost:8000", options)    ;
 }
-=======
-}
->>>>>>> 5c2f2b3de74b1c9503188a00ae943e019ad87ccd

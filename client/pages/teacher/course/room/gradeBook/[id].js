@@ -5,8 +5,18 @@ import { useRouter } from 'next/router';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { FaFileExcel } from 'react-icons/fa';
 import axios from 'axios';
+import Link from 'next/link';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 
 const GradeBookRoom = () => {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
+
   const router = useRouter();
   const { id } = router.query;
 
@@ -78,63 +88,77 @@ const GradeBookRoom = () => {
     }
   }
 
+  const [student, setStudent] = useState([]);
+  const loadStudentCourse = async () => {
+    if (id) {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['authtoken'] = token;
+        }
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/studentRoom/${id}`);
+        setStudent(data)
+      } catch (error) {
+        console.error("Error loading course:", error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      loadStudentCourse();
+    }
+  }, [id]);
 
 
-
-  const assignments = [
-    { name: "Assignment 1", maxScore: 100, weight: 5 },
-  ];
-
-  const students = [
-    {
-      studentId: "21380",
-      name: "นายกิตติภูมิ สุขใส",
-      assignmentScores: [20, 15, 25], // Scores for each assignment
-      codeRoomScore: 10,
-      totalScore: 70,
-      grade: "B",
-    },
-    {
-      studentId: "21381",
-      name: "ธนพงศ์ สุขใจ",
-      assignmentScores: [20, 10, 10], // Scores for each assignment
-      codeRoomScore: 10,
-      totalScore: 50,
-      grade: "C",
-    },
-    {
-      studentId: "21382",
-      name: "กาญจนา สุวรรณภูมิ",
-      assignmentScores: [20, 30, 20], // Scores for each assignment
-      codeRoomScore: 10,
-      totalScore: 80,
-      grade: "A",
-    },
-    {
-      studentId: "21383",
-      name: "ณัฐภา กิจวัตร",
-      assignmentScores: [15, 15, 25], // Scores for each assignment
-      codeRoomScore: 8,
-      totalScore: 63,
-      grade: "B",
-    },
-    {
-      studentId: "21384",
-      name: "นายกิตติภูมิ สุขใส",
-      assignmentScores: [20, 15, 25], // Scores for each assignment
-      codeRoomScore: 60,
-      totalScore: 60,
-      grade: "B",
-    },
-    {
-      studentId: "21385",
-      name: "ธนัชชา นาคพร",
-      assignmentScores: [20, 15, 25], // Scores for each assignment
-      codeRoomScore: 10,
-      totalScore: 70,
-      grade: "B",
-    },
-  ];
+  const downloadExcel = () => {
+    const workSheetData = student.map((stud) => {
+      // Find assignments for the student
+      const studentAssignments = assignmentScoreRoom.filter((assignment) => assignment.studentId === stud._id);
+  
+      // Calculate total weighted score and grade
+      const totalWeightedScore = studentAssignments.reduce((total, assignment) => {
+        return total + ((assignment.score * assignment.weight) / assignment.scoreLimit);
+      }, 0);
+      const grade = calculateGrade(totalWeightedScore);
+  
+      // Start with the student ID and name
+      let record = {
+        'รหัสนักเรียน': stud.username,
+        'ชื่อ': `${stud.firstName} ${stud.lastName}`,
+      };
+  
+      // Add scores for each unique assignment
+      uniqueAssignments.forEach((assignment) => {
+        const studentAssignment = studentAssignments.find((ass) => ass.assignmentName === assignment.assignmentName);
+        record[assignment.assignmentName] = studentAssignment
+          ? ((studentAssignment.score / studentAssignment.scoreLimit) * assignment.weight).toFixed(2)
+          : 'N/A'; // Use 'N/A' for assignments not found
+      });
+  
+      // Add code room score, total weighted score, and grade
+      record['คะแนนห้องเรียนเขียนโค้ด'] = ''; // Assign code room score if applicable
+      record['คะแนนรวม'] = totalWeightedScore.toFixed(2);
+      record['เกรด'] = grade;
+  
+      return record;
+    });
+  
+    // Generate worksheet
+    const workSheet = XLSX.utils.json_to_sheet(workSheetData);
+    const workBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workBook, workSheet, "GradeBook");
+  
+    // Generate buffer
+    const excelBuffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'array' });
+    
+    // Convert to Blob and save using FileSaver
+    const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    saveAs(data, 'GradeBook.xlsx');
+  };
+  
+ 
+  
 
   const [assignmentScoreRoom, setAssignmentScoreRoom] = useState([]);
 
@@ -199,20 +223,51 @@ const GradeBookRoom = () => {
   // Convert object into an array of students
   const studentsArray = Object.values(groupedByStudent);
 
+  const uniqueAssignments = assignmentScoreRoom.reduce((unique, item) => {
+    const isDuplicate = unique.some(uniqueItem => uniqueItem.assignmentId === item.assignmentId);
+    if (!isDuplicate) {
+      unique.push(item);
+    }
+    return unique;
+  }, []);
+
+  const calculateGrade = (score) => {
+    if (score >= 80) return 4;
+    else if (score >= 75) return 3.5;
+    else if (score >= 70) return 3;
+    else if (score >= 65) return 2.5;
+    else if (score >= 60) return 2;
+    else if (score >= 55) return 1.5;
+    else if (score >= 50) return 1;
+    else return 0;
+  }
+
 
 
   return (
-    <div>
+    <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom id={id} courseYearId={courseYearId} />
-        <HeaderBarTeacher />
-        <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
+        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+        <div className="h-full mt-28 mb-10 md:ml-64">
           <div className="px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
-              <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-              <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
-              <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={'/teacher/home'}>
+                  หน้าหลัก
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/room/${courseYearId}`}>
+                  {course.courseName} {courseRoomSingle.roomName}
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/year/${course._id}`}>
+                  ปีการศึกษา {courseYear.year}
+                </Link>
+              </BreadcrumbItem>
               <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
               <BreadcrumbItem>ผลการเรียน</BreadcrumbItem>
             </Breadcrumbs>
@@ -227,14 +282,12 @@ const GradeBookRoom = () => {
                     ผลการเรียน
                   </h1>
                   <Button
-                    // onPress={onOpenModalExcel}
+                    onPress={downloadExcel}
                     radius='sm'
                     className=" my-5 flex items-center text-white "
                     color="success"
                     startContent={
-                      <FaFileExcel
-                        size={20}
-                      />
+                      <FaFileExcel size={20} />
                     }
                   >
                     <p class=" font-medium leading-none">Download Excel</p>
@@ -250,17 +303,15 @@ const GradeBookRoom = () => {
                       <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
                         ชื่อ
                       </th>
-
-                      {/* Map through your assignments here */}
-                      {assignmentScoreRoom.map((score, index) => (
+                      {uniqueAssignments.map((assignment, index) => (
                         <th key={index} className="text-center text-gray-600 font-normal pr-6 tracking-normal leading-4">
                           <div className="flex flex-col items-center space-y-3">
-                            <span className="text-base font-semibold">{score.assignmentName}</span>
+                            <span className="text-base font-semibold">{assignment.assignmentName}</span>
                             <span className="  rounded p-2">
-                              คะแนนเต็ม <span className='font-semibold' >{score.scoreLimit}</span>
+                              คะแนนเต็ม <span className='font-semibold' >{assignment.scoreLimit}</span>
                             </span>
                             <span className="text-base text-gray-500">
-                              {score.weight}%
+                              {assignment.weight}%
                             </span>
                           </div>
                         </th>
@@ -277,32 +328,34 @@ const GradeBookRoom = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {studentsArray.length > 0 ? (
-                      studentsArray.map((student, index) => {
-                        const totalWeightedScore = student.assignments.reduce((total, assignment) => {
+                    {student.length > 0 ? (
+                      student.map((stud, index) => {
+                        const studentAssignments = assignmentScoreRoom.filter(assignment => assignment.studentId === stud._id);
+                        const totalWeightedScore = studentAssignments.reduce((total, assignment) => {
                           return total + ((assignment.score * assignment.weight) / assignment.scoreLimit);
                         }, 0);
 
                         return (
-                          <tr className="h-20 border-gray-300 border-b" key={index}>
+                          <tr className="h-20 border-gray-300 border-b" key={stud._id}>
                             <td className="text-center pl-14 pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
-                              {student.studentNo}
+                              {stud.username}
                             </td>
                             <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
-                              {student.studentName}
+                              {stud.firstName} {stud.lastName}
                             </td>
-                            {student.assignments.map((assignment, assignmentIndex) => (
+                            {studentAssignments.map((assignment, assignmentIndex) => (
                               <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4" key={assignmentIndex}>
-                                {((assignment.score * assignment.weight) / assignment.scoreLimit).toFixed(2)}
+                                {(assignment.score / assignment.scoreLimit) * assignment.weight.toFixed(2)}
                               </td>
                             ))}
-                            {/* Add more cells if needed */}
                             <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
-                            {/* code room score */}
-                    
+                              {/* Insert code room score here if applicable */}
                             </td>
                             <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
                               {totalWeightedScore.toFixed(2)}
+                            </td>
+                            <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                              {calculateGrade(totalWeightedScore)}
                             </td>
                           </tr>
                         );
@@ -313,14 +366,13 @@ const GradeBookRoom = () => {
                       </tr>
                     )}
                   </tbody>
-
                 </table>
               </div>
             </div>
           </main>
         </div>
       </div>
-    </div>
+    </TeacherRoute>
   )
 }
 

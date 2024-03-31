@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Tooltip, Chip, Skeleton } from "@nextui-org/react";
@@ -11,8 +12,9 @@ import { FaBookOpen } from "react-icons/fa";
 import { GoTrash } from "react-icons/go";
 import { CiEdit, CiSearch } from "react-icons/ci";
 import { Listbox, ListboxItem, ListboxSection, cn } from "@nextui-org/react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Link } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox } from "@nextui-org/react";
 import AddSection from '../../../../components/Modals/AddSection';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -21,6 +23,11 @@ import UpdateSection from '../../../../components/Modals/UpdateSection';
 
 const LessonCourse = () => {
     const [isLoading, setIsLoading] = useState(true);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
 
     const router = useRouter();
     const { id } = router.query;
@@ -207,17 +214,29 @@ const LessonCourse = () => {
     };
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-                <SideBarTeacher courseYearId={id} />
-                <HeaderBarTeacher />
+                <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
+                <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
                 <div className="h-full mt-28 mb-10 md:ml-64">
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    หน้าหลัก
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    {course.courseName} ม.{course.level}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/year/${course._id}`}>
+                                    ปีการศึกษา {courseYear.year}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>บทเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -333,8 +352,7 @@ const LessonCourse = () => {
                     )}
                 </ModalContent>
             </Modal>
-
-        </div>
+        </TeacherRoute>
     )
 }
 

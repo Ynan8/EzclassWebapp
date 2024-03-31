@@ -1,16 +1,27 @@
 import axios from 'axios';
+import StudentRoute from '../../../../components/Routes/StudentRoute';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react'
 import { AiFillStar } from 'react-icons/ai';
-import { BiCodeAlt } from 'react-icons/bi';
+import { BiCheck, BiCodeAlt } from 'react-icons/bi';
 import SideBarStudent from '../../../../components/Sidebar/SideBarStudent';
 import HeaderBarStd from '../../../../components/HeaderBar/HeaderBarStd';
 import { Context } from '../../../../context';
-import { Listbox, ListboxItem, ListboxSection } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Chip, Input, Listbox, ListboxItem, ListboxSection, useDisclosure } from '@nextui-org/react';
 import { RiCodeBoxFill } from 'react-icons/ri';
+import { FaCheckCircle, FaUsers } from 'react-icons/fa';
+import JoinRoom from '../../../../components/CodeRoomForm/JoinRoom';
+
 
 const CodeRoomStudent = () => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
     // Load course 
     const [course, setCourse] = useState({});
 
@@ -26,12 +37,23 @@ const CodeRoomStudent = () => {
         }
     }, [user]);
 
+    const [userData, setUserData] = useState('');
+
+
+    useEffect(() => {
+        if (user) {
+            setUserData(user)
+        }
+    }, [user]);
+
+    
     const handleStartLearning = (roomId) => () => {
         router.push({
             pathname: `/editor/${roomId}`,
             query: { firstName },
         });
     };
+    
 
     useEffect(() => {
         if (id) {
@@ -71,7 +93,7 @@ const CodeRoomStudent = () => {
         }
     }, [courseYearId]);
 
-    
+
     // Show CodeRoom
     const [codeRoom, setCodeRoom] = useState([])
 
@@ -80,7 +102,7 @@ const CodeRoomStudent = () => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-              axios.defaults.headers.common['authtoken'] = token;
+                axios.defaults.headers.common['authtoken'] = token;
             }
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/codeRoom`, {
                 params: {
@@ -93,28 +115,80 @@ const CodeRoomStudent = () => {
         }
     }
 
+    // Show Course Room
+    const [courseRoomStd, setCourseRoomStd] = useState({})
+    useEffect(() => {
+        loadCourseRoomStd()
+    }, [id])
 
+    const loadCourseRoomStd = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/courseRoomStd/${id}/${user._id}`);
+            setCourseRoomStd(data);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+        }
+    };
+
+    const renderStars = (difficulty) => {
+
+        const starArray = Array.from({ length: 5 }, (_, index) => index <= difficulty);
+
+        return (
+            <>
+                {starArray.map((isFilled, index) => (
+                    <AiFillStar
+                        key={index}
+                        className={isFilled ? 'text-[#FFDC5C]' : ''}
+                        size={20}
+                    />
+                ))}
+            </>
+        );
+    };
 
 
 
     return (
-        <div>
+        <StudentRoute>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-                <SideBarStudent id={id} />
-                <HeaderBarStd />
-                <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
+                <SideBarStudent mobileSidebarOpen={mobileSidebarOpen} id={id} />
+                <HeaderBarStd handleSidebarToggle={toggleSidebar} />
+                <div className="h-full  mt-28 mb-10 md:ml-64">
                     <div className="px-10">
-                        <nav className="text-gray-500" aria-label="Breadcrumb">
-                            <ol className="list-none p-0 inline-flex">
-                                <li className="flex items-center">
-                                    <a href="#">หน้าหลัก</a>
-                                    <svg className="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
-                                </li>
-                                <li>
-                                    <a href="#" className=" text-blue-500 font-bold" aria-current="page">ห้องเรียนเขียนโค้ด</a>
-                                </li>
-                            </ol>
-                        </nav>
+                        {/* Breadcrumbs */}
+                        <Breadcrumbs size='lg'>
+                            <BreadcrumbItem>
+                                <Link href='/student/home' >
+                                    หน้าหลัก
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href='/student/home' >
+                                    {course.courseName} {courseRoomStd.roomName}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>ห้องเรียนเขียนโค้ด</BreadcrumbItem>
+                        </Breadcrumbs>
+                    </div>
+                    <div className="flex p-8 ">
+                        <div className="flex space-x-2 ml-auto">
+                            <Button
+                                onPress={onOpen}
+                                color="warning"
+                                variant="bordered"
+                                size='lg'
+                                radius="md"
+                                startContent={<FaUsers />}>
+                                เข้าร่วมห้องเรียนเขียนโค้ด
+                            </Button>
+                        </div>
+                        {/* Modal */}
+
                     </div>
                     <div className="px-12 pt-8 w-full">
                         <div className="px-[40px] flex flex-col item-center justify-center">
@@ -123,16 +197,33 @@ const CodeRoomStudent = () => {
                                 <ListboxSection title="ห้องเรียนเขียนโค้ด" showDivider>
                                     {codeRoom && codeRoom.map(codeRoom => (
                                         <ListboxItem
+                                        onClick={handleStartLearning(codeRoom._id)}
                                             className='mb-2 p-3'
                                             key="delete"
                                             title={
                                                 <div
-                                                    onClick={handleStartLearning(codeRoom._id)}
                                                     className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >{codeRoom.codeRoomName}</span>
-                                                    </p>
-                                                 
+                                                    <div className="flex flex-col space-y-2 p-3">
+                                                        <p>
+                                                            <span className='font-semibold p-2' >{codeRoom.codeRoomName}</span>
+                                                        </p>
+                                                        <div className="flex text-sm p-2 items-center font-normal  border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
+                                                            <span className='mr-1' >ระดับความยาก:</span>
+                                                            {renderStars(codeRoom.Difficulty)}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
+                                                        <Chip
+                                                            className="capitalize"
+                                                            color="success"
+                                                            size="lg"
+                                                            variant="flat"
+                                                            startContent={ <FaCheckCircle /> }
+                                                        >
+                                                            ผ่านแล้ว
+                                                        </Chip>
+                                                    </div>
+
                                                 </div>
                                             }
                                             startContent={
@@ -144,13 +235,19 @@ const CodeRoomStudent = () => {
                                         >
                                         </ListboxItem>
                                     ))}
+
                                 </ListboxSection>
                             </Listbox>
                         </div>
                     </div>
                 </div>
             </div>
-        </div >
+            <JoinRoom
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                handleStartLearning={handleStartLearning}
+            />
+        </StudentRoute >
     )
 }
 

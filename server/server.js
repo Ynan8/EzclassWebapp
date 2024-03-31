@@ -20,12 +20,16 @@
     const app = express();
     const httpServer = require('http').createServer(app);
 
-    const io = new Server(httpServer)
+    const io = new Server(httpServer,{
+        cors: {
+            origin: ["http://localhost:3000"],
+            methods: ["GET", "POST"],
+        },
+    });
 
     // connectDB
 
     connectDB()
-
 
     // middleware
     app.use(cors());
@@ -51,6 +55,12 @@
         )
     }
     io.on("connection", (socket) => {
+
+        socket.on("sendChatMessage", ({ roomId, message }) => {
+            // Emit the received message to all clients in the same room
+            io.to(roomId).emit("receiveChatMessage", message);
+        });
+        
         // console.log(`User connection: ${socket.id}`)
         socket.on('join', ({ roomId, firstName }) => {
             userSocketMap[socket.id] = firstName;

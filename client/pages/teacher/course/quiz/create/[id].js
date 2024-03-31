@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import { AiOutlineClose, AiOutlineLeft, AiOutlineMenu } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
@@ -7,6 +8,7 @@ import { Button, Switch } from '@nextui-org/react';
 import QuizLesson from '../../../../../components/form/QuizLesson';
 
 const CreateQuiz = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { id, courseYear } = router.query;
 
@@ -18,12 +20,32 @@ const CreateQuiz = () => {
   const [questions, setQuestions] = useState([]);
 
 
+  useEffect(() => {
+    if (courseYear) {
+      loadSection();
+    }
+  }, [courseYear]);
+
+  const [section, setSection] = useState(null);
+
+  const loadSection = async () => {
+    setIsLoading(true);
+    try {
+      const { data: sectionData } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section/${id}`);
+      setSection(sectionData);
+    } catch (error) {
+      console.error('Error loading section:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+
+
   const handleAddQuizData = async () => {
     // Validate quiz data
-    if (!quizName.trim()) {
-      toast.error('กรุณากรอกชื่อแบบทดสอบ');
-      return;
-    }
+   
     if (!timeLimit || timeLimit <= 0) {
       toast.error('กรุณากรอกเวลาที่กำหนด');
       return;
@@ -48,13 +70,28 @@ const CreateQuiz = () => {
           toast.error('กรุณาเพิ่มอย่างน้อยสองตัวเลือก');
           return;
         }
-        
+        if (question.questionType === 'multiple-choice') {
+          if (!question.correctOptionIndex.length) {
+            toast.error('กรุณาเลือกอย่างน้อยหนึ่งคำตอบที่ถูกต้อง');
+            return;
+          }
+        } else if (question.questionType === 'single-choice') {
+          if (question.correctAnswerIndex === null || question.correctAnswerIndex === undefined) {
+            toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
+            return;
+          }
+        }
+      } else if (question.questionType === 'true-false') {
+        if (question.trueFalseOptions === null || question.trueFalseOptions === undefined) {
+          toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
+          return;
+        }
       }
     }
 
     try {
       const quizData = {
-        quizName,
+        quizName: `${section?.sectionName}`, 
         maxAttempts: attemptAllowance,
         passingThreshold: passingGrade,
         timeLimitMinutes: timeLimit,
@@ -117,7 +154,7 @@ const CreateQuiz = () => {
   }, []);
 
   return (
-    <div>
+    <TeacherRoute>
       <div className="flex min-h-screen bg-white">
         <div class="fixed w-full flex items-center justify-between h-14 text-white z-10">
           <div class="flex-1 flex items-center h-16   bg-white w-full border-b border-gray-300">
@@ -167,20 +204,6 @@ const CreateQuiz = () => {
                 <h2 className="text-xl font-medium" >เพิ่มแบบทดสอบ</h2>
                 <p className="text-sm text-gray-500 mb-3">กรอกข้อมูลแบบทดสอบให้ครบ เพื่อเพิ่มข้อมูลในการสร้างแบบทดสอบ</p>
                 <div className="space-y-4">
-                  <div className="flex flex-col">
-                    <label className="block text-lg text-gray-900 dark:text-white">
-                      ชื่อแบบทดสอบ
-                      <span className="text-red-400 ml-[2px]">*</span>
-                    </label>
-                    <input
-                      required
-                      value={quizName}
-                      onChange={(e) => setQuizName(e.target.value)}
-                      type="text"
-                      className="shadow-sm rounded-md py-2 px-4 border-2 focus:outline-none focus:border-blue-400 transition"
-                      placeholder="ชื่อแบบทดสอบ"
-                    />
-                  </div>
                   <div className="flex flex-col mb-2">
                     <label className="block text-lg  text-gray-900 dark:text-white">
                       เวลาที่กำหนด (นาที)
@@ -259,7 +282,7 @@ const CreateQuiz = () => {
           </div>
         </div>
       </div>
-    </div>
+    </TeacherRoute>
   )
 }
 

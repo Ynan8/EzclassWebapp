@@ -60,7 +60,7 @@ const ThirdForm = ({
                             className='cursor-pointer p-2 text-center rounded focus:outline-none '
                         >
                             <p className='font-bold text-lg'>แบบร่าง</p>
-                            <p>นักเรียนไม่สามารถเห็นห้องเรียนเขียนโค้ดได้</p>
+                            <p>นักเรียนไม่สามารถมองเห็นห้องเรียนเขียนโค้ดได้</p>
                         </div>
                     </div>
                 </div>

@@ -134,7 +134,7 @@ const createCodeRoom = () => {
 
     return (
         <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-            <SideBarTeacher />
+            <SideBarTeacher  courseYearId={courseYear} />
             <HeaderBarTeacher />
             <div class="h-full ml-14 mt-28 mb-10 md:ml-64">
                 <div className="px-10">
@@ -175,7 +175,7 @@ const createCodeRoom = () => {
                                     <span className="text-2xl">2</span>
                                 </Avatar>
                                 <span className={`${page === 1 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
-                                    ตัวอย่างโจทย์
+                                    กรณีทดสอบ
                                 </span>
                             </li>
 

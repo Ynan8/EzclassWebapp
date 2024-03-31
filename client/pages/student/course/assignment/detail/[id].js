@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { BsJournalCheck } from 'react-icons/bs';
+import StudentRoute from '../../../../../components/Routes/StudentRoute'
+import { BsFilePdf, BsJournalCheck } from 'react-icons/bs';
 import { UserOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -9,7 +10,8 @@ import Link from 'next/link';
 import { FaCloudUploadAlt, FaRegEdit, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { Dialog, Transition } from '@headlessui/react';
-import { Button, CardFooter, Skeleton } from '@nextui-org/react';
+import { Button, CardFooter, Chip, Skeleton } from '@nextui-org/react';
+import { MdAssignment } from 'react-icons/md';
 
 
 const DetailAssignment = () => {
@@ -43,6 +45,10 @@ const DetailAssignment = () => {
 
     const loadAssignment = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/assignment/${id}`)
             setAssignment(data)
         } catch (error) {
@@ -58,6 +64,10 @@ const DetailAssignment = () => {
 
     const loadAssignmentSubmit = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
+            }
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}`);
             setAssignmentSubmit(data)
         } catch (error) {
@@ -165,9 +175,6 @@ const DetailAssignment = () => {
         }
     }
 
-    // console.log(courseRoom._id)
-
-
     const handleSubmit = async () => {
         try {
             if (!assignmentFile) {
@@ -178,8 +185,8 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: true });
 
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}/${courseRoom._id
-            }`, {
-                fileSubmit: {   
+                }`, {
+                fileSubmit: {
                     originalName: originalFileName,
                     location: assignmentFile.Location,
                     bucket: assignmentFile.Bucket,
@@ -198,12 +205,31 @@ const DetailAssignment = () => {
         }
     };
 
+    const handleCancelSubmit = async () => {
+        try {
+            setValues({ ...values, loading: true });
+
+            // Call the API to cancel the submission
+            await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/cancel-submit`, {
+                assignmentId: id,
+            });
+
+            toast.success("การส่งงานถูกยกเลิกสำเร็จ");
+            setCheckSubmit({}); // Clear the submission data
+        } catch (error) {
+            console.error("Error canceling submission:", error);
+            toast.error("ไม่สามารถยกเลิกการส่งงานได้");
+        } finally {
+            setValues({ ...values, loading: false });
+        }
+    };
+
 
 
 
 
     return (
-        <>
+        <StudentRoute>
             <div>
                 <Link href={`/student/course/lesson/${courseId}`} >
                     <div className="p-2 m-2">
@@ -217,18 +243,31 @@ const DetailAssignment = () => {
                                 <div className="flex justify-between">
                                     <div className="flex flex-col space-y-6">
                                         <div className="flex items-center space-x-2">
-                                            <BsJournalCheck size={30} />
-                                            <p className="text-2xl font-semibold">{assignments.assignmentName}</p>
+                                            <div className="bg-warning/10 text-warning p-2 rounded-md">
+                                                <MdAssignment size={25} className="text-warning" />
+                                            </div>
+                                            <p className="text-xl font-semibold">{assignments.assignmentName}</p>
                                         </div>
-                                        <p>มอบหมายเมื่อ <span className='font-semibold'>{moment(assignments.createdAt)
-                                            .locale('th')
-                                            .format('LL')}</span></p>
-                                        <p>กำหนดส่ง <span className='font-semibold'>{moment(assignments.createdAt)
-                                            .locale('th')
-                                            .format('LL')}</span></p>
+                                        <p className='text-lg' >
+                                            <span className='font-semibold'>มอบหมายเมื่อ</span> {moment(assignments.createdAt)
+                                                .locale('th')
+                                                .format('LL HH:mm')}
+                                        </p>
+                                        <p className='text-lg' >
+                                            <span className='font-semibold'>กำหนดส่ง</span> {moment(assignments.createdAt)
+                                                .locale('th')
+                                                .format('LL HH:mm')}
+                                        </p>
                                     </div>
                                     <div className="flex flex-col justify-center items-center rounded-md">
-                                        <p className='text-lg' >{assignments.scoreLimit} คะแนน</p>
+                                        <Chip
+                                            className="capitalize p-4 text-xl"
+                                            color={"primary"}
+                                            size="lg"
+                                            variant="flat"
+                                        >
+                                            {assignments.scoreLimit} คะแนน
+                                        </Chip>
                                     </div>
                                 </div>
                                 <div className="flex flex-col space-y-1 mt-3">
@@ -247,18 +286,19 @@ const DetailAssignment = () => {
                                     <div className="form-group">
                                         <div className="flex items-center mt-2  ">
                                             {assignments.assignmentFile ? (
-                                                <div
-                                                    onClick={handleFileClick}
-                                                    className="flex space-x-2 items-center cursor-pointer shadow-md py-3 px-2 border-2 rounded-md w-full  ">
-                                                    <div className="bg-gray-200 p-2 rounded-full">
-                                                        <BsJournalCheck size={25} />
+                                                <Link
+                                                    href={assignments.assignmentFile.location}
+                                                    download={assignments.assignmentFile.originalName}
+                                                >
+                                                    <div
+                                                        onClick={handleFileClick}
+                                                        className="flex space-x-2 items-center cursor-pointer shadow-md py-3 px-2 border-2 rounded-md w-full focus:outline-none transition hover:bg-gray-100">
+                                                        <BsFilePdf size={25} />
+                                                        <div className="flex flex-col">
+                                                            <p>{assignments.assignmentFile.originalName}</p>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex flex-col">
-                                                        <p>{assignments.assignmentFile.originalName}</p>
-                                                        <p>ดาวน์โหลด</p>
-                                                    </div>
-                                                </div>
-
+                                                </Link>
                                             ) : (
                                                 ""
                                             )}
@@ -314,7 +354,7 @@ const DetailAssignment = () => {
                                         <Button
                                             size='lg'
                                             color='danger'
-                                            onClick={handleRemoveFile}
+                                            onClick={handleCancelSubmit}
                                             isLoading={values.loading}
                                         >
 
@@ -343,7 +383,7 @@ const DetailAssignment = () => {
                 </div>
 
             </div>
-        </>
+        </StudentRoute>
     );
 };
 

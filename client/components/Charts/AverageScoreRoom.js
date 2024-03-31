@@ -17,7 +17,7 @@ function Example({ averageScoresRoom }) {
       labels: averageScoresRoom.map(item => item.section),
       datasets: [
         {
-          label: 'Room Name', // You can replace this with the actual room name if you have it
+          label: 'คะแนนเฉลี่ย', // You can replace this with the actual room name if you have it
           data: averageScoresRoom.map(item => item.score),
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',

@@ -1,4 +1,5 @@
 import { Listbox, ListboxItem, ListboxSection, Switch } from '@nextui-org/react';
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
@@ -269,7 +270,7 @@ const EditContentLesson = () => {
 
 
     return (
-        <div>
+        <TeacherRoute>
             {/* <pre>{JSON.stringify(values.contents,null,4)}</pre> */}
             <div className="flex min-h-screen bg-white">
                 <div class="fixed w-full flex items-center justify-between h-14 text-white z-10">
@@ -441,7 +442,7 @@ const EditContentLesson = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </TeacherRoute>
     )
 }
 

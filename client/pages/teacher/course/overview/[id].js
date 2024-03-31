@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, Card, Skeleton } from "@nextui-org/react";
-
 import { HiOutlineUserGroup } from 'react-icons/hi';
 import { BsBook, BsJournalCheck } from 'react-icons/bs';
 import { SiGoogleclassroom } from 'react-icons/si';
@@ -10,15 +10,17 @@ import CardOverviewCourse from '../../../../components/Cards/CardOverviewCourse'
 import AverageScoreCourse from '../../../../components/Charts/AverageScoreCourse';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Link from 'next/link';
 
 
 const OverviewCourse = () => {
     const [isCourseLoading, setIsCourseLoading] = useState(true);
-    const [isSectionsLoading, setIsSectionsLoading] = useState(true);
-    const [isCourseRoomLoading, setIsCourseRoomLoading] = useState(true);
-    const [isQuizScoreLoading, setIsQuizScoreLoading] = useState(true);
     const [isAverageScoresLoading, setIsAverageScoresLoading] = useState(true);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
 
     const router = useRouter();
     const { id } = router.query;
@@ -200,21 +202,33 @@ const OverviewCourse = () => {
 
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto  bg-gray-50 text-black ">
-                <SideBarTeacher courseYearId={id} />
-                <HeaderBarTeacher />
-                <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
+                <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
+                <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+                <div className="h-full mt-28 mb-10 md:ml-64">
                     <div className="px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    หน้าหลัก
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    {course.courseName} ม.{course.level}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/year/${course._id}`}>
+                                    ปีการศึกษา {courseYear.year}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>ภาพรวมรายวิชา</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
-                    <div className="px-12 w-full">
+                    <div className="px-4 w-full">
 
                         {/* Card */}
                         {isCourseLoading ? (
@@ -272,7 +286,7 @@ const OverviewCourse = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </TeacherRoute>
     )
 }
 

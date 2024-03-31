@@ -17,6 +17,9 @@ const {
     profileImage,
     UpdateProfile,
     UpdatePassword,
+    currentTeacher,
+    currentStudent,
+    currentAdmin,
     
 } = require("../controllers/auth")
 
@@ -37,5 +40,8 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/current-user",auth, currentUser);
+router.get("/current-teacher",auth, currentTeacher);
+router.get("/current-student",auth, currentStudent);
+router.get("/current-admin",auth, currentAdmin);
 
 module.exports = router;

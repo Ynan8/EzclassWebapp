@@ -9,6 +9,7 @@ import { RiLoopLeftFill } from 'react-icons/ri';
 import moment from "moment/min/moment-with-locales";
 import AverageQuizScoreStd from "../../components/Charts/AverageScoreStd"
 import AverageQuizSubmit from "../../components/Charts/AverageQuizSubmit"
+import { Button } from '@nextui-org/react';
 
 
 const QuizContent = ({
@@ -41,12 +42,44 @@ const QuizContent = ({
     const openModal = (quizId) => {
         setApprovalModal(true);
     };
+
     const startQuiz = () => {
-
-
+        // Shuffle questions
+        const shuffledQuestions = [...selectedQuizContent.questions];
+        shuffleArray(shuffledQuestions);
+    
+        // Shuffle choices for each question and update correct answer indices
+        const shuffledQuestionsWithShuffledChoices = shuffledQuestions.map((question) => {
+            const shuffledOptions = [...question.options];
+            shuffleArray(shuffledOptions);
+    
+            // Update correct answer index for single-choice and true-false questions
+            if (question.questionType === 'single-choice' || question.questionType === 'true-false') {
+                const newCorrectIndex = shuffledOptions.indexOf(question.options[question.correctAnswerIndex]);
+                question.correctAnswerIndex = newCorrectIndex;
+            }
+    
+            // Update correct answer indices for multiple-choice questions
+            if (question.questionType === 'multiple-choice') {
+                const newCorrectIndices = question.correctOptionIndex.map((index) =>
+                    shuffledOptions.indexOf(question.options[index])
+                );
+                question.correctOptionIndex = newCorrectIndices;
+            }
+    
+            return { ...question, options: shuffledOptions };
+        });
+    
+        setSelectedQuizContent({ ...selectedQuizContent, questions: shuffledQuestionsWithShuffledChoices });
         setQuizStarted(true);
-        setAnswers(Array(selectedQuizContent.questions.length).fill(undefined));
+        setAnswers(Array(shuffledQuestionsWithShuffledChoices.length).fill(undefined));
+    
+        // Mark the quiz as completed
+        markCompletedQuiz(selectedQuizContent._id);
     };
+    
+
+
 
     const handleAnswerChange = (index, value) => {
         setAnswers((prevAnswers) => {
@@ -287,21 +320,43 @@ const QuizContent = ({
         }
     };
 
-    return (
-        <div>
-            {/* <pre>{JSON.stringify(selectedQuizContent, null, 4)}</pre>  */}
 
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+    }
+
+
+
+
+
+    return (
+        <div className="">
+            {/* <pre>{JSON.stringify(selectedQuizContent, null, 4)}</pre>  */}
             {selectedQuizContent && !showScore && (
-                <div className={`mx-auto ${quizStarted ? 'md:w-9/12 w-[90%] flex md:flex-row flex-col' : 'max-w-screen-lg'} px-4 pt-20 pb-20 space-y-12`}>
-                    <div className={`w-full rounded  ${quizStarted ? 'md:w-[70%]' : 'p-8'}`}>
-                        <div className="px-8 pt-4 pb-6 space-y-6">
+                <div className="h-full mt-10mb-10 md:ml-20">
+                    <div className="px-4">
+                        <div className="flex flex-col item-center justify-center">
+                            {quizStarted && (
+                                <div>
+                                    <div className="flex space-x-1 items-center px-2 md:px-6 lg:px-8">
+                                        <p><LuAlarmClock size={24} /></p>
+                                        <p className=" font-medium text-lg md:text-xl">เวลาที่เหลือ: <span className='font-semibold'>{formatTime(timeRemaining)}</span></p>
+                                    </div>
+
+                                </div>
+                            )}
+                        </div>
+                        <div className="px-2 md:px-6 lg:px-8 pt-4 pb-6 space-y-6">
                             {quizStarted ? (
                                 <div>
                                     {selectedQuizContent.questions.map((question, index) => (
                                         index === currentQuestion && (
                                             <div className="flex flex-col" key={question._id}>
                                                 <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                                                    <div className="text-xl bg-gray-50 border-b rounded-t-md px-8 py-4 flex items-center justify-between space-x-6">
+                                                    <div className="text-base md:text-lg lg:text-xl bg-gray-50 border-b rounded-t-md px-2 md:px-6 lg:px-8 py-4 flex items-center justify-between space-x-2 md:space-x-4 lg:space-x-6">
                                                         <p>
                                                             คำถามข้อที่{" "}
                                                             <span className="font-semibold">
@@ -312,8 +367,8 @@ const QuizContent = ({
                                                             <span className="font-semibold">{question.score}</span> คะแนน
                                                         </p>
                                                     </div>
-                                                    <div className="px-8 pt-4 pb-6 space-y-6">
-                                                        <h4 className="text-xl font-semibold">
+                                                    <div className="px-2 md:px-6 lg:px-8 pt-4 pb-6 space-y-6">
+                                                        <h4 className="text-base md:text-lg lg:text-xl font-semibold">
                                                             <span style={{ wordWrap: 'break-word' }}>{question.questionText}</span>
                                                         </h4>
                                                         {question.questionType === 'multiple-choice' && (
@@ -361,17 +416,6 @@ const QuizContent = ({
                                                             </>
                                                         )}
 
-                                                        {/* 
-                                                        {question.questionType === 'open-end' && (
-                                                            <input
-                                                                type="text"
-                                                                className="shadow-sm rounded-md py-2 px-4 border focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-20 focus:border-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                                                placeholder="คำตอบ"
-                                                                value={answers[index]}
-                                                                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                                                            />
-                                                        )} */}
-
                                                         {question.questionType === 'true-false' && (
                                                             <>
                                                                 <label className="flex items-center space-x-3 rounded-md p-2 border-2 border-gray-300 cursor-pointer">
@@ -404,269 +448,285 @@ const QuizContent = ({
                                         )
                                     ))}
 
-                                    <div className="flex justify-between mt-4">
-                                        <button
-                                            className="cursor-pointer flex items-center text-lg border-2 border-blue-500 hover:text-white hover:bg-blue-500 duration-300 py-2 px-4 rounded"
+                                    <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0">
+                                        <Button
+                                            variant='bordered'
+                                            size='lg'
+                                            className="w-full sm:w-auto"
                                             onClick={() => setCurrentQuestion(Math.max(currentQuestion - 1, 0))}
-                                            disabled={currentQuestion === 0}
+                                            isDisabled={currentQuestion === 0}
+                                            color="primary"
                                         >
                                             คำถามก่อนหน้า
-                                        </button>
-
+                                        </Button>
                                         {/* Conditionally render Next Question or Submit button */}
                                         {currentQuestion === selectedQuizContent.questions.length - 1 ? (
-                                            <button
-                                                className="cursor-pointer flex items-center text-lg bg-green-500 text-white hover:bg-green-700 duration-300 py-2 px-4 rounded"
+                                            <Button
+                                                variant='shadow'
+                                                size='lg'
+                                                className="w-full sm:w-auto text-white"
                                                 onClick={() => openModal(selectedQuizContent._id)}
+                                                color='success'
                                             >
                                                 ส่งคำตอบ
-                                            </button>
+                                            </Button>
                                         ) : (
-                                            <button
-                                                className="cursor-pointer flex items-center text-lg bg-blue-500 text-white hover:bg-blue-700 duration-300 py-2 px-4 rounded"
+                                            <Button
+                                                variant='shadow'
+                                                size='lg'
+                                                className="w-full sm:w-auto"
                                                 onClick={() => setCurrentQuestion(Math.min(currentQuestion + 1, selectedQuizContent.questions.length - 1))}
-                                                disabled={currentQuestion === selectedQuizContent.questions.length - 1}
+                                                isDisabled={currentQuestion === selectedQuizContent.questions.length - 1}
+                                                color="primary"
                                             >
                                                 คำถามถัดไป
-                                            </button>
+                                            </Button>
                                         )}
+                                    </div>
+                                    <div className="cursor-pointer flex space-x-3 mt-4   justify-center">
+                                        {selectedQuizContent.questions.map((_, index) => (
+                                            <div
+                                                key={index}
+                                                className={`rounded-full p-3 md:p-4 border-2 ${activeQuestionIndex === index
+                                                    ? 'border-blue-800 bg-blue-800 text-white'
+                                                    : answers[index] !== undefined
+                                                        ? 'border-green-500 bg-green-500 text-white'
+                                                        : 'border-blue-800 hover:bg-blue-800 hover:text-white'
+                                                    } duration-300 flex items-center justify-center mb-4`}
+                                                style={{ width: '35px', height: '35px' }}
+                                                onClick={() => handleJumpToQuestion(index + 1)}
+                                            >
+                                                {index + 1}
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             ) : (
                                 <>
                                     {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
                                         // "score height"
-                                        <div className={`mx-auto max-w-screen-lg px-4 pt-4 pb-20 space-y-12`}>
-                                            <div className="flex flex-col" >
-                                                <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                                                    <div className="text-lg bg-gray-50 border-b rounded-t-md px-8 py-4 flex items-center justify-between space-x-6">
-                                                        <p>
-                                                            แบบทดสอบท้ายบทที่ 1 <span className='font-semibold'>{selectedQuizContent.quizName}</span>
-                                                            <span className="font-semibold">
+                                        <div className="h-full mt-28 mb-10 md:ml-20">
+                                            <div className="px-4">
+                                                <div className="flex flex-col item-center justify-center">
+                                                    <div className="rounded-md shadow-md border border-opacity-50 mb-5">
+                                                        <div className="text-lg bg-gray-50 border-b rounded-t-md px-8 py-4 flex items-center justify-between space-x-6">
+                                                            <p>
+                                                                แบบทดสอบท้ายบทที่ <span className='font-semibold'>{selectedQuizContent.quizName}</span>
+                                                                <span className="font-semibold">
 
-                                                            </span>
-                                                        </p>
-                                                        <div className="flex space-x-2">
-                                                            {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
+                                                                </span>
+                                                            </p>
+                                                            <div className="flex space-x-2">
+                                                                {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
+                                                                    <button
+                                                                        disabled
+                                                                        className="flex text-white bg-gray-400  py-2 px-6 rounded"
+                                                                    >
+                                                                        ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
+                                                                    </button>
+                                                                ) : (
+                                                                    <Button
+                                                                        variant='shadow'
+                                                                        color="primary"
+                                                                        onClick={restartQuiz}
+                                                                        startContent={
+                                                                            <RiLoopLeftFill className="ml-2" size={25} />
+                                                                        }
+                                                                    >
+                                                                        ทำอีกครั้ง
+                                                                    </Button>
+
+                                                                )}
                                                                 <button
-                                                                    disabled
-                                                                    className="flex text-white bg-gray-400  py-2 px-6 rounded"
+                                                                    onClick={goToNextLessonQuiz}
+                                                                    className="flex text-white bg-green-500 hover:bg-green-700 duration-300 shadow-xl py-2 px-6 rounded"
                                                                 >
-                                                                    ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
+                                                                    บทเรียนถัดไป  <AiOutlineArrowRight className="ml-2" size={25} />
                                                                 </button>
-                                                            ) : (
-                                                                <button
-                                                                    onClick={restartQuiz}
-                                                                    className="flex text-white bg-blue-500 hover:bg-blue-700 duration-300 shadow-xl py-2 px-6 rounded"
-                                                                >
-                                                                    ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                onClick={goToNextLessonQuiz}
-                                                                className="flex text-white bg-green-500 hover:bg-green-700 duration-300 shadow-xl py-2 px-6 rounded"
-                                                            >
-                                                                บทเรียนถัดไป  <AiOutlineArrowRight className="ml-2" size={25} />
-                                                            </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="px-3">
-                                                        {averageHighestScore > selectedQuizContent.passingThreshold ? (
-                                                            <div className="text-green-600 w-full bg-green-100 rounded-md p-3 mt-2">
-                                                                <p>ขอแสดงความยินดี ! คุณได้คะแนนมากกว่าเกณฑ์ค่าเฉลี่ย !!</p>
-                                                                <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ผ่าน และ ยอดเยี่ยม เราขอเป็นกำลังใจให้สู้ต่อไป !</p>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-red-600 w-full bg-red-100 rounded-md p-3 mt-2">
-                                                                <p>ขอแสดงความเสียใจ คุณได้คะแนนต่ำกว่าเกณฑ์</p>
-                                                                <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ไม่ผ่าน เราขอเป็นกำลังใจให้คุณพยายามต่อไป !</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex justify-center items-center">
-
-                                                        <div className="flex flex-col items-center justify-center  px-8 pt-4 pb-6 space-y-2">
-                                                            <div className=" flex flex-col justify-center items-center">
-                                                                <h2 className={`text-4xl font-bold mb-2 ${averageHighestScore > selectedQuizContent.passingThreshold ? 'text-green-600' : 'text-red-600'}`}>
-                                                                    {averageHighestScore > selectedQuizContent.passingThreshold ? 'ผ่าน' : 'ไม่ผ่าน'}
-                                                                </h2>
-                                                                <p className='text-2xl' >คะแนนของคุณ {highestScore}/{selectedQuizContent.questions.length} คะแนน</p>
-                                                                <p className='text-2xl'>คะแนนเฉลี่ย {averageHighestScore.toFixed(2)}%</p>
-                                                                <AverageQuizScoreStd
-                                                                    averageHighestScore={averageHighestScore}
-                                                                />
-                                                            </div>
-
-                                                        </div>
-                                                        <div className="px-8  pb-6 space-y-6">
-                                                            <h2 className="text-xl ">ประวัติทำแบบทดสอบนี้</h2>
-                                                            {QuizScore.map((quizScore, index) => (
-                                                                <div className="flex flex-col justify-center">
-                                                                    <p>ครั้งที่ {index + 1} : <span className='font-bold'>{quizScore.score}/{selectedQuizContent.questions.length} คะแนน</span></p>
-                                                                    <p>วันที่: <span className='font-bold'>
-                                                                        ({moment(quizScore.timestamp)
-                                                                            .locale('th')
-                                                                            .format('LLL')})
-                                                                    </span>
-                                                                    </p>
+                                                        <div className="px-3">
+                                                            {averageHighestScore > selectedQuizContent.passingThreshold ? (
+                                                                <div className="text-green-600 w-full bg-green-100 rounded-md p-3 mt-2">
+                                                                    <p>ขอแสดงความยินดี ! คุณได้คะแนนมากกว่าเกณฑ์ค่าเฉลี่ย !!</p>
+                                                                    <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ผ่าน และ ยอดเยี่ยม เราขอเป็นกำลังใจให้สู้ต่อไป !</p>
                                                                 </div>
-                                                            ))}
+                                                            ) : (
+                                                                <div className="text-red-600 w-full bg-red-100 rounded-md p-3 mt-2">
+                                                                    <p>ขอแสดงความเสียใจ คุณได้คะแนนต่ำกว่าเกณฑ์</p>
+                                                                    <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ไม่ผ่าน เราขอเป็นกำลังใจให้คุณพยายามต่อไป !</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex justify-center items-center">
 
+                                                            <div className="flex flex-col items-center justify-center  px-8 pt-4 pb-6 space-y-2">
+                                                                <div className=" flex flex-col justify-center items-center">
+                                                                    <h2 className={`text-4xl font-bold mb-2 ${averageHighestScore > selectedQuizContent.passingThreshold ? 'text-green-600' : 'text-red-600'}`}>
+                                                                        {averageHighestScore > selectedQuizContent.passingThreshold ? 'ผ่าน' : 'ไม่ผ่าน'}
+                                                                    </h2>
+                                                                    <p className='text-2xl' >คะแนนของคุณ {highestScore}/{selectedQuizContent.questions.length} คะแนน</p>
+                                                                    <p className='text-2xl'>คะแนนเฉลี่ย {averageHighestScore.toFixed(2)}%</p>
+                                                                    <AverageQuizScoreStd
+                                                                        averageHighestScore={averageHighestScore}
+                                                                    />
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="px-8  pb-6 space-y-6">
+                                                                <h2 className="text-xl ">ประวัติทำแบบทดสอบนี้</h2>
+                                                                {QuizScore.map((quizScore, index) => (
+                                                                    <div className="flex flex-col justify-center">
+                                                                        <p>ครั้งที่ {index + 1} : <span className='font-bold'>{quizScore.score}/{selectedQuizContent.questions.length} คะแนน</span></p>
+                                                                        <p>วันที่: <span className='font-bold'>
+                                                                            ({moment(quizScore.timestamp)
+                                                                                .locale('th')
+                                                                                .format('LLL')})
+                                                                        </span>
+                                                                        </p>
+                                                                    </div>
+                                                                ))}
+
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    ) : <div className="rounded-md shadow-md border border-opacity-50 mt-4">
-                                        <div className="bg-gray-50 border-b rounded-t-md px-8 py-4 space-x-6">
-                                            <p className="font-medium text-xl">แบบทดสอบท้ายบทที่ 1 <span className='font-semibold'>{selectedQuizContent.quizName}</span></p>
+                                    ) :
+                                        <div className="rounded-md shadow-md border border-opacity-50 mt-4">
+                                            {/* <pre>{JSON.stringify(selectedQuizContent, null, 4)}</pre> */}
+                                            <div className="bg-gray-50 border-b rounded-t-md px-4 py-3 sm:px-8 sm:py-4">
+                                                <p className="font-medium text-base sm:text-xl text-center sm:text-left">แบบทดสอบท้ายบท <span className='font-semibold'>{selectedQuizContent.quizName}</span></p>
+                                            </div>
+                                            <div className="px-4 sm:px-8 pb-6 space-y-4">
+                                                <div className="flex mt-1 items-center justify-center">
+                                                    <MdQuiz size={80} className='text-blue-500 sm:size-100' />
+                                                </div>
+                                                <div className="text-center flex flex-col mt-2 space-y-2 text-sm sm:text-lg">
+                                                    <p>จำนวนข้อ: <span className='font-semibold text-blue-500'>{selectedQuizContent.questions.length} ข้อ</span></p>
+                                                    <p>เวลาที่ใช้: <span className='font-semibold text-blue-500'>{selectedQuizContent.timeLimitMinutes} นาที</span></p>
+                                                    <p>เกณฑ์คะแนนที่ผ่าน: <span className='font-semibold text-blue-500'>{selectedQuizContent.passingThreshold}%</span></p>
+                                                    <p>
+                                                        สามารถทำได้: {' '}
+                                                        <span className='font-semibold text-blue-500'>
+                                                            {selectedQuizContent.maxAttempts - QuizScore.length} ครั้ง
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <div className="flex space-x-4 item-center justify-center">
+                                                    <Button
+                                                        onPress={startQuiz}
+                                                        className='w-full sm:w-auto sm:px-20 py-2'
+                                                        variant='shadow'
+                                                        color="primary">
+                                                        เริ่มทำแบบทดสอบ
+                                                    </Button>
+                                                  
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="px-8 pb-6 space-y-6">
-                                            <div className="flex mt-1 items-center justify-center">
-                                                <MdQuiz size={100} className='text-blue-500' />
-                                            </div>
-                                            <div className="flex text-center flex-col mt-2 space-y-2 text-lg">
-                                                <p>จำนวนข้อ: <span className='font-semibold text-blue-500'>{selectedQuizContent.questions.length} ข้อ</span></p>
-                                                <p>เวลาที่ใช้: <span className='font-semibold text-blue-500'>{selectedQuizContent.timeLimitMinutes} นาที</span></p>
-                                                <p>เกณฑ์คะแนนที่ผ่าน: <span className='font-semibold text-blue-500'>{selectedQuizContent.passingThreshold}%</span></p>
-                                                <p>
-                                                    สามารถทำได้: {' '}
-                                                    <span className='font-semibold text-blue-500'>
-                                                        {selectedQuizContent.maxAttempts - QuizScore.length} ครั้ง
-                                                    </span>
-                                                </p>
-                                            </div>
-                                            <div className="flex item-center justify-center text-lg text-center mt-12">
-                                                <button
-                                                    className="text-white bg-blue-500 hover:bg-blue-700 duration-300 shadow-xl py-2 px-16 rounded"
-                                                    onClick={startQuiz}
-                                                >
-                                                    เริ่มทำแบบทดสอบ
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>}
+
+                                    }
                                 </>
                             )}
                         </div>
                     </div>
 
-                    <div className="md:w-[30%] w-full p-4 mt-0">
-                        {quizStarted && (
-                            <div>
-                                <div className="flex space-x-1 items-center">
-                                    <p><LuAlarmClock size={27} /></p>
-                                    <p className="font-medium text-xl">เวลาที่เหลือ: <span className='font-semibold'>{formatTime(timeRemaining)}</span></p>
-                                </div>
-                                <h3 className="text-xl font-medium my-3">จำนวนข้อ: </h3>
-                                <div className="cursor-pointer grid grid-cols-4 sm:grid-cols-5 gap-2 justify-center">
-                                    {selectedQuizContent.questions.map((_, index) => (
-                                        <div
-                                            key={index}
-                                            className={`rounded-full p-4 border-2 ${activeQuestionIndex === index
-                                                ? 'border-blue-800 bg-blue-800 text-white'
-                                                : answers[index] !== undefined
-                                                    ? 'border-green-500 bg-green-500 text-white' // Change the style for answered but not active questions
-                                                    : 'border-blue-800 hover:bg-blue-800 hover:text-white'
-                                                } duration-300 flex items-center justify-center mb-4`}
-                                            style={{ width: '40px', height: '40px' }}
-                                            onClick={() => handleJumpToQuestion(index + 1)}
-                                        >
-                                            {index + 1}
-                                        </div>
-                                    ))}
-                                </div>
 
 
-                            </div>
-                        )}
-                    </div>
                 </div>
 
             )}
-
             {showScore && (
-                <div className={`mx-auto max-w-screen-lg px-4 pt-20 pb-20 space-y-12`}>
-                    <div className="flex flex-col" >
-                        <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                            <div className="text-lg bg-gray-50 border-b rounded-t-md px-8 py-4 flex items-center justify-between space-x-6">
-                                <p>
-                                    แบบทดสอบท้ายบทที่ 1 <span className='font-semibold'>{selectedQuizContent.quizName}</span>
-                                    <span className="font-semibold">
+                <div className="h-full mt-28 mb-10 md:ml-20">
+                    <div className="px-4">
+                        <div className="flex flex-col item-center justify-center">
+                            <div className="rounded-md shadow-md border border-opacity-50 mb-5">
+                                <div className="md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
+                                    <p>
+                                        แบบทดสอบท้ายบทที่ test <span className='font-semibold'>{selectedQuizContent.quizName}</span>
+                                    </p>
+                                    <div className="flex space-x-1 md:space-x-2">
+                                        {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
+                                            <Button
+                                                size='md'
+                                                isDisabled
+                                                color="default"
+                                                endContent={<RiLoopLeftFill size={20} />}
+                                            >
+                                                ทำอีกครั้ง
+                                            </Button>
 
-                                    </span>
-                                </p>
-                                <div className="flex space-x-2">
-                                    {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
-                                        <button
-                                            disabled
-                                            className="flex  text-white bg-gray-400  py-2 px-6 rounded"
+                                        ) : (
+                                            <Button
+                                                onPress={restartQuiz}
+                                                size='md'
+                                                color="primary"
+                                                endContent={<RiLoopLeftFill size={20} />}
+                                            >
+                                                ทำอีกครั้ง
+                                            </Button>
+                                        )}
+                                        <Button
+                                            onPress={goToNextLessonQuiz}
+                                            size='md'
+                                            color="success"
+                                            className='text-white'
+                                            endContent={<AiOutlineArrowRight size={20} />}
                                         >
-                                            ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={restartQuiz}
-                                            className="flex text-white bg-blue-500 hover:bg-blue-700 duration-300 shadow-xl py-2 px-6 rounded"
-                                        >
-                                            ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={goToNextLessonQuiz}
-                                        className="flex text-white bg-green-500 hover:bg-green-700 duration-300 shadow-xl py-2 px-6 rounded"
-                                    >
-                                        บทเรียนถัดไป  <AiOutlineArrowRight className="ml-2" size={25} />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="px-3">
-                                {averageScore > selectedQuizContent.passingThreshold ? (
-                                    <div className="text-green-600 w-full bg-green-100 rounded-md p-3 mt-2">
-                                        <p>ขอแสดงความยินดี ! คุณได้คะแนนมากกว่าเกณฑ์ค่าเฉลี่ย !!</p>
-                                        <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ผ่าน และ ยอดเยี่ยม เราขอเป็นกำลังใจให้สู้ต่อไป !</p>
-                                    </div>
-                                ) : (
-                                    <div className="text-red-600 w-full bg-red-100 rounded-md p-3 mt-2">
-                                        <p>ขอแสดงความเสียใจ คุณได้คะแนนต่ำกว่าเกณฑ์</p>
-                                        <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ไม่ผ่าน เราขอเป็นกำลังใจให้คุณพยายามต่อไป !</p>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex  justify-center items-center">
-                                <div className=" flex flex-col items-center px-8 pt-4 pb-6 space-y-6">
-                                    <div className=" flex flex-col justify-center items-center">
-
-                                        <h2 className={`text-4xl font-bold mb-2 ${averageScore > selectedQuizContent.passingThreshold ? 'text-green-600' : 'text-red-600'}`}>
-                                            {averageScore > selectedQuizContent.passingThreshold ? 'ผ่าน' : 'ไม่ผ่าน'}
-                                        </h2>
-
-                                        <p className='text-2xl' >คะแนนของคุณ {totalScore}/{selectedQuizContent.questions.length} คะแนน</p>
-                                        <p className='text-2xl'>คะแนนเฉลี่ย {averageScore.toFixed(2)}%</p>
-                                        <AverageQuizSubmit
-                                            averageScore={averageScore}
-                                        />
+                                            บทเรียนถัดไป
+                                        </Button>
                                     </div>
                                 </div>
-                                <div className="px-8 pt-4 pb-6 space-y-6">
-                                    <h2 className="text-xl ">ประวัติทำแบบทดสอบนี้</h2>
-                                    {QuizScore.map((quizScore, index) => (
-                                        <div className="flex flex-col justify-center">
-                                            <p>ครั้งที่ {index + 1} : <span className='font-bold'>{quizScore.score}/{selectedQuizContent.questions.length} คะแนน</span></p>
-                                            <p>วันที่: <span className='font-bold'>
-                                                ({moment(quizScore.timestamp)
-                                                    .locale('th')
-                                                    .format('LLL')})
-                                            </span>
-                                            </p>
+                                <div className="px-3">
+                                    {averageScore > selectedQuizContent.passingThreshold ? (
+                                        <div className="text-green-600 w-full bg-green-100 rounded-md p-3 mt-2">
+                                            <p>ขอแสดงความยินดี ! คุณได้คะแนนมากกว่าเกณฑ์ค่าเฉลี่ย !!</p>
+                                            <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ผ่าน และ ยอดเยี่ยม เราขอเป็นกำลังใจให้สู้ต่อไป !</p>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        <div className="text-red-600 w-full bg-red-100 rounded-md p-3 mt-2">
+                                            <p>ขอแสดงความเสียใจ คุณได้คะแนนต่ำกว่าเกณฑ์</p>
+                                            <p>ผลการทดสอบของคุณอยู่ในเกณฑ์ไม่ผ่าน เราขอเป็นกำลังใจให้คุณพยายามต่อไป !</p>
+                                        </div>
+                                    )}
                                 </div>
+                                <div className="flex flex-col sm:flex-row justify-center items-center">
+                                    <div className="flex flex-col items-center px-4 sm:px-8 pt-4 pb-6 space-y-6">
+                                        <div className="flex flex-col justify-center items-center">
+                                            <h2 className={`text-3xl sm:text-4xl font-bold mb-2 ${averageScore > selectedQuizContent.passingThreshold ? 'text-green-600' : 'text-red-600'}`}>
+                                                {averageScore > selectedQuizContent.passingThreshold ? 'ผ่าน' : 'ไม่ผ่าน'}
+                                            </h2>
+                                            <p className='text-xl sm:text-2xl'>คะแนนของคุณ {totalScore}/{selectedQuizContent.questions.length} คะแนน</p>
+                                            <p className='text-xl sm:text-2xl'>คะแนนเฉลี่ย {averageScore.toFixed(2)}%</p>
+                                            <AverageQuizSubmit
+                                                averageScore={averageScore}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="px-4 sm:px-8 pt-4 pb-6 space-y-6">
+                                        <h2 className="text-lg sm:text-xl">ประวัติทำแบบทดสอบนี้</h2>
+                                        {QuizScore.map((quizScore, index) => (
+                                            <div className="flex flex-col justify-center">
+                                                <p>ครั้งที่ {index + 1} : <span className='font-bold'>{quizScore.score}/{selectedQuizContent.questions.length} คะแนน</span></p>
+                                                <p>วันที่: <span className='font-bold'>
+                                                    ({moment(quizScore.timestamp)
+                                                        .locale('th')
+                                                        .format('LLL')})
+                                                </span>
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
             <Transition appear show={ApprovalModal} as={Fragment}>
                 <Dialog
                     as="div"
@@ -715,7 +775,6 @@ const QuizContent = ({
                                         type="button"
                                         className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                                         onClick={() => {
-                                            markCompletedQuiz(quizId);
                                             handleSubmitQuiz();
                                         }}
                                     >

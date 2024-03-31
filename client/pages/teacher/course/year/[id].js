@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, DropdownSection, ModalHeader, ModalBody, ModalFooter, Card, CardHeader, CardBody, Skeleton } from "@nextui-org/react";
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher';
 import AddCourseYear from '../../../../components/Modals/AddCourseYear';
@@ -8,7 +9,8 @@ import bgYearAdd from '../../../../public/bgYearAdd.png'
 import bgYear from '../../../../public/bgYear.png'
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { Modal, ModalContent, useDisclosure, Link } from "@nextui-org/react";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import UpdateCourseYear from '../../../../components/Modals/UpdateCourseYear';
@@ -159,15 +161,23 @@ const TeacherCourse = () => {
 
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <HeaderBarTeacher />
                 <div className="h-full mt-20 mb-2">
                     <div className="pl-10  mb-6">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href='/teacher/home' >
+                                    <p>หน้าหลัก</p>
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href='/teacher/home' >
+                                    {course.courseName} ม.{course.level}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>เพิ่มปีการศึกษา</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -410,7 +420,7 @@ const TeacherCourse = () => {
                                                             </Card>
                                                         ))
                                                 ) : (
-                                                    <p className='text-center text-xl'>ไม่มีรายปีการศึกษาที่จัดเก็บ</p> // You can render something else if the filtered array is empty
+                                                    <p className='text-center text-xl'>ยังไม่มีรายปีการศึกษาที่จัดเก็บ</p> // You can render something else if the filtered array is empty
                                                 )
                                             )}
                                         </div>
@@ -591,7 +601,7 @@ const TeacherCourse = () => {
                     )}
                 </ModalContent>
             </Modal >
-        </div >
+        </TeacherRoute>
     )
 }
 

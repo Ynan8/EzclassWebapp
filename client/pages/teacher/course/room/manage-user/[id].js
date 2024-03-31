@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import { useRouter } from 'next/router';
 import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacherRoom';
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from 'react-icons/fa';
@@ -9,9 +10,20 @@ import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeach
 import AddStudent from '../../../../../components/Modals/AddStudent';
 import UpdateStudent from '../../../../../components/Modals/UpdateStudent';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
+import find from '../../../../../public/find.png'
+import { GoTrash } from "react-icons/go";
+import { CiEdit, CiSearch } from "react-icons/ci";
+import Link from 'next/link';
+
 
 
 const ManageUser = () => {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
   // Show Course Year
   const router = useRouter();
   const { id } = router.query;
@@ -96,49 +108,6 @@ const ManageUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Basic validation
-    if (!firstName || !lastName || !username || !password) {
-      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
-      return;
-    }
-
-    // Additional validation
-    if (!username.trim()) {
-      toast.error("กรุณากรอกรหัสนักเรียน");
-      return;
-    }
-
-    if (password.length < 4) {
-      toast.error("รหัสผ่านต้องมีอย่างน้อย 4 ตัว");
-      return;
-    }
-
-    try {
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
-        firstName,
-        lastName,
-        username,
-        password,
-      });
-      setFirstName('')
-      setLastName('')
-      setUsername('')
-      setPassword('')
-      toast.success("เพิ่มนักเรียนสำเร็จ");
-      loadStudentCourse();
-      isOpenModalStudent(false);
-    } catch (err) {
-      toast.error("ไม่สามารถเพิ่มนักเรียนได้");
-    }
-  };
-
-
-
-
-
   const [student, setStudent] = useState([]);
   const loadStudentCourse = async () => {
     if (id) {
@@ -164,20 +133,7 @@ const ManageUser = () => {
   // Update Student
   const [currentStd, setCurrentStd] = useState({});
 
-  const handleUpdateStd = async () => {
-    try {
-      // Include the fields you want to update in the PUT request body
-      const { data } = await axios.put(
-        `${process.env.NEXT_PUBLIC_API}/student/${currentStd._id}`,
-        currentStd
-      );
-      loadStudentCourse();
-      toast.success("แก้ไขข้อมูลนักเรียนสำเร็จ");
-    } catch (error) {
-      console.error(error);
-      toast.error("ไม่สามารถแก้ไขข้อมูลนักเรียนได้");
-    }
-  };
+
 
 
   // Delete Student
@@ -205,18 +161,30 @@ const ManageUser = () => {
 
 
   return (
-    <div>
+    <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom id={id} />
-        <HeaderBarTeacher />
-        <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
+        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+        <div className="h-full  mt-28 mb-10 md:ml-64">
 
           <div className="px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
-              <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-              <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
-              <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={'/teacher/home'}>
+                  หน้าหลัก
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/room/${courseYearId}`}>
+                  {course.courseName} {courseRoomSingle.roomName}
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/year/${course._id}`}>
+                  ปีการศึกษา {courseYear.year}
+                </Link>
+              </BreadcrumbItem>
               <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
               <BreadcrumbItem>จัดการผู้ใช้</BreadcrumbItem>
             </Breadcrumbs>
@@ -224,9 +192,9 @@ const ManageUser = () => {
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
             <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
               <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
-                <div className="sm:flex items-center justify-between px-4">
-                  <p className='text-2xl font-semibold'>ข้อมูลนักเรียน</p>
-                  <div className="flex ml-auto">
+                <div className="flex items-center justify-between px-4">
+                  <p className='md:text-2xl  sm:text-lg font-semibold'>ข้อมูลนักเรียน</p>
+                  <div className="flex">
                     <Button
                       onPress={onOpenModalStudent}
                       radius='sm'
@@ -257,46 +225,46 @@ const ManageUser = () => {
 
                 </div>
                 <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
-                  {/* <pre>{JSON.stringify(student,null,4)}</pre> */}
-                  <table className="w-full border-b border-gray-200">
-                    <thead>
-                      <tr className="text-lg font-medium border-b border-gray-200">
-                        <td className=" py-1 px-4 text-center ">ลำดับ</td>
-                        <td className=" py-1 px-4 text-center ">รหัสนักเรียน</td>
-                        <td className=" py-1 px-4 text-center ">ชื่อ-สกุล</td>
-                        <td className=" py-1 px-4 text-center ">เข้าเรียนล่าสุด</td>
+                  <div class="overflow-x-auto">
+                    <table className="w-full border-b border-gray-200">
+                      <thead>
+                        <tr className="text-lg md:text-base sm:text-sm border-b border-gray-200">
+                          <th className="py-1 px-4 text-center">ลำดับ</th>
+                          <th className="py-1 px-4 text-center">รหัสนักเรียน</th>
+                          <th className="py-1 px-4 text-center">ชื่อ-สกุล</th>
+                          <th className="py-1 px-4 text-center">เข้าเรียนล่าสุด</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-lg md:text-base sm:text-sm">
+                        {student
+                          .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                          .map((student, index) => (
+                            <tr className="h-16 transition-colors group">
+                              <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                              <td className="text-center py-2">{student.username}</td>
+                              <td className="text-center py-2">{student.firstName} {student.lastName}</td>
+                              <td className="text-center py-2">ยังไม่เข้าเรียน</td>
+                              <td className="flex justify-center items-center text-center">
+                                <div
+                                  onClick={() => {
+                                    onOpenModalUpdate();
+                                    setCurrentStd(student);
+                                  }}
+                                  className="flex items-center space-x-2 duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
+                                  <CiEdit size={25} />
+                                </div>
+                                <div
+                                  onClick={() => openDeleteModal(student._id)}
+                                  className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
+                                  <GoTrash size={23} />
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
 
-                      </tr>
-                    </thead>
-                    <tbody className='text-lg'>
-                      {student
-                        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                        .map((student, index) => (
-                          <tr className=" h-16 transition-colors group">
-                          <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                            <td className="text-center py-2">{student.username}</td>
-                            <td className="text-center py-2">{student.firstName} {student.lastName}</td>
-                            <td className="text-center py-2">ยังไม่เข้าเรียน</td>
-
-                            <td className="flex justify-center items-center text-center">
-                              <div
-                                onClick={() => {
-                                  onOpenModalUpdate();
-                                  setCurrentStd(student);
-                                }}
-                                className="flex items-center duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
-                                <FaEdit size={25} />
-                              </div>
-                              <div
-                                onClick={() => openDeleteModal(student._id)}
-                                className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
-                                <FaTrash size={23} />
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+                  </div>
                   <div className="flex justify-center mt-2">
                     <Pagination
                       size='lg'
@@ -309,12 +277,18 @@ const ManageUser = () => {
                   </div>
                   <div className="flex flex-col text-center mt-4">
                     {student.length === 0 ? (
-                      <>
-                        <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีนักเรียนในห้องเรียน</h1>
-                        <p className="text-gray-600">
-                          คุณยังไม่มีนักเรียนในห้องเรียนนี้ คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>เพิ่มนักเรียน</span> หรือ <span className='text-blue-800 font-semibold'>Import Excel</span>  เพื่อเพิ่มนักเรียน
+                      <div className="flex flex-col items-center justify-center w-full h-[400px]">
+                        <Image
+                          width={250}
+                          height={200}
+                          alt="No course"
+                          src={find}
+                        />
+                        <p className="md:text-2xl sm:text-lg text-gray-800">ยังไม่มีนักเรียนในห้องเรียนนี้</p>
+                        <p className="md:text-lg  sm:text-text-base text-gray-600">
+                          คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>เพิ่มนักเรียน</span> หรือ <span className='text-blue-800 font-semibold'>Import Excel</span> เพื่อเพิ่มนักเรียนเข้าห้องเรียน
                         </p>
-                      </>
+                      </div>
                     ) : (
                       ''
                     )}
@@ -360,7 +334,8 @@ const ManageUser = () => {
                 setUsername={setUsername}
                 password={password}
                 setPassword={setPassword}
-                handleSubmit={handleSubmit}
+                loadStudentCourse={loadStudentCourse}
+                id={id}
               />
             </>
           )}
@@ -378,7 +353,7 @@ const ManageUser = () => {
             <UpdateStudent
               currentStd={currentStd}
               setCurrentStd={setCurrentStd}
-              handleUpdateStd={handleUpdateStd}
+              loadStudentCourse={loadStudentCourse}
               onClose={onClose}
             />
           )}
@@ -418,7 +393,7 @@ const ManageUser = () => {
           )}
         </ModalContent>
       </Modal>
-    </div>
+    </TeacherRoute>
   )
 }
 

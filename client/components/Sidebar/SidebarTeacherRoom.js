@@ -4,7 +4,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { useRouter } from "next/router";
-
+import LogoTrans from '../../public/LogoTrans.png';
+import Image from 'next/image';
 
 //react icon
 import { BsCodeSquare, BsBook, BsJournalCheck } from "react-icons/bs";
@@ -18,7 +19,11 @@ import { TbUserCog } from 'react-icons/tb';
 import { FaUsers } from 'react-icons/fa';
 import { FiUsers } from 'react-icons/fi';
 
-const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
+const SidebarTeacherRoom = ({
+    open,
+    id,
+    mobileSidebarOpen,
+}) => {
 
     const [loading, setLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(open);
@@ -55,9 +60,27 @@ const SidebarTeacherRoom = ({ open, id, courseYearId }) => {
 
     return (
         <>
-            <div className="fixed flex flex-col top-[55px] left-0 w-20 hover:w-64 md:w-64  bg-blue-500 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar p-2">
+            <div className={`fixed top-[60px] left-0 w-64 bg-blue-500 h-full text-white transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
                 <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
-                    <ul className="flex flex-col py-8 space-y-1">
+                    <ul className="flex flex-col py-2 space-y-1">
+                        <Link href={'/teacher/home'}>
+                            <div className="flex justify-center item-center">
+                                <div className="md:hidden block Logo">
+                                    <Image
+                                        className='text-white'
+                                        src={LogoTrans}
+                                        alt="LogoTrans"
+                                        width={60}
+                                        height={20}
+                                    />
+                                </div>
+                                <div
+                                    className="flex justify-center items-center">
+                                    <p className="md:hidden block text-2xl font-medium justify-center items-center ">EZCLASS</p>
+                                </div>
+
+                            </div>
+                        </Link>
                         <li className="my-px py-2 ">
                             <Link
                                 href={`/teacher/course/room/single/${menu.id}`}

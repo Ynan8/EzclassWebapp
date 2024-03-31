@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
 import SidebarTeacherRoom from '../../../../../components/Sidebar/SidebarTeacherRoom'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
 import AssignmentAccordionTeacher from '../../../../../components/Accordion/AssignmentAccordionTeacher'
@@ -10,6 +11,14 @@ import { MdAssignment } from 'react-icons/md';
 import Link from 'next/link';
 
 const AssignmentRoom = () => {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
+
+  const [isLoading, setIsLoading] = useState(true);
+
   const router = useRouter();
   const { id } = router.query;
 
@@ -95,6 +104,7 @@ const AssignmentRoom = () => {
   const [section, setSection] = useState([])
   const loadSection = async () => {
     try {
+      setIsLoading(true);
       const { data: sections } = await axios.get(`${process.env.NEXT_PUBLIC_API}/section`, {
         params: {
           courseYearId: courseYearId,
@@ -123,21 +133,86 @@ const AssignmentRoom = () => {
       setSection(sectionsWithData);
     } catch (error) {
       console.error('Error loading sections:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const [student, setStudent] = useState([]);
+  const loadStudentCourse = async () => {
+    if (id) {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['authtoken'] = token;
+        }
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/studentRoom/${id}`);
+        setStudent(data)
+      } catch (error) {
+        console.error("Error loading course:", error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      loadStudentCourse();
+    }
+  }, [id]);
+
+
+  // student submit
+  const [studentSubmit, setStudentSubmit] = useState([])
+
+  useEffect(() => {
+    loadStdSubmit();
+  }, []);
+
+  const loadStdSubmit = async () => {
+    try {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/all/student-submit/${id}`);
+      setStudentSubmit(data)
+    } catch (error) {
+      console.error('Error loading assignments:', error);
+    }
+  };
+
+  const calculateSubmissionPercentage = (assignmentId) => {
+    // Filter students who have submitted the assignment
+    const studentsWithSubmission = studentSubmit.filter((submission) => submission.assignmentId === assignmentId);
+
+    // Calculate the percentage
+    const totalStudents = student.length;
+    const percentage = totalStudents > 0 ? (studentsWithSubmission.length / totalStudents) * 100 : 0;
+
+    return percentage.toFixed(2); // Round to two decimal places
+  };
+
+
   return (
-    <div>
+    <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom id={id} courseYearId={courseYearId} />
-        <HeaderBarTeacher />
-        <div className="h-full ml-20 mt-28 mb-10 md:ml-64">
+        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+        <div className="h-full mt-28 mb-10 md:ml-64">
           <div className="px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
-              <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-              <BreadcrumbItem>{course.courseName} {courseRoomSingle.roomName}</BreadcrumbItem>
-              <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={'/teacher/home'}>
+                  หน้าหลัก
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/room/${courseYearId}`}>
+                  {course.courseName} {courseRoomSingle.roomName}
+                </Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link href={`/teacher/course/year/${course._id}`}>
+                  ปีการศึกษา {courseYear.year}
+                </Link>
+              </BreadcrumbItem>
               <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
               <BreadcrumbItem>ตรวจงาน</BreadcrumbItem>
             </Breadcrumbs>
@@ -152,55 +227,20 @@ const AssignmentRoom = () => {
                 </h1>
                 {/* <pre>{JSON.stringify(section, null, 4)}</pre> */}
               </div>
-              <div className="flex flex-col text-center mt-4">
-                {section.map((sec, index) => (
-                  <Listbox key={index} variant="flat" aria-label="Listbox menu with sections">
-                    {sec.AssignmentData.map((assignment, assignmentIndex) => (
-                      <ListboxItem
-                        className="mb-2 p-3"
-                        key={assignment._id}
-                        title={
-                          <Link key={assignment._id} href={`/teacher/course/room/assignment/check/${assignment._id}?courseRoomId=${id}`}>
-                            <div className="flex items-center text-lg">
-                              <p>
-                                <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
-                              </p>
-                              <div className="flex items-center space-x-4 mr-4 ml-auto"></div>
-                            </div>
-                          </Link>
-                        }
-                        startContent={
-                          <div className="bg-warning/10 text-warning p-2 rounded-md">
-                            <MdAssignment size={25} className="text-warning" />
-                          </div>
-                        }
-                      ></ListboxItem>
-                    ))}
-                  </Listbox>
-                ))}
-
-                {/* {section.some((sec) => sec.assignmentData.length > 0) ? (
-                  // If there is at least one section with non-empty assignmentData, render the accordion
-                  <AssignmentAccordionTeacher
-                    section={section}
-                    courseYearId={courseYearId}
-                  />
-                ) : (
-                  // If all sections have empty assignmentData, show the message
-                  <>
-                    <h1 className='text-4xl font-bold text-gray-500 mb-3'>ยังไม่มีงานที่มอบหมาย</h1>
-                    <p className="text-gray-600">
-                      คุณยังไม่มีงานที่มอบหมายในรายวิชานี้ สร้างงานที่มอบหมายเมนู <span className='text-blue-800 font-semibold'>บทเรียน</span> ที่เมนูหลักเพื่อสร้างงานที่มอบหมาย
-                    </p>
-                  </>
-                )} */}
+              <div className="flex flex-col  mt-2">
+                <AssignmentAccordionTeacher
+                  section={section}
+                  courseYearId={courseYearId}
+                  courseRoomId={id}
+                  isLoading={isLoading}
+                  calculateSubmissionPercentage={calculateSubmissionPercentage}
+                />
               </div>
-
             </div>
           </main>
         </div>
       </div >
-    </div >
+    </TeacherRoute>
   )
 }
 

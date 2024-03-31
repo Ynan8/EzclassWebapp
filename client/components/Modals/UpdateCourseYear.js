@@ -13,21 +13,28 @@ const UpdateCourseYear = ({
 }) => {
 
     const handleUpdateCourseYear = async (e) => {
-    
+        const trimmedYear = currentCourseYear.year.trim();
+
+     
+        if (!trimmedYear || trimmedYear.length !== 4) {
+            toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง 4 ตัว");
+            return;
+        }
+
         try {
             const { data } = await axios.put(
                 `${process.env.NEXT_PUBLIC_API}/courseYear/${currentCourseYear._id}`,
-                currentCourseYear
+                { ...currentCourseYear, year: trimmedYear } 
             );
             loadCourseYear();
             toast.success("แก้ไขปีการศึกษาสำเร็จ");
-            onClose(); 
-
+            onClose();
         } catch (error) {
             console.error(error);
             toast.error("ไม่สามารถแก้ไขปีการศึกษาได้");
         }
     };
+
     return (
         <div>
             <ModalHeader className="flex flex-col gap-1">แก้ไขปีการศึกษา</ModalHeader>

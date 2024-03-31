@@ -20,15 +20,17 @@ const AddCourseYear = ({
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Basic validation
-        if (!values.year || values.year.length !== 4) {
+        const trimmedYear = values.year.trim();
+
+        if (!trimmedYear || trimmedYear.length !== 4) {
             toast.error("กรุณากรอกปีการศึกษาให้ถูกต้อง 4 ตัว");
             return;
         }
+
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-courseYear`, {
                 courseId,
-                ...values,
+                year: trimmedYear, 
             });
             toast.success("เพิ่มปีการศึกษาสำเร็จ");
             setValues({
@@ -41,6 +43,7 @@ const AddCourseYear = ({
             toast.error("ไม่สามารถเพิ่มปีการศึกษาได้");
         }
     };
+
 
 
 

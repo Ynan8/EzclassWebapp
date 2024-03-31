@@ -162,7 +162,15 @@ exports.removeStudent = async (req, res) => {
 
 exports.UpdateStudent = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
+
+    // Check if the password is provided in the request body
+    if (req.body.password) {
+      // Hash the new password
+      const hashedPassword = await hashPassword(req.body.password);
+      // Update the password in the request body
+      req.body.password = hashedPassword;
+    }
 
     const updated = await User.findOneAndUpdate({ _id: id }, req.body, {
       new: true,
@@ -175,6 +183,7 @@ exports.UpdateStudent = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 

@@ -1,7 +1,13 @@
+import { Button } from '@nextui-org/react';
 import React, { useEffect } from 'react';
 import Avatar from 'react-avatar';
 
-const Client = ({ user,  firstName }) => {
+const Client = (
+  {
+  firstName ,
+  userData
+}) => {
+  
 
   return (
     <div className="flex flex-col items-center justify-center">

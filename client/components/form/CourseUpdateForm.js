@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react'
+import TeacherRoute from '../../components/Routes/TeacherRoute';
 import { FaCloudUploadAlt } from 'react-icons/fa'
 import { Select, SelectItem, Textarea, Input, Button, Card, Image } from "@nextui-org/react";
 import { Badge, Avatar } from "@nextui-org/react";
-
-
 
 const CourseUpdateForm = ({
     handleSubmit,
@@ -22,7 +21,7 @@ const CourseUpdateForm = ({
 
 
     return (
-        <div>
+        <TeacherRoute>
             {values && (
                 <form>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 ">
@@ -30,6 +29,7 @@ const CourseUpdateForm = ({
                             <div className="flex items-center space-x-2">
                                 <div className="flex-1 relative">
                                     <Input
+                                        size='lg'
                                         isRequired
                                         type="text"
                                         name="courseNo"
@@ -49,6 +49,7 @@ const CourseUpdateForm = ({
                             <div className="flex items-center space-x-2">
                                 <div className="flex-1 relative">
                                     <Input
+                                        size='lg'
                                         isRequired
                                         name="courseName"
                                         value={values.courseName}
@@ -68,6 +69,7 @@ const CourseUpdateForm = ({
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
                                 <Textarea
+                                    size='lg'
                                     isRequired
                                     name="detail"
                                     value={values.detail}
@@ -93,6 +95,7 @@ const CourseUpdateForm = ({
                     <div className="flex space-y-1 mt-4">
                         <div className="w-full">
                             <Select
+                                size='lg'
                                 variant='bordered'
                                 isRequired
                                 name="level"
@@ -161,7 +164,7 @@ const CourseUpdateForm = ({
 
                 </form>
             )}
-        </div>
+        </TeacherRoute>
     )
 }
 

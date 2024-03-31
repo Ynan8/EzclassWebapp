@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import TeacherRoute from "../../components/Routes/TeacherRoute";
 import { useState, useEffect } from "react";
 import { Link, User, Avatar } from "@nextui-org/react";
 import Image from "next/image";
@@ -6,7 +7,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { AvatarGroup, AvatarIcon } from "@nextui-org/avatar";
 import Resizer from "react-image-file-resizer"
 import { Input, Button, ButtonGroup } from "@nextui-org/react";
-import { IoMdClose } from "react-icons/io";
+import { IoIosEyeOff, IoMdClose, IoMdEye } from "react-icons/io";
 import { Context } from "../../context/";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -17,6 +18,15 @@ import { AiOutlineLeft } from "react-icons/ai";
 
 function editprofile() {
   const [open, setOpen] = useState(true);
+
+  const [isVisibleOld, setIsVisibleOld] = useState(false);
+  const [isVisibleNew, setIsVisibleNew] = useState(false);
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false);
+
+  const toggleVisibilityOld = () => setIsVisibleOld(!isVisibleOld);
+  const toggleVisibilityNew = () => setIsVisibleNew(!isVisibleNew);
+  const toggleVisibilityConfirm = () => setIsVisibleConfirm(!isVisibleConfirm);
+
 
   const [loading, setLoading] = useState(false);
 
@@ -130,9 +140,20 @@ function editprofile() {
 
   const handleUpdateProfile = async () => {
     try {
+      // Trim the input values to remove any leading/trailing whitespace
+      const trimmedFirstName = userData.firstName.trim();
+      const trimmedLastName = userData.lastName.trim();
+
+      // Check if the trimmed values are empty
+      if (!trimmedFirstName || !trimmedLastName) {
+        toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+        return;
+      }
+
       const { data } = await axios.put(
         `${process.env.NEXT_PUBLIC_API}/updateProfile/${userData._id}`, {
-        ...userData,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
         image,
       });
       console.log("Updated Data:", data);
@@ -146,6 +167,7 @@ function editprofile() {
       toast.error("ไม่สามารถแก้ไขได้");
     }
   };
+
 
   //change password
   const [formData, setFormData] = useState({
@@ -188,185 +210,187 @@ function editprofile() {
   };
 
 
-
-
-
   return (
-  <>
-    <div className="pl-20 flex items-center text-black  w-96 md:w-96 h-12  border-none pt-10">
-      <button
-        onClick={() => router.push("/teacher/home")}
-        className=" text-lg"
-      >
-        <AiOutlineLeft
-          size={25}
-          className="inline-block align-text-bottom mx-2"
-        />
-        ย้อนกลับ
-      </button>
-    </div>
-    <div className="mx-auto  max-w-screen-lg px-4 pt-2 pb-20 space-y-12">
+    <TeacherRoute>
+      <div className="pl-5 flex items-center text-black  w-96 md:w-96 h-12  border-none pt-10">
+        <button
+          onClick={() => router.push("/teacher/home")}
+          className=" text-lg"
+        >
+          <AiOutlineLeft
+            size={25}
+            className="inline-block align-text-bottom mx-2"
+          />
+          ย้อนกลับ
+        </button>
+      </div>
+      <div className="mx-auto  max-w-screen-lg w-full px-4 pt-2 pb-20 space-y-12">
 
-      {/* <pre>{JSON.stringify(userData, null, 4)}</pre> */}
-      <h1 className="text-2xl font-semibold my-10">แก้ไขข้อมูลส่วนตัว</h1>
-      <div className="bg-gray-100 min-h-max rounded-xl p-5">
-        <div>
+        {/* <pre>{JSON.stringify(userData, null, 4)}</pre> */}
+        <h1 className="text-2xl font-semibold mt-5">แก้ไขข้อมูลส่วนตัว</h1>
+        <div className="bg-gray-100 min-h-max rounded-xl p-5">
           <div className="xl:flex gap-10 place-content-center md:block">
-            <div className="">
-              <label className="flex flex-col items-center cursor-pointer space-x-1 rounded-md px-2 py-1.5 max-w-max focus:outline-none transition ">
+            <div class="flex justify-center">
+              <label class="flex flex-col items-center cursor-pointer rounded-md p-2 focus:outline-none transition">
                 {preview ? (
-                  <Avatar
-                    src={preview}
-                    className="w-52 h-52 text-large"
-                  />
+                  <Avatar src={preview} className="w-32 h-32 md:w-52 md:h-52 text-lg" />
                 ) : (
-                  <Avatar
-                    src={userData.image ? userData.image.Location : '/profile.png'}
-                    className="w-52 h-52 text-large"
-                  />
+                  <Avatar src={userData.image ? userData.image.Location : '/profile.png'} className="w-32 h-32 md:w-52 md:h-52 text-lg" />
                 )}
 
-                <div className="flex flex-col items-center">
-                  <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleImage}
-                    hidden
-                  />
+                <div class="flex flex-col items-center mt-2">
+                  <input type="file" name="image" accept="image/*" onChange={handleImage} hidden />
+                  <p class="text-sm md:text-lg">อัพโหลดรูปโปรไฟล์</p>
                 </div>
-                <p className="mt-1 text-lg">อัพโหลดรูปโปรไฟล์</p>
               </label>
-
             </div>
-            <div className="flex flex-col bg-white w-full p-10 rounded-lg shadow-md">
-              <table className=" table table-borderless">
-                <tbody>
-                  <tr>
-                    <td className="text-end"><p className="">ชื่อ :</p></td>
-                    <td className="mt-5">
-                      <Input
-                        type="text"
-                        id="firstName"
-                        value={userData.firstName}
-                        onChange={handleInputChange}
-                        placeholder="กรุณากรอกชื่อ"
-                        className="rounded-md max-w-xl border focus:border-transparent"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-end mt-5">นามสกุล :</td>
-                    <td className="mt-5">
-                      <Input
-                        type="text"
-                        id="lastName"
-                        value={userData.lastName}
-                        onChange={handleInputChange}
-                        placeholder="กรุณากรอกนามสกุล"
-                        className="rounded-md max-w-xl border focus:border-transparent"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-end">รหัสผู้สอน :</td>
-                    <td>
-                      <Input
-                        isDisabled
-                        type="email"
-                        value={userData.username}
-                        defaultValue="junior@nextui.org"
-                        className="bg-gray-200 rounded-md  max-w-xl"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="flex items-center justify-between">
+
+
+            <div className="flex flex-col  space-y-3 bg-white w-full p-10 rounded-lg shadow-md">
+
+              <Input
+                type="text"
+                id="firstName"
+                value={userData.firstName}
+                onChange={handleInputChange}
+                placeholder="กรุณากรอกชื่อ"
+                label="ชื่อ"
+                variant="bordered"
+                size="lg"
+              />
+
+              <Input
+                type="text"
+                id="lastName"
+                value={userData.lastName}
+                onChange={handleInputChange}
+                placeholder="กรุณากรอกนามสกุล"
+                label="นามสกุล"
+                variant="bordered"
+                size="lg"
+              />
+
+
+              <Input
+                isDisabled
+                type="username"
+                value={userData.username}
+                label="รหัสผู่สอน"
+                variant="bordered"
+                size="lg"
+              />
+
+              <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
                 <Button
                   onClick={handleOpenModal}
-                  className="  border-1 border-orange-400 bg-white  px-8 py-2 rounded"
+                  color="warning"
+                  variant="bordered"
+                  size="md"
+                  className="px-4"
                 >
                   เปลี่ยนรหัสผ่าน
                 </Button>
                 <Button
+                  color="primary"
+                  size="md"
+                  className="px-6"
+                  variant="shadow"
                   isLoading={userData.loading}
-                  onClick={handleUpdateProfile} className=" bg-blue-500 text-white px-12 py-2 rounded">
+                  onClick={handleUpdateProfile}
+                >
                   {userData.loading ? 'กำลังโหลด...' : 'บันทึกข้อมูล'}
                 </Button>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 gray-background">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="flex justify-end">
-              <button onClick={handleCloseModal} className="text-gray-500 hover:text-gray-700">
-                <IoMdClose size={20} />
-              </button>
-            </div>
-            <p>กรุณาเปลี่ยนรหัสผ่าน</p>
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 gray-background">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex justify-end">
+                <button onClick={handleCloseModal} className="text-gray-500 hover:text-gray-700">
+                  <IoMdClose size={20} />
+                </button>
+              </div>
+              <p className="text-lg" >กรุณาเปลี่ยนรหัสผ่าน</p>
 
-            {/* ฟอร์มเปลี่ยนรหัสผ่าน */}
+              {/* ฟอร์มเปลี่ยนรหัสผ่าน */}
 
-            <div className="flex flex-col items-center mt-4 ">
-              <label htmlFor="oldPassword" className="text-gray-600">
-                รหัสผ่านเก่า:
-              </label>
-              <input
-                type="password"
-                id="oldPassword"
-                placeholder="กรอกรหัสผ่านเก่า"
-                className="w-96 max-w-xs p-2 mt-1 border border-gray-300 rounded"
-                value={formData.oldPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, oldPassword: e.target.value })
-                }
-              />
+              <div className="flex flex-col space-y-4 items-center mt-4 ">
 
-              <label htmlFor="newPassword" className="text-gray-600">
-                รหัสผ่านใหม่:
-              </label>
-              <input
-                type="password"
-                id="newPassword"
-                placeholder="กรอกรหัสผ่านใหม่"
-                className="w-96 max-w-xs p-2 mt-1 border border-gray-300 rounded"
-                value={formData.newPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, newPassword: e.target.value })
-                }
-              />
+                <Input
+                  value={formData.oldPassword}
+                  onChange={(e) => setFormData({ ...formData, oldPassword: e.target.value })}
+                  label="รหัสผ่านเก่า"
+                  variant="bordered"
+                  placeholder="กรอกรหัสผ่านเก่า"
+                  endContent={
+                    <button className="focus:outline-none" type="button" onClick={toggleVisibilityOld}>
+                      {isVisibleOld ? (
+                        <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
+                      ) : (
+                        <IoIosEyeOff className="text-2xl text-default-400 pointer-events-none" />
+                      )}
+                    </button>
+                  }
+                  type={isVisibleOld ? "text" : "password"}
+                  className="max-w-xs"
+                />
 
-              <label htmlFor="confirmPassword" className="text-gray-600 mt-3">
-                ยืนยันรหัสผ่าน:
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                placeholder="ยืนยันรหัสผ่าน"
-                className="w-96 max-w-xs p-2 mt-1 border border-gray-300 rounded"
-                value={formData.confirmPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, confirmPassword: e.target.value })
-                }
-              />
+                <Input
+                  value={formData.newPassword}
+                  onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                  label="รหัสผ่านใหม่"
+                  variant="bordered"
+                  placeholder="กรอกรหัสผ่านใหม่"
+                  endContent={
+                    <button className="focus:outline-none" type="button" onClick={toggleVisibilityNew}>
+                      {isVisibleNew ? (
+                        <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
+                      ) : (
+                        <IoIosEyeOff className="text-2xl text-default-400 pointer-events-none" />
+                      )}
+                    </button>
+                  }
+                  type={isVisibleNew ? "text" : "password"}
+                  className="max-w-xs"
+                />
 
-              <button
-                onClick={handleUpdatePassword}
-                className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
-              >
-                บันทึกรหัสผ่าน
-              </button>
+                <Input
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  label="รหัสผ่านยืนยัน"
+                  variant="bordered"
+                  placeholder="กรอกรหัสผ่านยืนยัน"
+                  endContent={
+                    <button className="focus:outline-none" type="button" onClick={toggleVisibilityConfirm}>
+                      {isVisibleConfirm ? (
+                        <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
+                      ) : (
+                        <IoIosEyeOff className="text-2xl text-default-400 pointer-events-none" />
+                      )}
+                    </button>
+                  }
+                  type={isVisibleConfirm ? "text" : "password"}
+                  className="max-w-xs"
+                />
+
+                <Button
+                  color="primary"
+                  size="md"
+                  className="px-6"
+                  variant="shadow"
+                  onClick={handleUpdatePassword}
+                >
+                  บันทึกรหัสผ่าน
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  </>
+        )}
+      </div>
+    </TeacherRoute>
   );
 }
 

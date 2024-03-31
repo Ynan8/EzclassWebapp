@@ -7,13 +7,15 @@ import { RxDashboard } from "react-icons/rx"
 import { SiGoogleclassroom } from "react-icons/si"
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import LogoTrans from '../../public/LogoTrans.png';
+import Image from 'next/image';
 
-const SideBarTeacher = ({ 
+const SideBarTeacher = ({
     courseYearId,
     mobileSidebarOpen,
 }) => {
 
-  
+
 
     const menu = {
         id: courseYearId
@@ -27,8 +29,26 @@ const SideBarTeacher = ({
     return (
         <div className={`fixed top-[60px] left-0 w-64 bg-blue-500 h-full text-white transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             <div className="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
-                <ul className="flex flex-col py-8 space-y-1">
-                    <p className=' text-sm sm:text-center md:text-left md:px-3 md:text-lg lg:text-xl'>แดชบอร์ด</p>
+                <ul className="flex flex-col md:py-8 space-y-1">
+                    <Link href={'/teacher/home'}>
+                        <div className="flex justify-center item-center">
+                            <div className="md:hidden block Logo">
+                                <Image
+                                className='text-white'
+                                    src={LogoTrans}
+                                    alt="LogoTrans"
+                                    width={60}
+                                    height={20}
+                                />
+                            </div>
+                            <div
+                                className="flex justify-center items-center">
+                                <p className="md:hidden block text-2xl font-medium justify-center items-center ">EZCLASS</p>
+                            </div>
+
+                        </div>
+                    </Link>
+                    <p className=' text-base  md:text-left md:px-3 md:text-lg lg:text-xl'>แดชบอร์ด</p>
                     <li className="my-px py-2 ">
                         <Link
                             href={`/teacher/course/overview/${menu.id}`}
@@ -41,7 +61,7 @@ const SideBarTeacher = ({
                             <span className="ml-4 text-lg">ภาพรวมรายวิชา</span>
                         </Link>
                     </li>
-                    <p className='mt-4 text-sm sm:text-center md:text-left  md:px-3 md:text-lg lg:text-xl'>การจัดการ</p>
+                    <p className='mt-4 text-base  md:text-left  md:px-3 md:text-lg lg:text-xl'>การจัดการ</p>
                     <li className="my-px py-2 ">
                         <Link
                             href={`/teacher/course/room/${menu.id}`}

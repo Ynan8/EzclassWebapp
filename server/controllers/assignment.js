@@ -189,6 +189,24 @@ exports.submitAssignment = async (req, res) => {
   }
 };
 
+exports.cancelSubmission = async (req, res) => {
+  try {
+      const { assignmentId, studentId } = req.body;
+      
+      // Find and remove the submission
+      await Submission.findOneAndDelete({
+          assignmentId,
+          studentId: req.user._id,
+      });
+
+      res.status(200).json({ message: 'Submission canceled successfully' });
+  } catch (error) {
+      console.error('Error canceling submission:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
 
 exports.getAssignmentSubmit = async (req, res) => {
   try {
@@ -250,7 +268,6 @@ exports.CheckSubmit = async (req, res) => {
 
 
 
-
 exports.getStdSubmit = async (req, res) => {
   const { id } = req.params;
 
@@ -307,5 +324,25 @@ exports.updateScore = async (req, res) => {
   } catch (error) {
     console.error('Error updating score:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getStdSubmitAll = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the assignment by its _id using findById
+    const stdSubmits = await Submission.find({});
+
+    // Check if any submissions were found
+    if (!stdSubmits || stdSubmits.length === 0) {
+      return res.status(404).json({ error: 'Assignment submit not found' });
+    }
+
+
+    res.json(stdSubmits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching assignment submit.' });
   }
 };

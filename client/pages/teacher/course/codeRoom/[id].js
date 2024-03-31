@@ -1,26 +1,36 @@
 import React, { useContext, useEffect, useState } from 'react'
+import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
 import Image from 'next/image';
-import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardFooter, CardHeader, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Input, Link, Listbox, ListboxItem, ListboxSection } from '@nextui-org/react'
-import { FaPlus } from 'react-icons/fa'
+import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardFooter, CardHeader, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Input, Listbox, ListboxItem, ListboxSection, Skeleton } from '@nextui-org/react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { FaPlus, FaUsers } from 'react-icons/fa'
 import { CiEdit } from 'react-icons/ci'
 import { GoTrash } from 'react-icons/go'
 import { MdContentCopy, MdLibraryBooks, MdQuiz } from 'react-icons/md'
 import { RiCodeBoxFill } from "react-icons/ri";
-import { AiOutlinePlus } from 'react-icons/ai'
+import { AiFillStar, AiOutlinePlus } from 'react-icons/ai'
 import BgCodeRoom from '../../../../public/BgCodeRoom.png'
 import bgYearAdd from '../../../../public/bgYearAdd.png'
 import { useRouter } from 'next/router';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import axios from 'axios';
 import { Context } from '../../../../context';
+import Link from 'next/link';
 
 
 
 const CodeRoom = () => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const router = useRouter();
     const { id } = router.query;
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const toggleSidebar = () => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+    };
 
 
 
@@ -81,6 +91,7 @@ const CodeRoom = () => {
     const [codeRoom, setCodeRoom] = useState([]);
 
     const loadCodeRoom = async () => {
+        setIsLoading(true);
         try {
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/codeRoom`, {
                 params: {
@@ -91,6 +102,8 @@ const CodeRoom = () => {
             console.log(data)
         } catch (error) {
             console.error('Error loading sections:', error);
+        } finally {
+            setIsLoading(false);  // Set loading to false after fetching data
         }
     };
 
@@ -108,21 +121,48 @@ const CodeRoom = () => {
     };
 
 
+    const renderStars = (difficulty) => {
 
+        const starArray = Array.from({ length: 5 }, (_, index) => index <= difficulty);
+
+        return (
+            <>
+                {starArray.map((isFilled, index) => (
+                    <AiFillStar
+                        key={index}
+                        className={isFilled ? 'text-[#FFDC5C]' : ''}
+                        size={20}
+                    />
+                ))}
+            </>
+        );
+    };
 
     return (
-        <div>
+        <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-                <SideBarTeacher courseYearId={id} />
-                <HeaderBarTeacher />
-                <div className="h-full ml-14 mt-28 mb-10 md:ml-64">
+                <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
+                <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
+                <div className="h-full mt-28 mb-10 md:ml-64">
                     <div className="px-10">
 
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
-                            <BreadcrumbItem>{course.courseName} ม.{course.level}</BreadcrumbItem>
-                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    หน้าหลัก
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={'/teacher/home'} >
+                                    {course.courseName} ม.{course.level}
+                                </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                                <Link href={`/teacher/course/year/${course._id}`}>
+                                    ปีการศึกษา {courseYear.year}
+                                </Link>
+                            </BreadcrumbItem>
                             <BreadcrumbItem>ห้องเรียนเขียนโค้ด</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
@@ -134,149 +174,108 @@ const CodeRoom = () => {
                                     สร้างห้องเรียนเขียนโค้ด
                                 </Button>
                             </Link>
+                            <Button onPress={onOpen} color="warning" variant="bordered" size='lg' radius="md" startContent={<FaUsers />}>
+                                เข้าร่วมห้องเรียนเขียนโค้ด
+                            </Button>
                         </div>
                         {/* Modal */}
 
                     </div>
                     <div className="px-12 w-full">
                         <div className="px-[40px] flex flex-col item-center justify-center">
-                            <Listbox variant="flat" aria-label="Listbox menu with sections">
-                                <ListboxSection title="ห้องเรียนเขียนโค้ด" showDivider>
-                                    {codeRoom && codeRoom.map(codeRoom => (
-                                        <ListboxItem
-                                            className='mb-2 p-3'
-                                            key="delete"
-                                            title={
-                                                <div
-                                                    onClick={handleStartTeaching(codeRoom._id)}
-                                                    className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >{codeRoom.codeRoomName}</span>
-                                                    </p>
-                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                        <Chip
-                                                            className="capitalize"
-                                                            color="success"
-                                                            size="md"
-                                                            variant="flat"
-                                                        >
-                                                            เผยแพร่
-                                                        </Chip>
-                                                        <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                            <CiEdit size={23} className="ml-auto" />
-                                                        </span>
-                                                        <span
-                                                            className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                            <GoTrash size={20} className="" />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            }
-                                            startContent={
-                                                <div className="bg-secondary/10 text-secondary p-2 rounded-md">
-                                                    <RiCodeBoxFill size={25} className="text-secondary" />
-                                                </div>
-                                            }
-
-                                        >
-                                        </ListboxItem>
-                                    ))}
-
-                                </ListboxSection>
-
-                            </Listbox>
-                            <div className="flex flex-col text-center mt-4">
-                                {codeRoom.length === 0 ? (
-                                    <>
-                                        <h1 className='text-4xl font-bold text-gray-500 mb-3' >ยังไม่มีห้องเรียนเขียนโค้ด</h1>
-                                        <p className="text-gray-600">
-                                            คุณยังไม่มีห้องเรียนเขียนโค้ดในรายวิชานี้ คลิกที่ปุ่ม <span className='text-blue-800 font-semibold'>สร้างห้องเรียนเขียนโค้ด</span> เพื่อสร้างห้องเรียนเขียนโค้ด
-                                        </p>
-                                    </>
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-
-                            <div className="flex flex-wrap gap-4 my-8 mt-4">
-
-                                <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
-                                    {/* <Link href={`/teacher/course/codeRoom/create/${courseId}/?courseYear=${id}`} >
-                                        <div
-                                            className="cursor-pointer  bg-white shadow-md border rounded-xl overflow-hidden hover:text-blue-500 "
-                                        >
-                                            <div className="h-full w-full relative">
-                                                <Image
-                                                    alt='addCourseYear'
-                                                    className="w-full h-full object-cover rounded-t"
-                                                    src={bgYearAdd}
-                                                />
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                                    <div className="flex flex-col items-center justify-center space-y-2">
-                                                        <p className="text-xl"><AiOutlinePlus size={45} /></p>
-                                                        <p className="text-2xl">สร้างห้องเรียนเขียนโค้ด</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            {isLoading ? (
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <div key={index} className="p-4 w-full flex items-center gap-3">
+                                        <Skeleton className="flex rounded-full w-12 h-12" />
+                                        <div className="w-full flex flex-col gap-3">
+                                            <Skeleton className="h-3 w-3/5 rounded-lg" />
+                                            <Skeleton className="h-3 w-4/5 rounded-lg" />
                                         </div>
-                                    </Link> */}
+                                    </div>
+                                ))
+                            ) : (
+                                <Listbox variant="flat" aria-label="Listbox menu with sections">
+                                    <ListboxSection title="ห้องเรียนเขียนโค้ด" showDivider>
+                                        {codeRoom && codeRoom.map(codeRoom => (
+                                            <ListboxItem
+                                                className='mb-2 p-3'
+                                                key="delete"
+                                                title={
+                                                    <div
+                                                      //  onClick={handleStartTeaching(codeRoom._id)}
+                                                        className='flex items-center text-lg' >
+                                                        <div className="flex flex-col space-y-2 p-3">
+                                                            <p>
+                                                                <span className='font-semibold p-2' >{codeRoom.codeRoomName}</span>
+                                                            </p>
+                                                            <div className="flex text-sm p-2 items-center font-normal  border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
+                                                                <span className='mr-1' >ระดับความยาก:</span>
+                                                                {renderStars(codeRoom.Difficulty)}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center space-x-4 mr-4 ml-auto">
+                                                            <Chip
+                                                                className="capitalize"
+                                                                color="success"
+                                                                size="md"
+                                                                variant="flat"
+                                                            >
+                                                                เผยแพร่
+                                                            </Chip>
+                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                                <CiEdit size={23} className="ml-auto" />
+                                                            </span>
+                                                            <span
+                                                                className="text-lg text-danger cursor-pointer active:opacity-50">
+                                                                <GoTrash size={20} className="" />
+                                                            </span>
+                                                        </div>
 
-                                    {/* {codeRoom && codeRoom.map(codeRoom => (
-                                        <Card
-                                            className="py-3">
-                                            <CardHeader className="flex-col items-start">
-                                                <div className="absolute top-0 right-0 m-2">
-                                                    <Dropdown>
-                                                        <DropdownTrigger>
-                                                            <Button
-                                                                size='sm'
-                                                                variant="light"
-                                                                startContent={<BsThreeDotsVertical size={18} />}
-                                                            />
-                                                        </DropdownTrigger>
-                                                        <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                                                            <DropdownSection showDivider>
-                                                                <DropdownItem key="edit">
-                                                                    <p>แก้ไข</p>
-                                                                </DropdownItem>
-                                                                <DropdownItem key="archived">
-                                                                    <p>จัดเก็บ</p>
-                                                                </DropdownItem>
-                                                            </DropdownSection>
-                                                            <DropdownSection>
-                                                                <DropdownItem key="delete" className="text-danger" color="danger">
-                                                                    <p>ลบปีการศึกษา</p>
-                                                                </DropdownItem>
-                                                            </DropdownSection>
-                                                        </DropdownMenu>
-                                                    </Dropdown>
-                                                </div>
-                                            </CardHeader>
-                                            <CardBody className="overflow-visible ">
-                                                <Image
-                                                    alt="Card background"
-                                                    className="object-cover rounded-xl"
-                                                    src={BgCodeRoom}
-                                                />
-                                            </CardBody>
-                                            <CardFooter className="flex justify-center items-center">
-                                                <button
-                                                    onClick={handleStartTeaching(codeRoom._id)}
-                                                    className='md:text-2xl sm:text-lg font-semibold'>
-                                                    {codeRoom.codeRoomName}
-                                                </button>
-                                            </CardFooter>
-                                        </Card>
+                                                    </div>
+                                                }
+                                                startContent={
+                                                    <div className="bg-secondary/10 text-secondary p-2 rounded-md">
+                                                        <RiCodeBoxFill size={25} className="text-secondary" />
+                                                    </div>
+                                                }
 
+                                            >
+                                            </ListboxItem>
+                                        ))}
 
-                                    ))} */}
-                                </div>
-                            </div>
+                                    </ListboxSection>
+                                </Listbox>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
-        </div >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">รหัสเข้าร่วมห้องเรียนเขียนโค้ด</ModalHeader>
+                            <ModalBody>
+                                <Input
+                                    type="text"
+                                    placeholder='กรอกรหัสเข้าร่วม'
+                                    variant="bordered"
+                                    className="w-full"
+                                />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="primary" onPress={onClose}>
+                                    เข้าร่วม
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </TeacherRoute>
     )
 }
 

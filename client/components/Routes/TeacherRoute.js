@@ -17,6 +17,10 @@ const TeacherRoute = ({ children }) => {
 
     const fetchTeacher = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (token) {
+              axios.defaults.headers.common['authtoken'] = token;
+            }
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/current-teacher`);
             // console.log(data);
             if (data.ok)
@@ -33,7 +37,8 @@ const TeacherRoute = ({ children }) => {
             {!ok ? (
               
                 <Spinner
-                className='   transform: scale(3); text-9xl flex h-screen items-center justify-center text-blue-500'
+                size='lg'
+                className='transform: scale(3); text-9xl flex h-screen items-center justify-center text-blue-500'
                 />
             ) : (
                 <>{children}</>

@@ -33,6 +33,17 @@ exports.getSection = async (req, res) => {
     }
 }
 
+exports.getSectionRead = async (req, res) => {
+    try {
+        const section = await Section.findById(req.params.id);
+        res.json(section);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error fetching section.' });
+    }
+}
+
+
 exports.updateSection = async (req, res) => {
     try {
         const { _id, } = req.body;

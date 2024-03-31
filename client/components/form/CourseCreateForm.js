@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import TeacherRoute from '../../components/Routes/TeacherRoute';
 import { FaCloudUploadAlt } from 'react-icons/fa'
 import { Select, SelectItem, Textarea, Input, Button, Card, Image } from "@nextui-org/react";
 import { Badge, Avatar } from "@nextui-org/react";
@@ -19,7 +20,7 @@ const CourseCreateForm = ({
     isLoading,
 }) => {
     return (
-        <div>
+        <TeacherRoute>
             <form>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 ">
                     <div className="flex flex-col space-y-1">
@@ -97,6 +98,7 @@ const CourseCreateForm = ({
                     <div className="w-full">
                         <Select
                             isRequired
+                            size='lg'
                             variant='bordered'
                             name="level"
                             items={levels}
@@ -170,7 +172,7 @@ const CourseCreateForm = ({
                     </Button>
                 </div>
             </form >
-        </div>
+        </TeacherRoute>
     )
 }
 
