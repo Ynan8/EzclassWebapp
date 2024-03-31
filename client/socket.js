@@ -7,5 +7,9 @@ export const initSocket = async () => {
         timeout: 10000,
         transports: ['websocket'],
     };
+<<<<<<< HEAD
    return io("http://localhost:8000", options)    ;
+=======
+   return io("https://backendezclass.onrender.com", options)    ;
+>>>>>>> 77156dd33e8779fc80bd8c06254f77ee28ec5913
 }

@@ -1,33 +1,22 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-
-import Split from 'react-split'
-import ProblemDetail from './ProblemDetail/ProblemDetail'
-import Playground from './Playground/Playground'
-import MenuBar from './MenuBar/MenuBar'
-import Navbar from './Navbar/Navbar'
-import { useRouter } from 'next/router'
-import { initSocket } from '../../socket'
-import toast from 'react-hot-toast'
-
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import Split from 'react-split';
+import ProblemDetail from './ProblemDetail/ProblemDetail';
+import Playground from './Playground/Playground';
+import MenuBar from './MenuBar/MenuBar';
+import Navbar from './Navbar/Navbar';
+import { useRouter } from 'next/router';
+import { initSocket } from '../../socket';
+import toast from 'react-hot-toast';
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
-import RandomColor from "randomcolor";
-import { Context } from '../../context'
-import axios from 'axios'
+import RandomColor from 'randomcolor';
+import { Context } from '../../context';
+import axios from 'axios';
 const { nanoid } = require('nanoid');
 
-
-
-
-const WorkSpace = ({
-  id,
-  showConfetti,
-  setShowConfetti,
-
-}) => {
-
+const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
   const socketRef = useRef(null);
-  const editorRef = useRef()
+  const editorRef = useRef();
   const [userData, setUserData] = useState('');
 
   const generateRoomId = (length = 10) => {
@@ -41,7 +30,6 @@ const WorkSpace = ({
 
   const [codeJoin, setCodeJoin] = useState(generateRoomId());
 
-
   const generateNewRoomId = () => {
     setCodeJoin(generateRoomId());
   };
@@ -54,44 +42,42 @@ const WorkSpace = ({
     };
   }, []);
 
-
   const LANGUAGE_VERSIONS = {
-    python: "3.10.0",
-    javascript: "18.15.0",
-    typescript: "5.0.3",
-    java: "15.0.2",
-    csharp: "6.12.0",
-    php: "8.2.3",
+    python: '3.10.0',
+    javascript: '18.15.0',
+    typescript: '5.0.3',
+    java: '15.0.2',
+    csharp: '6.12.0',
+    php: '8.2.3',
   };
-
 
   const languages = Object.entries(LANGUAGE_VERSIONS);
 
   // Assuming 'Context' is your context imported from somewhere else in your app.
-  const { state: { user }, dispatch } = useContext(Context);
+  const {
+    state: { user },
+    dispatch,
+  } = useContext(Context);
 
   useEffect(() => {
     if (user) {
-      setUserData(user)
+      setUserData(user);
     }
   }, [user]);
-
-
 
   const router = useRouter();
   const { roomId, firstName } = router.query;
   const [clients, setClients] = useState([]);
-  const [fetchedCode, setFetchedCode] = useState("");
+  const [fetchedCode, setFetchedCode] = useState('');
   const [currentUser, setCurrentUser] = useState('');
 
   const [language, setLanguage] = useState('python');
   const onSelect = (language) => {
-    setLanguage(language)
-  }
+    setLanguage(language);
+  };
 
   const [theme, setTheme] = useState('vs-dark');
   const [fontSize, setFontSize] = useState(16);
-
 
   useEffect(() => {
     const init = async () => {
@@ -115,20 +101,17 @@ const WorkSpace = ({
         setClients(clients);
       });
 
-
-      socketRef.current.on("code-change", ({ code, firstName }) => {
+      socketRef.current.on('code-change', ({ code, firstName }) => {
         setFetchedCode(code);
         setCurrentUser(firstName);
         console.log(`${firstName} made a code change:`, code);
       });
 
-
       socketRef.current.on('disconnected', ({ socketId, firstName }) => {
         toast.success(`${firstName} ออกจากห้องเรียน`);
         setClients((prev) => prev.filter((client) => client.socketId !== socketId));
       });
-
-    }
+    };
     init();
 
     // Remove listeners on cleanup
@@ -137,9 +120,8 @@ const WorkSpace = ({
       socketRef.current.off('connect_error');
       socketRef.current.off('connect_failed');
       socketRef.current.off('joined');
-      socketRef.current.off("code-change");
+      socketRef.current.off('code-change');
       socketRef.current.off('disconnected');
-
     };
   }, [roomId, firstName]);
 
@@ -148,7 +130,7 @@ const WorkSpace = ({
     socketRef.current.emit('code-change', {
       roomId,
       code: newCode,
-      firstName
+      firstName,
     });
   };
 
@@ -174,14 +156,12 @@ const WorkSpace = ({
   };
 
   // Run Code
-
-
   const API = axios.create({
-    baseURL: "https://emkc.org/api/v2/piston",
+    baseURL: 'https://emkc.org/api/v2/piston',
   });
 
   const executeCode = async (language, sourceCode, input) => {
-    const response = await API.post("/execute", {
+    const response = await API.post('/execute', {
       language: language,
       version: LANGUAGE_VERSIONS[language],
       files: [
@@ -194,18 +174,12 @@ const WorkSpace = ({
     return response.data;
   };
 
-
-
-
   return (
     // Use flex-col for mobile and switch to flex-row for larger screens
     <div className="flex flex-col md:flex-row">
-
       {/* Assign flex-grow classes and responsive display/hiding as necessary */}
       <div className="flex-grow w-full md:w-2/5 lg:w-2/5 xl:w-1/4">
-        <ProblemDetail
-          problem={problem}
-        />
+        <ProblemDetail problem={problem} />
       </div>
 
       {/* Playground occupies more space on larger screens */}
@@ -226,7 +200,7 @@ const WorkSpace = ({
           executeCode={executeCode}
           problem={problem}
           showConfetti={showConfetti}
-           setShowConfetti={setShowConfetti}
+          setShowConfetti={setShowConfetti}
         />
       </div>
 
@@ -247,5 +221,6 @@ const WorkSpace = ({
       </div>
     </div>
   );
-}
-export default WorkSpace
+};
+
+export default WorkSpace;
