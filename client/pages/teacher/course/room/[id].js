@@ -15,6 +15,7 @@ import AddCourseRoom from '../../../../components/Modals/AddCourseRoom';
 import axios from 'axios';
 import UpdateCourseRoom from '../../../../components/Modals/UpdateCourseRoom';
 import toast from 'react-hot-toast';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 
 
 
@@ -157,7 +158,7 @@ const CourseRoom = () => {
         switch (columnKey) {
             case "index":
                 return (
-                    <div className="">
+                    <div className="text-lg">
                         {index}
                     </div>
                 );
@@ -245,10 +246,8 @@ const CourseRoom = () => {
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
                 <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
-
-                <div className="h-full  mt-28 mb-10 md:ml-64">
+                <div className="h-full mt-28 mb-10 md:ml-64">
                     <div className="px-10">
-                        {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
                             <BreadcrumbItem>
                                 <Link href='/teacher/home' >
@@ -268,10 +267,9 @@ const CourseRoom = () => {
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
-
+                 
                     <main className="flex-1 mt-10 pb-16 sm:pb-32">
-
-                        <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
+                        <div className="mx-auto max-w-screen-2xl  px-4 sm:px-6 xl:px-12">
                             <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                                 <div className="flex flex-col sm:flex-row justify-between gap-3 items-end">
                                     <Input
@@ -297,7 +295,6 @@ const CourseRoom = () => {
                                         สร้างห้องเรียน
                                     </Button>
                                 </div>
-
 
                                 <div className="mt-7 overflow-x-auto">
                                     {isLoading ? (

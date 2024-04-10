@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { HiOutlineUserGroup } from 'react-icons/hi';
 import { SiGoogleclassroom } from 'react-icons/si';
 import { FaTrophy } from 'react-icons/fa';
+import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 
 
 const SingleRoom = () => {
@@ -235,11 +237,61 @@ const SingleRoom = () => {
     return (
         <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-                <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+                {/* <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} /> */}
+                <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={courseYearId} />
                 <HeaderBarTeacher mobileSidebarOpen={mobileSidebarOpen} />
-                <div className="h-full  mt-28 mb-10 md:ml-64">
+                <div className="h-full  mt-16 mb-10 md:ml-64">
                     {/* <pre>{JSON.stringify(courseRoomSingle,null,4)}</pre> */}
-                    <div className="px-10">
+                    <Navbar
+                        classNames={{
+                            item: [
+                                "flex",
+                                "relative",
+                                "h-full",
+                                "items-center",
+                                "data-[active=true]:after:content-['']",
+                                "data-[active=true]:after:absolute",
+                                "data-[active=true]:after:bottom-0",
+                                "data-[active=true]:after:left-0",
+                                "data-[active=true]:after:right-0",
+                                "data-[active=true]:after:h-[2px]",
+                                "data-[active=true]:after:rounded-[2px]",
+                                "data-[active=true]:after:bg-primary",
+                            ],
+                        }}
+                    >
+                        <NavbarContent className=" gap-6" justify="center">
+                            <NavbarItem isActive >
+                                <Link
+                                    href={`/teacher/course/room/single/${id}/`}
+                                >
+                                    ภาพรวามห้องเรียน
+                                </Link>
+                            </NavbarItem>
+                            <NavbarItem >
+                                <Link
+                                    href={`/teacher/course/room/assignment/${id}/`}
+                                >
+                                    ตรวจงาน
+                                </Link>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <Link
+                                    href={`/teacher/course/room/gradeBook/${id}/`}
+                                >
+                                    ผลการเรียน
+                                </Link>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <Link
+                                    href={`/teacher/course/room/manage-user/${id}/`}
+                                >
+                                    จัดการชื่อผู้ใช้
+                                </Link>
+                            </NavbarItem>
+                        </NavbarContent>
+                    </Navbar>
+                    <div className="mt-10 px-10">
                         {/* Breadcrumbs */}
                         <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
                             <BreadcrumbItem>
@@ -261,6 +313,7 @@ const SingleRoom = () => {
                             <BreadcrumbItem>ภาพรวมห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
+
                     <div className="px-12 w-full my-8">
                         <div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 my-8">

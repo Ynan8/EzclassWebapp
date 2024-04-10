@@ -75,13 +75,15 @@ exports.removeImage = async (req, res) => {
 
 exports.courseList = async (req, res) => {
     try {
-            const course = await Course.find({})
-                    .exec()
-            res.json(course)
+        const courses = await Course.find({})
+            .populate('teacher') // Populate the 'teacher' field with the corresponding teacher data
+            .exec();
+        res.json(courses);
     } catch (err) {
-            console.log(err)
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+};
 
 exports.create = async (req, res) => {
     try {

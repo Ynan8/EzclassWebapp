@@ -196,9 +196,9 @@ const CourseEdit = () => {
                     <AiOutlineArrowLeft size={30} />
                 </div>
             </Link>
-            <div className="mx-auto max-w-screen-lg px-4 pt-2 pb-20 space-y-12">
+            <div className="mx-auto max-w-screen-xl px-4 pt-2 pb-20 space-y-12">
                 <div className="text-center space-y-4">
-                    <h1 className="text-2xl sm:text-3xl font-medium">แก้ไขรายวิชา </h1>
+                    <h1 className="text-3xl sm:text-4xl font-semibold">แก้ไขรายวิชา </h1>
                 </div>
                 {/* CourseUpdateForm */}
                 <CourseUpdateForm

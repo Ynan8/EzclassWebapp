@@ -9,6 +9,9 @@ import { BreadcrumbItem, Breadcrumbs, Listbox, ListboxItem, ListboxSection } fro
 import { RiCodeBoxFill } from 'react-icons/ri';
 import { MdAssignment } from 'react-icons/md';
 import Link from 'next/link';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
+import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
+
 
 const AssignmentRoom = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -192,10 +195,60 @@ const AssignmentRoom = () => {
   return (
     <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={courseYearId} />
         <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
-        <div className="h-full mt-28 mb-10 md:ml-64">
-          <div className="px-10">
+        <div className="h-full mt-16 mb-10 md:ml-64">
+          <Navbar
+            classNames={{
+              item: [
+                "flex",
+                "relative",
+                "h-full",
+                "items-center",
+                "data-[active=true]:after:content-['']",
+                "data-[active=true]:after:absolute",
+                "data-[active=true]:after:bottom-0",
+                "data-[active=true]:after:left-0",
+                "data-[active=true]:after:right-0",
+                "data-[active=true]:after:h-[2px]",
+                "data-[active=true]:after:rounded-[2px]",
+                "data-[active=true]:after:bg-primary",
+              ],
+            }}
+          >
+            <NavbarContent className=" gap-6" justify="center">
+              <NavbarItem  >
+                <Link
+                  href={`/teacher/course/room/single/${id}/`}
+                >
+                  ภาพรวามห้องเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem isActive >
+                <Link
+                  href={`/teacher/course/room/assignment/${id}/`}
+                >
+                  ตรวจงาน
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  href={`/teacher/course/room/gradeBook/${id}/`}
+                >
+                  ผลการเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  href={`/teacher/course/room/manage-user/${id}/`}
+                >
+                  จัดการชื่อผู้ใช้
+                </Link>
+              </NavbarItem>
+            </NavbarContent>
+          </Navbar>
+
+          <div className="mt-10 px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
               <BreadcrumbItem>

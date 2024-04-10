@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 import StudentRoute from '../../../../../components/Routes/StudentRoute'
 import { BsFilePdf, BsJournalCheck } from 'react-icons/bs';
 import { UserOutlined } from '@ant-design/icons';
@@ -12,9 +12,16 @@ import toast from 'react-hot-toast';
 import { Dialog, Transition } from '@headlessui/react';
 import { Button, CardFooter, Chip, Skeleton } from '@nextui-org/react';
 import { MdAssignment } from 'react-icons/md';
+import { Context } from '../../../../../context';
 
 
 const DetailAssignment = () => {
+    // state
+    const { state: { user },
+        dispatch,
+    } = useContext(Context);
+
+
     const [showAssignment, setShowAssignment] = useState(true);
     const [uploadButtonTextFile, setUploadButtonTextFile] = useState('เพิ่มงานของคุณ');
     const [course, setCourse] = useState({});
@@ -175,17 +182,32 @@ const DetailAssignment = () => {
         }
     }
 
+    const logUser = async (username, userRole, firstName, lastName, action) => {
+        try {
+            // Send a request to your server-side endpoint to log the user login
+            await axios.post(`${process.env.NEXT_PUBLIC_API}/course-logs`, {
+                courseId: courseId,
+                username,
+                firstName,
+                lastName,
+                userType: userRole, 
+                format: action, 
+            });
+        } catch (error) {
+            console.error('Error logging user action:', error);
+        }
+    };
+    
     const handleSubmit = async () => {
         try {
             if (!assignmentFile) {
                 // Show an error message or handle the case where no file is selected
                 return;
             }
-
+    
             setValues({ ...values, loading: true });
-
-            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}/${courseRoom._id
-                }`, {
+    
+            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}/${courseRoom._id}`, {
                 fileSubmit: {
                     originalName: originalFileName,
                     location: assignmentFile.Location,
@@ -193,10 +215,10 @@ const DetailAssignment = () => {
                     key: assignmentFile.Key,
                 },
             });
-
-
+    
             toast.success('บันทึกการส่งงานสำเร็จ!');
             router.push(`/student/course/lesson/${courseId}`);
+            logUser(user.username, user.role, user.firstName, user.lastName, 'อัปโหลดไฟล์');
         } catch (error) {
             console.error('Error submitting assignment:', error);
             toast.error('Failed to submit assignment. Please try again.');
@@ -204,18 +226,19 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: false });
         }
     };
-
+    
     const handleCancelSubmit = async () => {
         try {
             setValues({ ...values, loading: true });
-
+    
             // Call the API to cancel the submission
             await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/cancel-submit`, {
                 assignmentId: id,
             });
-
+    
             toast.success("การส่งงานถูกยกเลิกสำเร็จ");
             setCheckSubmit({}); // Clear the submission data
+            logUser(user.username, user.role, user.firstName, user.lastName, 'ยกเลิกอัปโหลดไฟล์');
         } catch (error) {
             console.error("Error canceling submission:", error);
             toast.error("ไม่สามารถยกเลิกการส่งงานได้");
@@ -223,6 +246,7 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: false });
         }
     };
+    
 
 
 

@@ -16,6 +16,9 @@ const {
     UpdateTeacher,
     removeTeacher,
     getCourseYearId,
+    getTotalCompleted,
+    getCourseYearIdByCourse,
+    getRoomProgress,
     
 } = require("../controllers/admin")
 
@@ -26,13 +29,10 @@ router.put("/teacher/:tchId", auth, UpdateTeacher);
 router.delete('/delete-teacher/:id', auth, removeTeacher);
 router.get("/admin/getCourseYearId/:id", auth, getCourseYearId);
 
+router.get('/total-completed/:courseId', getTotalCompleted);
+router.get('/courseYearIdByCourse/:courseId', getCourseYearIdByCourse);
 
-
-
-
-
-
-
+router.get("/room-progress/:courseYearId", getRoomProgress);
 
 
 

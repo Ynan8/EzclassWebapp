@@ -19,28 +19,6 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
   const editorRef = useRef();
   const [userData, setUserData] = useState('');
 
-  const generateRoomId = (length = 10) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-  };
-
-  const [codeJoin, setCodeJoin] = useState(generateRoomId());
-
-  const generateNewRoomId = () => {
-    setCodeJoin(generateRoomId());
-  };
-
-  useEffect(() => {
-    const interval = setInterval(generateNewRoomId, 3600000); // Generate new room ID every 1 hour
-
-    return () => {
-      clearInterval(interval); // Clear the interval when the component unmounts
-    };
-  }, []);
 
   const LANGUAGE_VERSIONS = {
     python: '3.10.0',
@@ -66,7 +44,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
   }, [user]);
 
   const router = useRouter();
-  const { roomId, firstName } = router.query;
+  const { roomId, firstName, joinCode } = router.query;
   const [clients, setClients] = useState([]);
   const [fetchedCode, setFetchedCode] = useState('');
   const [currentUser, setCurrentUser] = useState('');
@@ -88,47 +66,50 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
         console.log('socket err=>', e);
         toast.error('Socket connection failed!!');
       };
-
+  
+      // Use userData to join the room
       socketRef.current.emit('join', {
-        roomId,
-        firstName,
+        roomId:joinCode,
+        user: userData,
+        
       });
-
-      socketRef.current.on('joined', ({ clients, firstName, socketId }) => {
-        if (firstName) {
-          toast.success(`${firstName} เข้าร่วมห้องเรียน.`);
+  
+      socketRef.current.on('joined', ({ clients, user, socketId }) => {
+        if (user) {
+          toast.success(`${user.firstName} เข้าร่วมห้องเรียน.`);
         }
         setClients(clients);
       });
-
-      socketRef.current.on('code-change', ({ code, firstName }) => {
+  
+      socketRef.current.on('code-change', ({ code, user }) => {
         setFetchedCode(code);
-        setCurrentUser(firstName);
-        console.log(`${firstName} made a code change:`, code);
       });
-
-      socketRef.current.on('disconnected', ({ socketId, firstName }) => {
-        toast.success(`${firstName} ออกจากห้องเรียน`);
+  
+      socketRef.current.on('disconnected', ({ socketId, user }) => {
+        toast.success(`${user.firstName} ออกจากห้องเรียน`);
         setClients((prev) => prev.filter((client) => client.socketId !== socketId));
       });
     };
     init();
-
+  
     // Remove listeners on cleanup
     return () => {
-      socketRef.current.disconnect();
-      socketRef.current.off('connect_error');
-      socketRef.current.off('connect_failed');
-      socketRef.current.off('joined');
-      socketRef.current.off('code-change');
-      socketRef.current.off('disconnected');
-    };
-  }, [roomId, firstName]);
+  if (socketRef.current) {
+    socketRef.current.disconnect();
+    socketRef.current.off('connect_error');
+    socketRef.current.off('connect_failed');
+    socketRef.current.off('joined');
+    socketRef.current.off('code-change');
+    socketRef.current.off('disconnected');
+  }
+};
+  }, [roomId, userData]);
+  
 
   const onCodeChange = (newCode) => {
     setFetchedCode(newCode);
     socketRef.current.emit('code-change', {
-      roomId,
+      roomId:joinCode,
       code: newCode,
       firstName,
     });
@@ -201,6 +182,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
           problem={problem}
           showConfetti={showConfetti}
           setShowConfetti={setShowConfetti}
+          clients={clients}
         />
       </div>
 
@@ -216,7 +198,8 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
           setFontSize={setFontSize}
           userData={userData}
           roomId={roomId}
-          codeJoin={codeJoin}
+          joinCode={joinCode}
+          setClients={setClients}
         />
       </div>
     </div>

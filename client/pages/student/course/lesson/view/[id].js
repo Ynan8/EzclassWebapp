@@ -236,6 +236,8 @@ const LessonView = () => {
     }
   };
 
+  
+// Check lessonId have in complete? else markCompleted working
   const goToNextLesson = (lessonId) => {
     markCompleted(lessonId);
     if (selectedSectionIndex !== null) {

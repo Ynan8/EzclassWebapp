@@ -17,7 +17,7 @@ const register = () => {
 
     const [firstName, setFirstName] = useState("นันฐวุฒิ");
     const [lastName, setLstName] = useState("ต้นสวรรค์"); { }
-    const [username, setUserName] = useState("31280 ");
+    const [email, setEmail] = useState("31280 ");
     const [password, setPassword] = useState("1234 ");
     const [Cpassword, setCpassword] = useState("1234");
     const [loading, setLoading] = useState(false)
@@ -28,7 +28,7 @@ const register = () => {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/register`, {
                 firstName,
                 lastName,
-                username,
+                email,
                 password,
                 Cpassword,
             });
@@ -93,8 +93,8 @@ const register = () => {
                                     <label className="text-lg font-medium">อีเมล</label>
                                     <input
                                         className={`w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:outline-none focus:border-blue-500`}
-                                        value={username}
-                                        onChange={(e) => setUserName(e.target.value)}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         placeholder="กรอกอีเมล"
                                         required
                                     />

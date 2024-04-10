@@ -27,6 +27,7 @@ const CourseCreateForm = ({
                         <div className="flex items-center space-x-2">
                             <div className="flex-1 relative">
                                 <Input
+                                    size='lg'
                                     isRequired
                                     type="text"
                                     name="courseNo"
@@ -34,7 +35,6 @@ const CourseCreateForm = ({
                                     onChange={handleChange}
                                     variant={"bordered"}
                                     label="รหัสวิชา"
-                                    size='lg'
                                 />
                             </div>
                         </div>
@@ -73,7 +73,7 @@ const CourseCreateForm = ({
                                 name="detail"
                                 value={values.detail}
                                 onChange={handleChange}
-                                label={<span className="text-lg">รายละเอียด</span>} 
+                                label={<span className="text-lg">รายละเอียด</span>}
                                 variant="bordered"
                                 disableAnimation
                                 disableAutosize
@@ -102,7 +102,6 @@ const CourseCreateForm = ({
                             variant='bordered'
                             name="level"
                             items={levels}
-                            label="ระดับการศึกษา"
                             placeholder="เลือกระดับการศึกษา"
                             className="max-w-xs"
                             onChange={handleLevelChange}
@@ -120,6 +119,7 @@ const CourseCreateForm = ({
                             variant="bordered"
                             startContent={<FaCloudUploadAlt size={25} />}
                             onClick={handleUploadButtonClick}
+                            className='text-lg'
                         >
                             เพิ่มรูปรายวิชา
                         </Button>
@@ -156,7 +156,7 @@ const CourseCreateForm = ({
                 </div>
                 <div className="flex sm:justify-end justify-center mt-6">
                     <Button
-                        className='px-24 '
+                        className='px-24 text-xl'
                         radius='lg'
                         size='lg'
                         onClick={handleSubmit}

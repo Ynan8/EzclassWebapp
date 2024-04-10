@@ -11,10 +11,9 @@ import Logo from '../public/Logo.png'
 import LogoString from '../public/LogoString.png'
 import { useRouter } from 'next/router'
 import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
-import { FaUserGroup, FaUserTie } from "react-icons/fa6";
+import { FaUserTie } from "react-icons/fa6";
 import HeaderBar from '../components/HeaderBar/HeaderBar'
-import { RiAdminFill, RiUserSettingsFill } from 'react-icons/ri'
-import { HiOutlineUserGroup } from 'react-icons/hi'
+import { RiUserSettingsFill } from 'react-icons/ri'
 
 
 const index = () => {
@@ -89,42 +88,19 @@ const index = () => {
     return (
         <>
             <div className="flex flex-col lg:flex-row w-full h-screen">
-                <HeaderBar />
-                <div className="flex flex-col lg:flex-row-reverse w-full lg:w-1/2 items-center justify-center bg-white">
-                    <div className="flex flex-col space-y-14 px-44">
-                        <div className="flex items-center p-4 rounded-lg">
-                            <div className="inline-flex flex-shrink-0 items-center justify-center h-20 w-20 text-blue-600 bg-blue-100 rounded-full mr-4">
-                                <FaUserGroup size={35} />
-                            </div>
-                            <div className='flex flex-col space-y-1'>
-                                <p className='text-3xl font-semibold'>ครูและนักเรียน</p>
-                                <p className='text-xl'>สำหรับครูและนักเรียนให้ลงชื่อเข้าใช้งานระบบ "ที่หน้าแรก" <br /> กรอกข้อมูล เลขประจำตัว และ รหัสผ่าน</p>
-
-                            </div>
-                        </div>
-                        <div className="flex items-center p-4 rounded-lg">
-                            <div className="inline-flex flex-shrink-0 items-center justify-center h-20 w-20 text-blue-600 bg-blue-100 rounded-full mr-4">
-                                <RiAdminFill size={35} />
-                            </div>
-                            <div className='flex flex-col space-y-1'>
-                                <p className='text-3xl font-semibold'>แอดมิน</p>
-                                <p className='text-xl'>สำหรับแอดมินให้ลงชื่อเข้าใช้งานระบบผ่านเมนู "สำหรับแอดมิน"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="w-full bg-blue-500 flex items-center justify-center lg:w-1/2">
-                    <div className=' w-11/12 max-w-[700px] px-10 py-20 rounded-3xl bg-white border-2 border-gray-100'>
-                        <h1 className='text-4xl text-center font-semibold'>เข้าสู่ระบบ</h1>
+                {/* <HeaderBar /> */}
+                <div className="w-full bg-blue-500 flex items-center justify-center ">
+                    <div className=' w-11/12 max-w-[700px] px-10 py-16 rounded-3xl bg-white border-2 border-gray-100'>
+                        <h1 className='text-4xl text-center font-semibold'>สำหรับแอดมิน</h1>
                         <form onSubmit={handleSubmit}>
                             <div className='mt-8'>
                                 <div className='flex flex-col'>
-                                    <label className='text-lg font-medium'>เลขประจำตัว</label>
+                                    <label className='text-lg font-medium'>อีเมล</label>
                                     <input
                                         className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:outline-none focus:border-blue-500'
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        placeholder="กรอกเลขประจำตัว"
+                                        placeholder="กรอกอีเมล"
                                         required
                                     />
                                 </div>
@@ -139,10 +115,30 @@ const index = () => {
                                         type='password'
                                     />
                                 </div>
+                                <div className='mt-8 flex justify-between items-center'>
+                                    <div>
+
+                                    </div>
+
+                                    <Link href="/forgot-password" >
+                                        <button
+                                            className='font-medium text-base text-blue-500'
+                                        >ลืมรหัสผ่าน ?
+                                        </button>
+                                    </Link>
+
+                                </div>
                                 <div className='mt-8 flex flex-col gap-y-4'>
                                     <Button size='lg' type="submit" color="primary" isLoading={loading}>
                                         {loading ? "กำลังโหลด..." : "เข้าสู่ระบบ"}
                                     </Button>
+                                </div>
+                                <div className='mt-8 flex justify-center items-center'>
+                                    <Link href="/" >
+                                        <button
+                                            className='ml-2 font-medium text-base text-blue-500'>กลับหน้าแรก
+                                        </button>
+                                    </Link>
                                 </div>
                             </div>
                         </form>

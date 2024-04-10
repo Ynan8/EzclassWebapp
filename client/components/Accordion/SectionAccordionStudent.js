@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionItem, Listbox, ListboxSection, ListboxItem, Chip, Button, Modal, ModalContent, ModalHeader, ModalFooter, useDisclosure, ModalBody } from "@nextui-org/react";
-import { FaBookOpen, FaPlus } from 'react-icons/fa';
+import { FaBookOpen, FaCheckCircle, FaPlus } from 'react-icons/fa';
 import { MdLibraryBooks, MdQuiz, MdAssignment } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import { GoTrash } from "react-icons/go";
 import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { BsCheck2Circle } from 'react-icons/bs';
+import { IoAlertCircle } from "react-icons/io5";
 
 const SectionAccordionStd = ({
     section,
     id,
     courseRoomStd,
+    completedLessons,
+    completedQuiz,
+    completedAssignments,
 }) => {
-    
+
+   
+
+
     return (
         <>
+            {/* <pre>{JSON.stringify(completedAssignments, null, 4)}</pre> */}
             <Accordion selectionMode="multiple" variant="splitted">
                 {section.map((item, index) => (
                     <AccordionItem
@@ -39,11 +48,19 @@ const SectionAccordionStd = ({
                                         title={
                                             <Link href={`/student/course/lesson/view/${id}`}>
 
-                                                <div className='flex items-center text-lg' >
+                                                <div className='flex justify-between items-center text-lg' >
                                                     <p>
                                                         <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
                                                     </p>
-
+                                                    {completedLessons.includes(lesson._id) ? (
+                                                        <span>
+                                                            <FaCheckCircle size={25} className='text-green-500' />
+                                                        </span>
+                                                    ) : (
+                                                        <span>
+                                                            <IoAlertCircle size={27} className='text-red-500' />
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </Link>
                                         }
@@ -63,10 +80,19 @@ const SectionAccordionStd = ({
                                         key={quizIndex}
                                         title={
                                             <Link href={`/student/course/lesson/view/${id}`}>
-                                                <div className='flex items-center text-lg' >
+                                                <div className='flex justify-between items-center text-lg' >
                                                     <p>
                                                         <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
                                                     </p>
+                                                    {completedQuiz.includes(quiz._id) ? (
+                                                        <span>
+                                                            <FaCheckCircle size={25} className='text-green-500' />
+                                                        </span>
+                                                    ) : (
+                                                        <span>
+                                                            <IoAlertCircle size={27} className='text-red-500' />
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </Link>
                                         }
@@ -86,24 +112,23 @@ const SectionAccordionStd = ({
                                         <ListboxItem
                                             key={assignmentIndex}
                                             title={
-                                                <div className='flex items-center text-lg' >
-
                                                     <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
 
-                                                        <div className='flex items-center text-lg' >
+                                                        <div className='flex justify-between items-center text-lg' >
                                                             <p>
                                                                 <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
                                                             </p>
+                                                            {completedAssignments.some(completedId => completedId.assignmentId === assignment._id) ? (
+                                                                <span>
+                                                                    <FaCheckCircle size={25} className='text-green-500' />
+                                                                </span>
+                                                            ) : (
+                                                                <span>
+                                                                    <IoAlertCircle size={27} className='text-red-500' />
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </Link>
-                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                        {/* {assignmentSubmissions && assignmentSubmissions.fileSubmit ? (
-                                                            <p className="text-base font-semibold text-green-400">ส่งงานแล้ว</p>
-                                                        ) : (
-                                                            <p className="text-base font-semibold text-red-400">ยังไม่ส่งงาน</p>
-                                                        )} */}
-                                                    </div>
-                                                </div>
 
 
                                             }

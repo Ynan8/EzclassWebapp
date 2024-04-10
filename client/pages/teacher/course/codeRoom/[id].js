@@ -18,11 +18,14 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 import axios from 'axios';
 import { Context } from '../../../../context';
 import Link from 'next/link';
+import { GiProgression } from "react-icons/gi";
+import toast from 'react-hot-toast';
 
 
 
 const CodeRoom = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
     const router = useRouter();
     const { id } = router.query;
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -138,6 +141,27 @@ const CodeRoom = () => {
         );
     };
 
+    // Delete Course Year
+    const [codeRoomId, setCodeRoomId] = useState("");
+
+    const openDeleteModal = (id) => {
+        setCodeRoomId(id);
+        onOpenModalDelete();
+    };
+
+    const handleDeleteCodeRoom = async (codeRoomId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-codeRoom/${codeRoomId}`);
+
+            toast.success('ลบห้องเรียนเขียนโค้ดสำเร็จ');
+            loadCodeRoom();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบห้องเรียนเขียนโค้ดได้');
+        }
+    };
+
+
     return (
         <TeacherRoute>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
@@ -174,9 +198,11 @@ const CodeRoom = () => {
                                     สร้างห้องเรียนเขียนโค้ด
                                 </Button>
                             </Link>
-                            <Button onPress={onOpen} color="warning" variant="bordered" size='lg' radius="md" startContent={<FaUsers />}>
-                                เข้าร่วมห้องเรียนเขียนโค้ด
-                            </Button>
+                            <Link href={`/teacher/course/codeRoom/progress/${courseId}/?courseYear=${id}`} >
+                                <Button color="warning" className='text-white' variant="shadow" size='lg' radius="md" startContent={<GiProgression />}>
+                                    ดูความคืบหน้า
+                                </Button>
+                            </Link>
                         </div>
                         {/* Modal */}
 
@@ -199,11 +225,9 @@ const CodeRoom = () => {
                                         {codeRoom && codeRoom.map(codeRoom => (
                                             <ListboxItem
                                                 className='mb-2 p-3'
-                                                key="delete"
+                                                key={codeRoom._id}
                                                 title={
-                                                    <div
-                                                      //  onClick={handleStartTeaching(codeRoom._id)}
-                                                        className='flex items-center text-lg' >
+                                                    <div className='flex items-center text-lg' >
                                                         <div className="flex flex-col space-y-2 p-3">
                                                             <p>
                                                                 <span className='font-semibold p-2' >{codeRoom.codeRoomName}</span>
@@ -222,15 +246,19 @@ const CodeRoom = () => {
                                                             >
                                                                 เผยแพร่
                                                             </Chip>
-                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                            <span
+                                                                className="text-lg text-default-600 cursor-pointer active:opacity-50"
+                                                                onClick={() => handleEdit(codeRoom._id)}
+                                                            >
                                                                 <CiEdit size={23} className="ml-auto" />
                                                             </span>
                                                             <span
-                                                                className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                                <GoTrash size={20} className="" />
+                                                                className="text-lg text-danger cursor-pointer active:opacity-50"
+                                                                onClick={() => openDeleteModal(codeRoom._id)}
+                                                            >
+                                                                <GoTrash  size={20} className="" />
                                                             </span>
                                                         </div>
-
                                                     </div>
                                                 }
                                                 startContent={
@@ -238,11 +266,9 @@ const CodeRoom = () => {
                                                         <RiCodeBoxFill size={25} className="text-secondary" />
                                                     </div>
                                                 }
-
                                             >
                                             </ListboxItem>
                                         ))}
-
                                     </ListboxSection>
                                 </Listbox>
                             )}
@@ -275,6 +301,40 @@ const CodeRoom = () => {
                     )}
                 </ModalContent>
             </Modal>
+
+            {/* Delete */}
+            < Modal
+                isOpen={isOpenModalDelete}
+                onOpenChange={onOpenChangeModalDelete}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องลบห้องเรียนเขียนโค้ดหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบห้องเรียนเขียนโค้ดจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger"  onPress={onClose} onClick={() => handleDeleteCodeRoom(codeRoomId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal >
         </TeacherRoute>
     )
 }

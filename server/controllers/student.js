@@ -172,6 +172,8 @@ exports.listCompletedExercises = async (req, res) => {
 exports.markCompletedQuiz = async (req, res) => {
   const { courseId, quizId } = req.body;
 
+ 
+
   const existingQuiz = await CompletedQuiz.findOne({
     quiz: quizId
   }).exec();
@@ -204,6 +206,7 @@ exports.markCompletedQuiz = async (req, res) => {
     }
   }
 };
+
 
 exports.addQuizScore = async (req, res) => {
   try {

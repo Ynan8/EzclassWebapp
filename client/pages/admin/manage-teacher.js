@@ -221,13 +221,21 @@ const ManageTeacher = () => {
               </div>
 
               <div className="flex ml-auto space-x-2">
-                <button
+                <Button
                   onClick={onOpenModalCreate}
-                  className="inline-flex items-center justify-center px-4 sm:px-3  py-1 sm:py-2 text-xs sm:text-sm md:text-sm lg:text-base bg-primary-500 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring focus:ring-primary-300"
+                  radius='sm'
+                  size="lg"
+                  className="ml-3 flex items-center text-white "
+                  color="primary"
+                  startContent={
+                    <FaPlus
+                      size={20}
+                    />
+                  }
                 >
-                  <FaPlus className="text-center" />
                   <span className="ml-2 hidden md:inline">เพิ่มผู้สอน</span>
-                </button>
+                </Button>
+              
               </div>
             </div>
 

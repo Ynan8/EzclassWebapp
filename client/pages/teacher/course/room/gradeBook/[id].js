@@ -9,6 +9,10 @@ import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import TeacherRoute from '../../../../../components/Routes/TeacherRoute';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
+import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
+
+
 
 const GradeBookRoom = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -115,19 +119,19 @@ const GradeBookRoom = () => {
     const workSheetData = student.map((stud) => {
       // Find assignments for the student
       const studentAssignments = assignmentScoreRoom.filter((assignment) => assignment.studentId === stud._id);
-  
+
       // Calculate total weighted score and grade
       const totalWeightedScore = studentAssignments.reduce((total, assignment) => {
         return total + ((assignment.score * assignment.weight) / assignment.scoreLimit);
       }, 0);
       const grade = calculateGrade(totalWeightedScore);
-  
+
       // Start with the student ID and name
       let record = {
         'รหัสนักเรียน': stud.username,
         'ชื่อ': `${stud.firstName} ${stud.lastName}`,
       };
-  
+
       // Add scores for each unique assignment
       uniqueAssignments.forEach((assignment) => {
         const studentAssignment = studentAssignments.find((ass) => ass.assignmentName === assignment.assignmentName);
@@ -135,30 +139,30 @@ const GradeBookRoom = () => {
           ? ((studentAssignment.score / studentAssignment.scoreLimit) * assignment.weight).toFixed(2)
           : 'N/A'; // Use 'N/A' for assignments not found
       });
-  
+
       // Add code room score, total weighted score, and grade
       record['คะแนนห้องเรียนเขียนโค้ด'] = ''; // Assign code room score if applicable
       record['คะแนนรวม'] = totalWeightedScore.toFixed(2);
       record['เกรด'] = grade;
-  
+
       return record;
     });
-  
+
     // Generate worksheet
     const workSheet = XLSX.utils.json_to_sheet(workSheetData);
     const workBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workBook, workSheet, "GradeBook");
-  
+
     // Generate buffer
     const excelBuffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'array' });
-    
+
     // Convert to Blob and save using FileSaver
     const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     saveAs(data, 'GradeBook.xlsx');
   };
-  
- 
-  
+
+
+
 
   const [assignmentScoreRoom, setAssignmentScoreRoom] = useState([]);
 
@@ -247,10 +251,59 @@ const GradeBookRoom = () => {
   return (
     <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={courseYearId} />
         <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
-        <div className="h-full mt-28 mb-10 md:ml-64">
-          <div className="px-10">
+        <div className="h-full mt-16 mb-10 md:ml-64">
+          <Navbar
+            classNames={{
+              item: [
+                "flex",
+                "relative",
+                "h-full",
+                "items-center",
+                "data-[active=true]:after:content-['']",
+                "data-[active=true]:after:absolute",
+                "data-[active=true]:after:bottom-0",
+                "data-[active=true]:after:left-0",
+                "data-[active=true]:after:right-0",
+                "data-[active=true]:after:h-[2px]",
+                "data-[active=true]:after:rounded-[2px]",
+                "data-[active=true]:after:bg-primary",
+              ],
+            }}
+          >
+            <NavbarContent className=" gap-6" justify="center">
+              <NavbarItem  >
+                <Link
+                  href={`/teacher/course/room/single/${id}/`}
+                >
+                  ภาพรวามห้องเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem  >
+                <Link
+                  href={`/teacher/course/room/assignment/${id}/`}
+                >
+                  ตรวจงาน
+                </Link>
+              </NavbarItem>
+              <NavbarItem isActive>
+                <Link
+                  href={`/teacher/course/room/gradeBook/${id}/`}
+                >
+                  ผลการเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  href={`/teacher/course/room/manage-user/${id}/`}
+                >
+                  จัดการชื่อผู้ใช้
+                </Link>
+              </NavbarItem>
+            </NavbarContent>
+          </Navbar>
+          <div className="mt-10 px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
               <BreadcrumbItem>
@@ -316,9 +369,9 @@ const GradeBookRoom = () => {
                           </div>
                         </th>
                       ))}
-                      <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
+                      {/* <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
                         คะแนนห้องเรียนเขียนโค้ด
-                      </th>
+                      </th> */}
                       <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
                         คะแนนรวม
                       </th>
@@ -348,9 +401,9 @@ const GradeBookRoom = () => {
                                 {(assignment.score / assignment.scoreLimit) * assignment.weight.toFixed(2)}
                               </td>
                             ))}
-                            <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
-                              {/* Insert code room score here if applicable */}
-                            </td>
+                            {/* <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                              Insert code room score here if applicable
+                            </td> */}
                             <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
                               {totalWeightedScore.toFixed(2)}
                             </td>

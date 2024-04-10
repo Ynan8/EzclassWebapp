@@ -181,9 +181,9 @@ const studentGradeBook = () => {
         else if (score >= 55) return 1.5;
         else if (score >= 50) return 1;
         else return 0;
-      }
+    }
 
-      
+
     return (
         <StudentRoute>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
@@ -207,7 +207,7 @@ const studentGradeBook = () => {
                         </Breadcrumbs>
                     </div>
                     <div className="px-4 md:px-12 pt-8 w-full"> {/* Use smaller padding on smaller screens */}
-                        <div className="mx-auto max-w-4xl flex flex-col item-center justify-center"> {/* Center content and limit max width */}
+                        <div className="mx-auto max-w-screen-2xl flex flex-col item-center justify-center"> {/* Center content and limit max width */}
                             {/* <pre>{JSON.stringify(assignmentScoreRoom, null, 4)}</pre> */}
                             <Card className='p-4'>
                                 <CardBody>
@@ -240,14 +240,24 @@ const studentGradeBook = () => {
                                 </TableHeader>
 
                                 <TableBody>
-                                    {assignmentScoreRoom.map((assignment, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell className='text-base md:text-lg'>{assignment.assignmentName}</TableCell>
-                                            <TableCell className='text-base md:text-lg'>{assignment.scoreLimit}</TableCell>
-                                            <TableCell className='text-base md:text-lg'>{assignment.score}</TableCell>
-                                            <TableCell className='text-base md:text-lg'> {(assignment.score / assignment.scoreLimit) * assignment.weight.toFixed(2)} คะแนน</TableCell>
+                                    {assignmentScoreRoom.length === 0 ? (
+                                        <TableRow >
+                                            <TableCell className='text-base md:text-lg'>ยังไมีมีคะแนนการส่งงาน</TableCell>
+                                            <TableCell className='text-base md:text-lg'></TableCell>
+                                            <TableCell className='text-base md:text-lg'></TableCell>
+                                            <TableCell className='text-base md:text-lg'></TableCell>
                                         </TableRow>
-                                    ))}
+                                    ) : (
+
+                                        assignmentScoreRoom.map((assignment, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell className='text-base md:text-lg'>{assignment.assignmentName}</TableCell>
+                                                <TableCell className='text-base md:text-lg'>{assignment.scoreLimit}</TableCell>
+                                                <TableCell className='text-base md:text-lg'>{assignment.score}</TableCell>
+                                                <TableCell className='text-base md:text-lg'> {(assignment.score / assignment.scoreLimit) * assignment.weight.toFixed(2)} คะแนน</TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
                                 </TableBody>
 
                             </Table>

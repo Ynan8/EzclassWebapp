@@ -1,20 +1,23 @@
-import { Button } from '@nextui-org/react';
+import { Avatar, Button } from '@nextui-org/react';
 import React, { useEffect } from 'react';
-import Avatar from 'react-avatar';
 
-const Client = (
-  {
-  firstName ,
-  userData
-}) => {
-  
+const Client = ({ user, userData }) => {
+    const isCurrentUser = userData && user && userData._id === user._id;
 
-  return (
-    <div className="flex flex-col items-center justify-center">
-      <Avatar name={firstName} size={60} round="14px" />
-      <span className="userName text-white">{`${firstName}`}</span>
-    </div>
-  );
+    return (
+        <div className="flex flex-col space-y-2 items-center justify-center mt-2">
+            <Avatar
+                isBordered
+                radius="sm"
+                name={`${user.firstName} ${user.lastName}`}
+                size='lg'
+                src={user.image ? user.image : undefined}
+            />
+            <span className="userName text-white">
+                {`${user.firstName} ${user.lastName}`} {isCurrentUser ? "(ฉัน)" : ""}
+            </span>
+        </div>
+    );
 };
 
 export default Client;

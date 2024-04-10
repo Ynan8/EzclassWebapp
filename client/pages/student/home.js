@@ -1,15 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-import { Button, CardFooter, Skeleton } from '@nextui-org/react';
-import { Card, CardBody } from "@nextui-org/react";
-import { Tabs, Tab, } from "@nextui-org/react";
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import React, { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
-import { Context } from '../../context';
-import HeaderBarStd from '../../components/HeaderBar/HeaderBarStd';
+import axios from 'axios';
+import { Context } from '../../context/';
 import { useRouter } from 'next/router';
+import HeaderBarStd from '../../components/HeaderBar/HeaderBarStd'
+import { Card, CardBody, CardFooter, Skeleton } from '@nextui-org/react';
 
 const Home = () => {
   const [courseImgLoading, setCourseImgLoading] = useState(false);
@@ -17,6 +12,20 @@ const Home = () => {
 
   const router = useRouter();
 
+  const logUser = async (username, userRole, firstName, lastName, action, courseId) => {
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API}/course-logs`, {
+        courseId: courseId,
+        username,
+        firstName,
+        lastName,
+        userType: userRole,
+        format: action,
+      });
+    } catch (error) {
+      console.error('Error logging user action:', error);
+    }
+  };
 
   useEffect(() => {
     if (user !== null && user.role === 'teacher') {
@@ -60,9 +69,8 @@ const Home = () => {
             <div className="container mx-auto px-4 sm:px-6 xl:px-12">
               <div className="mt-14 ">
                 <div className="flex flex-wrap gap-4 mb-4">
-                  <h1 className=" text-2xl font-semibold text-gray-700"
-                  >
-                  รายวิชาทั้งหมด
+                  <h1 className=" text-2xl font-semibold text-gray-700">
+                    รายวิชาทั้งหมด
                   </h1>
                   <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
                     {courseImgLoading ? (
@@ -75,9 +83,10 @@ const Home = () => {
                         .map(course => (
                           <Card key={course._id} className="py-8">
                             <Link href={`/student/course/lesson/[id]`} as={`/student/course/lesson/${course._id}`}>
-                              <CardBody className="overflow-visible">
+                              <CardBody className="overflow-visible" >
                                 <div className="w-full grid place-items-center">
                                   <img
+                                    onClick={() => logUser(user.username, user.role, user.firstName, user.lastName, 'เข้าใช้งานวิชา', course._id)}
                                     className="object-cover rounded"
                                     src={course.image.Location}
                                     alt={course.courseName}
@@ -103,7 +112,6 @@ const Home = () => {
                         ))
                     )}
                   </div>
-
                 </div>
               </div>
             </div>
@@ -114,4 +122,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Home;

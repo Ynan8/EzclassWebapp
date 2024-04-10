@@ -15,6 +15,10 @@ import find from '../../../../../public/find.png'
 import { GoTrash } from "react-icons/go";
 import { CiEdit, CiSearch } from "react-icons/ci";
 import Link from 'next/link';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
+import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
+import moment from "moment/min/moment-with-locales";
+
 
 
 
@@ -163,11 +167,59 @@ const ManageUser = () => {
   return (
     <TeacherRoute>
       <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
-        <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} />
+        <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={courseYearId} />
         <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
-        <div className="h-full  mt-28 mb-10 md:ml-64">
-
-          <div className="px-10">
+        <div className="h-full  mt-16 mb-10 md:ml-64">
+          <Navbar
+            classNames={{
+              item: [
+                "flex",
+                "relative",
+                "h-full",
+                "items-center",
+                "data-[active=true]:after:content-['']",
+                "data-[active=true]:after:absolute",
+                "data-[active=true]:after:bottom-0",
+                "data-[active=true]:after:left-0",
+                "data-[active=true]:after:right-0",
+                "data-[active=true]:after:h-[2px]",
+                "data-[active=true]:after:rounded-[2px]",
+                "data-[active=true]:after:bg-primary",
+              ],
+            }}
+          >
+            <NavbarContent className=" gap-6" justify="center">
+              <NavbarItem  >
+                <Link
+                  href={`/teacher/course/room/single/${id}/`}
+                >
+                  ภาพรวามห้องเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  href={`/teacher/course/room/assignment/${id}/`}
+                >
+                  ตรวจงาน
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  href={`/teacher/course/room/gradeBook/${id}/`}
+                >
+                  ผลการเรียน
+                </Link>
+              </NavbarItem>
+              <NavbarItem isActive>
+                <Link
+                  href={`/teacher/course/room/manage-user/${id}/`}
+                >
+                  จัดการชื่อผู้ใช้
+                </Link>
+              </NavbarItem>
+            </NavbarContent>
+          </Navbar>
+          <div className="mt-10 px-10">
             {/* Breadcrumbs */}
             <Breadcrumbs size='lg' maxItems={4} itemsBeforeCollapse={2} itemsAfterCollapse={1}>
               <BreadcrumbItem>
@@ -226,13 +278,14 @@ const ManageUser = () => {
                 </div>
                 <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                   <div class="overflow-x-auto">
+                    {/* <pre>{JSON.stringify(student,null,4)}</pre> */}
                     <table className="w-full border-b border-gray-200">
                       <thead>
                         <tr className="text-lg md:text-base sm:text-sm border-b border-gray-200">
                           <th className="py-1 px-4 text-center">ลำดับ</th>
                           <th className="py-1 px-4 text-center">รหัสนักเรียน</th>
                           <th className="py-1 px-4 text-center">ชื่อ-สกุล</th>
-                          <th className="py-1 px-4 text-center">เข้าเรียนล่าสุด</th>
+                          <th className="py-1 px-4 text-center">วันที่เพิ่ม</th>
                         </tr>
                       </thead>
                       <tbody className="text-lg md:text-base sm:text-sm">
@@ -243,7 +296,11 @@ const ManageUser = () => {
                               <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                               <td className="text-center py-2">{student.username}</td>
                               <td className="text-center py-2">{student.firstName} {student.lastName}</td>
-                              <td className="text-center py-2">ยังไม่เข้าเรียน</td>
+                              <td className="text-center py-2">
+                                {moment(student.createdAt)
+                                  .locale('th')
+                                  .format('LL HH:mm')}
+                                </td>
                               <td className="flex justify-center items-center text-center">
                                 <div
                                   onClick={() => {

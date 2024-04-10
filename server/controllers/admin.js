@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const CourseRoom = require("../models/courseRoom");
+const Completed = require("../models/completed");
+const CompletedQuiz = require("../models/completedQuiz");
+const CourseYear = require("../models/courseYear");
 const { hashPassword } = require("../utils/auth");
 
 exports.addTeacher = async (req, res) => {
@@ -124,3 +127,86 @@ exports.addTeacher = async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     }
   };
+
+  exports.getTotalCompleted = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        const totalCompletedLessons = await Completed.find({ courseId }).countDocuments();
+        const totalCompletedQuizzes = await CompletedQuiz.find({ courseId }).countDocuments();
+
+        res.json({ totalCompletedLessons, totalCompletedQuizzes });
+    } catch (error) {
+        console.error('Error fetching total completed:', error);
+        res.status(500).json({ error: 'Failed to fetch total completed' });
+    }
+};
+
+
+exports.getCourseYearIdByCourse = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const courseYearIdByCourse = await CourseYear.find({
+      courseId,
+    });
+
+    if (!courseYearIdByCourse) {
+      return res
+        .status(404)
+        .json({ error: "No course room found for the user" });
+    }
+
+    // Send the courseYearId as a string directly without wrapping it in an object
+    res.json(courseYearIdByCourse);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getRoomProgress = async (req, res) => {
+  const { courseYearId } = req.params;
+
+  try {
+      // Find all rooms for the given course year ID
+      const rooms = await CourseRoom.find({ courseYearId });
+
+      // Calculate progress for each room
+      const roomProgress = await Promise.all(rooms.map(async (room) => {
+          const studentCount = room.studentId.length;
+
+          // Fetch completed quizzes and lessons for each student in the room
+          const completedQuizPromises = room.studentId.map(studentId =>
+              CompletedQuiz.findOne({ studentId, courseId: room.courseId })
+          );
+          const completedQuizResults = await Promise.all(completedQuizPromises);
+
+          const completedLessonPromises = room.studentId.map(studentId =>
+              Completed.findOne({ studentId, courseId: room.courseId })
+          );
+          const completedLessonResults = await Promise.all(completedLessonPromises);
+
+          // Calculate completion percentage for each student
+          const completionPercentages = completedQuizResults.map((quiz, index) => {
+              const lesson = completedLessonResults[index];
+              const totalQuizzes = quiz ? quiz.quiz.length : 0;
+              const totalLessons = lesson ? lesson.lesson.length : 0;
+              const totalCompleted = totalQuizzes + totalLessons;
+              return (totalCompleted / (totalQuizzes + totalLessons)) * 100;
+          });
+
+          // Calculate average completion percentage for the room
+          const averageCompletionPercentage = completionPercentages.reduce((acc, curr) => acc + curr, 0) / studentCount;
+
+          return {
+              roomId: room._id,
+              completionPercentage: isNaN(averageCompletionPercentage) ? 0 : averageCompletionPercentage,
+          };
+      }));
+
+      res.json(roomProgress);
+  } catch (error) {
+      console.error("Error loading room progress:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+};

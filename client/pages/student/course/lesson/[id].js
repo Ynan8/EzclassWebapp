@@ -1,4 +1,4 @@
-import { BreadcrumbItem, Breadcrumbs, Button, Skeleton } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, Skeleton } from '@nextui-org/react';
 import StudentRoute from '../../../../components/Routes/StudentRoute';
 import Link from 'next/link';
 import axios from 'axios';
@@ -175,6 +175,70 @@ const LessonStudent = () => {
         }
     };
 
+    const [isNavigating, setIsNavigating] = useState(false);
+
+
+    const handleGoToLessonView = () => {
+        setIsNavigating(true); // Set loading to true
+
+        router.push(`/student/course/lesson/view/${id}`).then(() => {
+            setIsNavigating(false); // Set loading to false after navigation is complete
+        }).catch((error) => {
+            console.error('Navigation error:', error);
+            setIsNavigating(false); // Set loading to false if navigation fails
+        });
+    };
+
+    const [completedLessons, setCompletedLessons] = useState([]);
+
+    // complete lesson
+    useEffect(() => {
+        if (id) loadCompletedLessons();
+    }, [id]);
+
+    const loadCompletedLessons = async () => {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-completed`, {
+            courseId: id
+        })
+        setCompletedLessons(data)
+    }
+
+    const [completedQuiz, setCompletedQuiz] = useState([]);
+
+
+    // complete quiz
+    useEffect(() => {
+        if (id) loadCompletedQuiz();
+    }, [id]);
+
+
+    const loadCompletedQuiz = async () => {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/list-completedQuiz`, {
+            courseId: id
+        })
+        setCompletedQuiz(data)
+    }
+
+    const [completedAssignments, setCompletedAssignments] = useState([]);
+
+    // complete lesson
+    useEffect(() => {
+        if (id) loadCompletedAssignments();
+    }, [id]);
+
+    const loadCompletedAssignments = async () => {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/complete-assignment/${id}`)
+        setCompletedAssignments(data)
+    }
+
+    const completedProgress = completedQuiz.length + completedLessons.length + completedAssignments.length
+
+    const totalTodo = section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length + cur.AssignmentData.length, 0)
+
+    const noCompleted = totalTodo - completedProgress;
+
+    
+
     return (
         <StudentRoute>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
@@ -225,36 +289,63 @@ const LessonStudent = () => {
                                         <h3 className="font-black text-xl md:text-2xl">
                                             {course.courseNo} : {course.courseName}
                                         </h3>
-                                        <p className="text-base md:text-lg text-gray-600"> 
+                                        <p className="text-base md:text-lg text-gray-600">
                                             {course.detail}
                                         </p>
-                                        <div className="flex flex-col md:flex-row mt-4 space-y-2 md:space-y-0 md:space-x-4"> 
+                                        <div className="flex flex-col md:flex-row mt-4 space-y-2 md:space-y-0 md:space-x-4">
                                             <p className="text-base md:text-lg">
                                                 <span className='font-black'>ระดับชั้น:</span>
                                                 <span className='text-gray-600'>{courseRoomStd.roomName}</span>
                                             </p>
-                                            <p className="text-base md:text-lg"> 
+                                            <p className="text-base md:text-lg">
                                                 <span className='font-black'>ปีการศึกษา:</span>
                                                 <span className='text-gray-600'>{courseYear.year}</span>
                                             </p>
                                         </div>
-                                        <Link href={`/student/course/lesson/view/${id}`}>
+                                        <div className="">
                                             <Button
-                                                className='w-full md:w-auto md:px-24 py-2' 
+                                                onClick={handleGoToLessonView}
+                                                className='w-full md:w-auto md:px-24 py-2'
                                                 radius='md'
                                                 size='lg'
                                                 color="primary"
                                                 variant='shadow'
+                                                disabled={isNavigating}
+                                                isLoading={isNavigating}
                                             >
-                                                เข้าเรียน
+                                                {isNavigating ? 'กำลังโหลด...' : 'เข้าเรียน'}
                                             </Button>
-                                        </Link>
+
+                                        </div>
                                     </div>
                                 </div>
 
                             )}
+                            <Card className='p-3 mt-8'>
+                                <CardBody>
+                                    <div className="flex justify-between items-center flex-col md:flex-row">
+                                        <p className='text-2xl text-gray-700 font-semibold'>สิ่งที่ต้องทำ</p>
+                                        <div className="flex items-center space-x-4 md:space-x-12 mt-4 md:mt-0">
+                                            <div className="flex flex-col items-center text-default-500">
+                                                <p className='text-2xl md:text-3xl font-semibold'>{section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length + cur.AssignmentData.length, 0)}</p>
+                                                <p className='text-lg'>สิ่งที่ต้องทำ</p>
+                                            </div>
+
+                                            <div className="flex flex-col items-center text-green-500">
+                                                <p className='text-2xl md:text-3xl font-semibold'>{completedProgress}</p>
+                                                <p className='text-lg'>ทำเสร็จแล้ว</p>
+                                            </div>
+                                            <div className="flex flex-col items-center text-red-500">
+                                                <p className='text-2xl md:text-3xl font-semibold'>{noCompleted}</p>
+                                                <p className='text-lg'>ยังไม่เสร็จ</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+
                             <div className="flex justify-between items-center mt-4">
-                                <h1 className=" text-2xl font-semibold text-gray-700"
+                                <h1 className="p-3 text-2xl font-semibold text-gray-700"
                                 >
                                     บทเรียนทั้งหมด
                                 </h1>
@@ -273,6 +364,9 @@ const LessonStudent = () => {
                                         section={section}
                                         id={id}
                                         courseRoomStd={courseRoomStd}
+                                        completedLessons={completedLessons}
+                                        completedQuiz={completedQuiz}
+                                        completedAssignments={completedAssignments}
                                     />
                                 )}
                             </div>

@@ -7,28 +7,18 @@ const JoinRoom = ({
     isOpen,
     onOpenChange,
     handleStartLearning,
+    handleToRoom,
 }) => {
     const [codeJoin, setCodeJoin] = useState('');
+    const router = useRouter();
 
-    const router = useRouter()
-    
-    const handleJoin = async () => {
-        try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/join-room`, { roomId: codeJoin });
-            if (response.data.success) {
-                // Join the room
-                handleStartLearning(codeJoin)();
-                onOpenChange(false); // Close the modal
-            } else {
-                alert('Room not found or unable to join.');
-            }
-        } catch (error) {
-            console.error('Error joining room:', error);
-            alert('An error occurred while trying to join the room.');
-        }
+   
+
+    const handleJoin = () => {
+        // Join the room with the password
+        handleToRoom (codeJoin, codeJoin)();
+        onOpenChange(false); // Close the modal
     };
-
-
 
     return (
         <div>
@@ -49,17 +39,14 @@ const JoinRoom = ({
                         <Button color="danger" variant="light" onPress={() => onOpenChange(false)}>
                             ยกเลิก
                         </Button>
-                        <Button
-                            color="primary"
-                            onClick={handleJoin}
-                        >
+                        <Button color="primary" onClick={handleJoin}>
                             เข้าร่วม
                         </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
         </div>
-    )
-}
+    );
+};
 
 export default JoinRoom;

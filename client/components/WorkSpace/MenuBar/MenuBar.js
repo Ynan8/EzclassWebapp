@@ -8,10 +8,9 @@ import { useRouter } from 'next/router'
 import axios from 'axios';
 import moment from "moment/min/moment-with-locales";
 import { initSocket } from '../../../socket';
-import { IoIosCopy } from "react-icons/io";
-
-
-
+import { IoIosCopy, IoMdAlert } from "react-icons/io";
+import { RiQuestionAnswerFill } from "react-icons/ri";
+import toast from 'react-hot-toast';
 
 const MenuBar = ({
     clients,
@@ -23,12 +22,14 @@ const MenuBar = ({
     setTheme,
     fontSize,
     setFontSize,
-    codeJoin,
+    setClients,
 }) => {
     const [isLoadingLeave, setIsLoadingLeave] = useState(false);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const router = useRouter();
-    const { id } = router.query;
+
+    const { id, firstName, joinCode } = router.query;
+
     const socketRef = useRef(null);
 
     const lastMessageRef = useRef();
@@ -109,7 +110,7 @@ const MenuBar = ({
 
     useEffect(() => {
         getMessages();
-    }, [, id]);
+    }, [id]);
 
 
     useEffect(() => {
@@ -157,14 +158,68 @@ const MenuBar = ({
         }, 100);
     }, [messages]);
 
+    const [codeJoinRoom, setCodeJoinRoom] = useState('');
+    const [isJoining, setIsJoining] = useState(false);
+
+
+    const handleToRoom = () => {
+        if (userData && userData.firstName && codeJoinRoom) {
+            setIsJoining(true);
+            // Emit the join event to the server with the new room ID
+            socketRef.current.emit('join', {
+                roomId: codeJoinRoom,
+                user: userData,
+            });
+
+            socketRef.current.on('joined', ({ clients, user, socketId }) => {
+                if (user) {
+                    toast.success(`${user.firstName} เข้าร่วมห้องเรียน.`);
+                }
+                setClients(clients);
+                setCodeJoinRoom("")
+                setIsJoining(false);
+            });
+
+            socketRef.current.on('disconnected', ({ socketId, user }) => {
+                toast.success(`${user.firstName} ออกจากห้องเรียน`);
+                setClients((prev) => prev.filter((client) => client.socketId !== socketId));
+            });
+
+
+            // Update the router with the new room ID and user data
+            router.push({
+                pathname: `/editor/${id}`,
+                query: {
+                    firstName: userData.firstName,
+                    joinCode: codeJoinRoom
+                }
+            });
+        } else {
+            // Handle the case where userData, userData.firstName, or codeJoinRoom is not available
+            console.error('User data, first name, or join code is not available');
+        }
+    };
+
+    const handleCopyJoinCode = () => {
+        navigator.clipboard.writeText(joinCode)
+        try {
+            toast.success('คัดลอกรหัสเข้าร่วมแล้ว!');
+        } catch (error) {
+            console.error('Error copying join code to clipboard:', err);
+            toast.error('ไม่สามารถคัดลอกรหัสเข้าร่วม กรุณาลองอีกครั้ง!.');
+        }
+    };
+
+
+
 
     return (
-        <div className='min-h-screen bg-[#282827]'>
+        <div className='min-h-screen bg-[#282827] '>
             <div className='flex flex-col px-0  min-h-screen'>
                 {/* <pre>{JSON.stringify(userData, null, 4)}</pre> */}
                 <Tabs
-                    size='md'
-                    className='flex justify-center mt-4'
+                    size='lg'
+                    className='flex justify-center mt-4  overflow-auto'
                     aria-label="Options"
                     color="primary"
                     variant="bordered" >
@@ -177,50 +232,55 @@ const MenuBar = ({
                             </div>
                         }
                     >
-                        {/* <div className=" text-lg pl-3 mt-6  text-white text-center">อันดับคะแนน</div> */}
-                        {/* <div className="flex justify-center items-center space-x-20 mt-3">
-                            <div className="flex flex-col justify-center items-center text-white">
-                                <p className='mb-2 text-2xl' >2</p>
-                                <Avatar size='lg' className='w-16 h-16' isBordered color="default" src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
-                                <p className='mt-2' >2 คะแนน</p>
-                            </div>
-                            <div className="flex flex-col justify-center items-center text-white">
-                                <p className='mb-2 text-2xl' ><FaTrophy className='text-yellow-500 shadow-md' size={30} /></p>
-                                <Avatar size='lg' className='w-20 h-20 ' isBordered color="warning" src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
-                                <p className='mt-2 mb-16' >5 คะแนน</p>
-                            </div>
-                            <div className="flex flex-col justify-center items-center text-white">
-                                <p className='mb-2 text-2xl' >3</p>
-                                <Avatar size='lg' className='w-16 h-16' isBordered color="danger" src="https://i.pravatar.cc/150?u=a04258114e29026708c" />
-                                <p className='mt-2' >3 คะแนน</p>
-                            </div>
-
-                        </div> */}
-                        <div className="flex flex-col items-center pl-3 my-4">
-                            <p className='text-lg text-white' >รหัสเข้าร่วม:</p>
+                        <div className="flex flex-col space-y-3  px-10 my-4">
+                            <p className='flex space-x-2 items-center text-yellow-500'><IoMdAlert size={25} />สามารถคัดลอกรหัสเข้าร่วม เพื่อเชิญเข้าร่วมแก้โค้ด</p>
                             <Button
-                                size="md"
-                                className='px-24 text-lg'
+                                onClick={handleCopyJoinCode}
+                                size="lg"
+                                className='text-xl'
                                 color="primary"
+                                variant='solid'
                                 endContent={
                                     <IoIosCopy />
                                 }
                             >
-                                {codeJoin}
+                                <span>รหัสเข้าร่วม:</span> {joinCode}
                             </Button>
-                        </div>
+                            <span className='text-center text-white' >หรือ</span>
+                            <div className="flex space-x-2 items-center justify-center">
+                                <Input
+                                    label='กรอกรหัสเข้าร่วม'
+                                    value={codeJoinRoom}
+                                    onChange={(e) => setCodeJoinRoom(e.target.value)}
+                                    type='text'
+                                    size='md'
+                                />
+                                <Button
+                                    size='lg'
+                                    color='primary'
+                                    className='p-4'
+                                    onClick={handleToRoom}
+                                    disabled={isJoining}
+                                    isLoading={isJoining}
+                                >
+                                    {isJoining ? 'กำลังเข้าร่วม...' : 'เข้าร่วม'}
+                                </Button>
 
+                            </div>
+                        </div>
+                        {/* <pre>{JSON.stringify(clients, null, 4)}</pre> */}
                         <div className=" text-lg pl-3 mt-6 text-white">ผู้เข้าร่วม {clients.length} คน</div>
                         <div
                             onClick={() => userData.role === "teacher" ? onOpen() : null}
-                            className="cursor-pointer grid grid-cols-2 gap-4 my-4">
+                            className="cursor-pointer grid grid-cols-2 gap-4 my-4 max-h-[500px] overflow-y-auto">
                             {clients.map((client) => (
                                 <Client
                                     key={client.socketId}
-                                    firstName={client.firstName}
+                                    user={client.user}
                                     userData={userData}
                                 />
                             ))}
+
                         </div>
 
                     </Tab>
@@ -237,56 +297,73 @@ const MenuBar = ({
                         <div className="flex flex-col items-center justify-center h-[750px] bg-[#282827] text-gray-800 p-10">
                             <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden ">
                                 <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
-                                    {messages.map((msg, index) => {
-                                        const fromMe = msg.senderId === userData._id; // Check if the message is from the current user
-                                        const bubbleBgColor = fromMe ? "bg-blue-500" : "bg-gray-400"; // Set background color based on sender
 
-                                        // Find the user object corresponding to the senderId of the message
-                                        const senderUser = clients.find(user => user._id === msg.senderId);
+                                    {messages.length === 0 ? (
+                                        <div className="flex flex-col justify-center items-center space-y-2">
+                                            <RiQuestionAnswerFill size={40} />
+                                            <div className="text-center">ยังไม่มีข้อความ</div>
+                                        </div>
+                                    ) : (
+                                        messages.map((msg, index) => {
+                                            const fromMe = msg.senderId === userData._id; // Check if the message is from the current user
+                                            const bubbleBgColor = fromMe ? "bg-blue-500" : "bg-gray-400"; // Set background color based on sender
 
-                                        return (
-                                            <div key={index} ref={index === messages.length - 1 ? lastMessageRef : null} className={`flex w-full mt-2 space-x-3 max-w-xs ${fromMe ? "justify-end" : ""}`}>
-                                                {!fromMe && <User src={senderUser ? senderUser.image : null} name={senderUser ? senderUser.firstName : ''} />}
-                                                <div>
-                                                    <Tooltip
-                                                        showArrow
-                                                        placement="right"
-                                                        content={
-                                                            <>
-                                                                <div className="chat-footer opacity-50 text-sm flex gap-1 p-2 items-center">
-                                                                    {moment(msg.createdAt).locale('th').format('LLL')}
-                                                                </div>
-                                                            </>
-                                                        }
-                                                        classNames={{
-                                                            base: [
-                                                                "before:bg-neutral-400 dark:before:bg-white",
-                                                            ],
+                                            // Find the user object corresponding to the senderId of the message
+                                            const senderUser = clients.find(client => {
+                                                const user = client.user;
+                                                return user;
+                                            });
+                                            return (
+                                                <div key={index} ref={index === messages.length - 1 ? lastMessageRef : null} className={`flex w-full mt-2 space-x-3 max-w-xs ${fromMe ? "justify-end" : ""}`}>
+                                                    {!fromMe && senderUser && (
+                                                        <Avatar
+                                                            src={senderUser.user.image ? senderUser.user.image : undefined}
+                                                            name={`${senderUser.user.firstName} ${senderUser.user.lastName}`}
+                                                            css={{ minWidth: '40px' }}
+                                                        />
+                                                    )}
 
-                                                        }}
-                                                    >
-                                                        <div className={`p-3 rounded-lg ${bubbleBgColor}`}>
-                                                            <p className="chat-bubble text-white">{msg.message}</p>
-                                                        </div>
-                                                    </Tooltip>
+                                                    <div>
+                                                        <Tooltip
+                                                            showArrow
+                                                            placement="right"
+                                                            content={
+                                                                <>
+                                                                    <div className="chat-footer opacity-50 text-sm flex gap-1 p-2 items-center">
+                                                                        {moment(msg.createdAt).locale('th').format('LLL')}
+                                                                    </div>
+                                                                </>
+                                                            }
+                                                            classNames={{
+                                                                base: [
+                                                                    "before:bg-neutral-400 dark:before:bg-white",
+                                                                ],
+                                                            }}
+                                                        >
+                                                            <div className={`p-3 rounded-lg ${bubbleBgColor}`}>
+                                                                <p className="chat-bubble text-white">{msg.message}</p>
+                                                            </div>
+                                                        </Tooltip>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-
+                                            );
+                                        })
+                                    )}
                                 </div>
-                                <div className="bg-gray-300 p-2 w-full relative">
-                                    <input
-                                        className="flex items-center h-10 w-full rounded px-3 text-sm"
+                                <div className="bg-gray-300 flex items-center p-2 w-full">
+                                    <Input
                                         type="text"
-                                        placeholder="Type your message…"
+                                        placeholder="พิมพ์ข้อความที่นี่…"
                                         value={inputMessage}
                                         onChange={handleInputChange}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                        endContent={
+                                            <Button radius='md' onClick={handleSendMessage} type='submit' color='primary' size='sm' className='absolute inset-y-0 end-0 flex items-center mt-3 mr-3'>
+                                                <BsSend size={20} />
+                                            </Button>
+                                        }
                                     />
-                                    <button onClick={handleSendMessage} type='submit' className='absolute inset-y-0 end-0 flex items-center pe-3 mr-3'>
-                                        <BsSend />
-                                    </button>
+
                                 </div>
                             </div>
                         </div>
@@ -302,7 +379,7 @@ const MenuBar = ({
                         variant="shadow"
                         disabled={isLoadingLeave} // Disable the button while loading
                         isLoading={isLoadingLeave}
-                  >
+                    >
                         {isLoadingLeave ? 'กำลังออกจากห้อง...' : 'ออกจากห้อง'}
                     </Button>
                 </div>

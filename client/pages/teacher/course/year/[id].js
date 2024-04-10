@@ -183,7 +183,7 @@ const TeacherCourse = () => {
                     </div>
                 </div>
                 <main className="flex-1 pb-16 sm:pb-32">
-                    <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
+                    <div className="mx-auto max-w-screen-xl px-4 sm:px-6 xl:px-12">
 
                         <div className=" rounded py-4  md:py-7 px-4 md:px-8 xl:px-10">
                             {/* Skeleton Loading */}
@@ -214,15 +214,15 @@ const TeacherCourse = () => {
                                             {course.courseNo} : {course.courseName}
                                         </h3>
                                         <div className="flex mt-4">
-                                            <p className="md:text-lg  text-base"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' >มัธยมศึกษาปีที่ {course.level}</span>  </p>
+                                            <p className="md:text-xl  text-lg"><span className='font-black' >ระดับชั้น :</span> <span className='text-gray-600' >มัธยมศึกษาปีที่ {course.level}</span>  </p>
                                         </div>
-                                        <p className="md:text-lg text-gray-600 text-base">{course.detail}</p>
+                                        <p className="md:text-xl text-lg text-gray-600">{course.detail}</p>
                                     </div>
                                 </div>
                             )}
 
                             <div className="flex flex-wrap gap-4 my-8 mt-4">
-                                <Tabs size={"lg"} aria-label="Tabs sizes">
+                                <Tabs size="lg">
                                     <Tab key="active" title="ปีการศึกษาปัจจุบัน" >
                                         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-10">
                                             <div

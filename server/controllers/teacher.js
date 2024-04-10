@@ -112,7 +112,7 @@ exports.getStdRoom = async (req, res) => {
 
     // Use correct query format: { _id: codeRoomId }
     const courseRoom = await CourseRoom.findOne({ _id: codeRoomId })
-      .populate('studentId', ' username firstName lastName ') // Adjust fields as needed
+      .populate('studentId', ' username firstName lastName createdAt ') // Adjust fields as needed
       .exec();
 
     if (!courseRoom) {

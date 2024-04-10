@@ -47,18 +47,18 @@ const QuizContent = ({
         // Shuffle questions
         const shuffledQuestions = [...selectedQuizContent.questions];
         shuffleArray(shuffledQuestions);
-    
+
         // Shuffle choices for each question and update correct answer indices
         const shuffledQuestionsWithShuffledChoices = shuffledQuestions.map((question) => {
             const shuffledOptions = [...question.options];
             shuffleArray(shuffledOptions);
-    
+
             // Update correct answer index for single-choice and true-false questions
             if (question.questionType === 'single-choice' || question.questionType === 'true-false') {
                 const newCorrectIndex = shuffledOptions.indexOf(question.options[question.correctAnswerIndex]);
                 question.correctAnswerIndex = newCorrectIndex;
             }
-    
+
             // Update correct answer indices for multiple-choice questions
             if (question.questionType === 'multiple-choice') {
                 const newCorrectIndices = question.correctOptionIndex.map((index) =>
@@ -66,18 +66,18 @@ const QuizContent = ({
                 );
                 question.correctOptionIndex = newCorrectIndices;
             }
-    
+
             return { ...question, options: shuffledOptions };
         });
-    
+
         setSelectedQuizContent({ ...selectedQuizContent, questions: shuffledQuestionsWithShuffledChoices });
         setQuizStarted(true);
         setAnswers(Array(shuffledQuestionsWithShuffledChoices.length).fill(undefined));
-    
+
         // Mark the quiz as completed
         markCompletedQuiz(selectedQuizContent._id);
     };
-    
+
 
 
 
@@ -616,13 +616,14 @@ const QuizContent = ({
                                                 </div>
                                                 <div className="flex space-x-4 item-center justify-center">
                                                     <Button
-                                                        onPress={startQuiz}
+                                                        onClick={() => selectedQuizContent && startQuiz(selectedQuizContent._id)}
+
                                                         className='w-full sm:w-auto sm:px-20 py-2'
                                                         variant='shadow'
                                                         color="primary">
                                                         เริ่มทำแบบทดสอบ
                                                     </Button>
-                                                  
+
                                                 </div>
                                             </div>
                                         </div>

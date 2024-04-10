@@ -18,6 +18,7 @@ import axios from 'axios';
 import { BiSolidPencil } from 'react-icons/bi';
 import { BsFillClipboardCheckFill } from 'react-icons/bs';
 import { TbAlertSquareFilled } from "react-icons/tb";
+import { FiAlertCircle } from 'react-icons/fi';
 
 
 
@@ -37,15 +38,19 @@ const Playground = ({
     problem,
     showConfetti,
     setShowConfetti,
+    clients,
+    userData
 }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenModalSubmit, onOpen: onOpenModalSubmit, onOpenChange: onOpenChangeModalSubmit } = useDisclosure();
+
     const [activeTab, setActiveTab] = useState("playground");
 
-  const router = useRouter();
+    const isCurrentUser = clients.some(client => userData && client.user && userData._id === client.user._id);
 
-  const { id, firstName } = router.query;
+    const router = useRouter();
 
-  console.log("Room Id", id)
+    const { id, firstName } = router.query;
 
     const [activeSection, setActiveSection] = useState(null);
     const toggleSection = (section) => {
@@ -111,12 +116,12 @@ const Playground = ({
     const submitCode = async () => {
         const sourceCode = editorRef.current.getValue();
         if (!sourceCode) return;
-    
+
         let passedCases = 0;
         const updatedTestCases = testCases.map((testCase) => {
             return { ...testCase };
         });
-    
+
         for (let i = 0; i < updatedTestCases.length; i++) {
             try {
                 setIsLoadingSubmit(true);
@@ -149,29 +154,29 @@ const Playground = ({
             }
         }
         setActiveTab("result");
-    
+
         const score = ((passedCases / updatedTestCases.length) * 100).toFixed(2);
         setPercentPass(score);
         let finalScore = score === '100.00' ? 1 : 0;
         if (score === '100.00') {
             toast.success("ยินดีด้วย! คุณผ่านโจทย์ข้อนี้แล้ว.");
             setShowConfetti(true);
-    
+
             // You may want to reset the confetti after a certain duration
             setTimeout(() => {
                 setShowConfetti(false);
-            }, 3000);
+            }, 5000);
         } else {
             toast.error(`โค้ดยังไม่สมบูรณ์! กรุณาตรวจสอบที่ผลลัพธ์`);
         }
-    
+
         console.log(`Score: ${score}%`);
         setTestCases(updatedTestCases); // Update the testCases state to trigger re-render
-    
+
         // Submit the code and score to the server
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/codeRoom/submit`, {
-                codeRoomId: id,  
+                codeRoomId: id,
                 score: finalScore,
                 percentPass: parseFloat(score),
                 code: sourceCode,
@@ -183,8 +188,28 @@ const Playground = ({
             toast.error('Failed to submit code.');
         }
     };
-    
-    
+
+
+    // Get course submit
+    const [stdSubmitCode, setStdSubmitCode] = useState({});
+
+    useEffect(() => {
+        if (id) {
+            loadStdSubmitCode();
+        }
+    }, [id]);
+
+
+    const loadStdSubmitCode = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/std-submitCode/${id}`);
+            setStdSubmitCode(data);
+            console.log("Loading student submit code", data);
+        } catch (error) {
+            console.error("Error loading course:", error);
+        } finally {
+        }
+    };
 
 
 
@@ -236,7 +261,7 @@ const Playground = ({
             </nav>
             <Split className="h-[calc(100vh-90px)] w-[calc(100vh)]" direction="vertical" sizes={[60, 40]} minSize={60}>
                 <div className="w-full overflow-auto">
-                    {/* <pre>{JSON.stringify(problem, null, 4)}</pre> */}
+                    {/* <pre>{JSON.stringify(stdSubmitCode, null, 4)}</pre> */}
                     <Editor
                         width={`100%`}
                         language={language}
@@ -245,7 +270,6 @@ const Playground = ({
                         onChange={onCodeChange}
                         options={{ fontSize: fontSize }}
                         onMount={onMount}
-
                     />
                 </div>
                 <div className='text-white p-4 mt-2 rounded-b-md'>
@@ -263,14 +287,14 @@ const Playground = ({
                                             onClick={runCode}
                                             isLoading={isLoading}
                                         >
-                                            {isLoading ? "" : "Run"}
+                                            Run
                                         </Button>
                                         <Button
                                             color='success'
                                             size='md'
                                             className='text-sm px-6 py-2 sm:px-14 text-white'
-                                            onClick={submitCode}
-                                            isLoading={isLoadingSubmit}
+                                            // onClick={submitCode}
+                                            onPress={onOpenChangeModalSubmit}
                                         >
                                             {isLoadingSubmit ? "" : "Submit"}
                                         </Button>
@@ -301,29 +325,36 @@ const Playground = ({
                                         />
 
                                         {/* <div
-                                    className="p-2 pt-3 pb-5 w-full h-60 bg-white whitespace-pre overflow-y-auto rounded-sm"
-                                    style={isError ? errorStyle : {}}
-                                >
-                                    <p className="font-mono cursor-text" style={isError ? { color: 'red' } : {}}>
-                                        {output
-                                            ? output.map((line, i) => <p key={i}>{line}</p>)
-                                            : 'Click "Run Code" to see the output here'}
-                                    </p>
-                                </div> */}
+                     className="p-2 pt-3 pb-5 w-full h-60 bg-white whitespace-pre overflow-y-auto rounded-sm"
+                     style={isError ? errorStyle : {}}
+                 >
+                     <p className="font-mono cursor-text" style={isError ? { color: 'red' } : {}}>
+                         {output
+                             ? output.map((line, i) => <p key={i}>{line}</p>)
+                             : 'Click "Run Code" to see the output here'}
+                     </p>
+                 </div> */}
 
 
                                     </div>
                                 </div>
                             </Tab>
-                            <Tab key="result" title={
-                                <div className='flex items-center space-x-2' >
-                                    <p>ผลลัพธ์</p>
-                                </div>
-                            }>
-                                <div className="flex items-center space-x-3 my-2">
-                                    <p className='p-3' >ผลลัพธ์</p>
-                                    <Chip size='lg' color='success' className='text-white' >ความถูกต้อง {percentPass}%</Chip>
-                                </div>
+                            <Tab
+                                key="result"
+                                title={
+                                    <div className='flex items-center space-x-2'>
+                                        <p>ผลลัพธ์</p>
+                                    </div>
+                                }
+                            >
+                                {stdSubmitCode ? (
+                                    <div className="flex items-center space-x-3 my-2">
+                                        <p className='p-3'>ผลลัพธ์</p>
+                                        <Chip size='lg' color='success' className='text-white'>ความถูกต้อง {stdSubmitCode.percentPass}%</Chip>
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
                                 <Accordion selectionMode="multiple" variant="splitted">
                                     {testCases.map((testCase, index) => (
                                         <AccordionItem
@@ -331,11 +362,12 @@ const Playground = ({
                                             aria-label={`Test Case ${index + 1}`}
                                             title={`Test Case ${index + 1}`}
                                             startContent={
-                                                testCase.status === 'passed' ?
-                                                <BsFillClipboardCheckFill size={25} className="text-success" /> :
-                                                <TbAlertSquareFilled size={25} className="text-danger" />
+                                                testCase.status === 'passed' ? (
+                                                    <BsFillClipboardCheckFill size={25} className="text-success" />
+                                                ) : (
+                                                    <TbAlertSquareFilled size={25} className="text-danger" />
+                                                )
                                             }
-                                            
                                         >
                                             <div className="mt-2  pb-7 w-full flex flex-col sm:flex-row">
                                                 <div className="w-full sm:w-1/2 sm:mr-2 mb-4 sm:mb-0">
@@ -362,8 +394,8 @@ const Playground = ({
                                         </AccordionItem>
                                     ))}
                                 </Accordion>
-
                             </Tab>
+
                         </Tabs>
 
                     </div>
@@ -422,6 +454,37 @@ const Playground = ({
                                     </div>
                                 </div>
                             </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            <Modal isOpen={isOpenModalSubmit} onOpenChange={onOpenChangeModalSubmit}>
+                <ModalContent  >
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col  justify-center items-center gap-1">
+                                <FiAlertCircle
+                                    className='text-yellow-500 '
+                                    size={60}
+                                />
+                                <p className='text-2xl'>คุณต้องการส่งคำตอบใช่หรือไม่</p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className='flex flex-col items-center justify-center space-y-1 px-6'>
+                                    หากยังไม่มั่นใจสามารถตรวจสอบข้อมูลให้ถูกต้อง ก่อนที่จะกดปุ่ม "ยืนยัน"
+                                </p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button
+                                    isLoading={isLoadingSubmit}
+                                    color="primary"
+                                    onPress={submitCode}>
+                                    {isLoading ? "" : "ยืนยัน"}
+                                </Button>
+                            </ModalFooter>
                         </>
                     )}
                 </ModalContent>

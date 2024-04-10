@@ -1,10 +1,13 @@
 const User = require("../models/user");
+const Admin = require("../models/admin");
 const { hashPassword, comparePassword } = require('../utils/auth')
 const jwt = require('jsonwebtoken')
 const AWS = require('aws-sdk');
 const bcrypt = require('bcrypt')
 const { nanoid } = require('nanoid');
 const slugify = require('slugify');
+const CourseLogs = require("../models/courseLogs");
+const useragent = require('useragent');
 
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -15,10 +18,12 @@ const awsConfig = {
 
 const S3 = new AWS.S3(awsConfig)
 
+const SES = new AWS.SES(awsConfig)
+
 exports.register = async (req, res) => {
   try {
     //Check teacher
-    const { firstName, lastName, username, password } = req.body
+    const { firstName, lastName, email, password } = req.body
 
     var user
 
@@ -26,22 +31,76 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
-    user = new User({
+    user = new Admin({
       firstName,
       lastName,
-      username,
+      email,
       password: hashedPassword,
-      role: "teacher",
-      status: "false"
     })
     await user.save();
-    console.log("save teacher", user)
+    console.log("save admin", user)
     return res.json({ ok: true });
   } catch (err) {
     console.log(err)
     res.status(500).send('Server Error!')
   }
 }
+
+
+exports.courseLogs = async (req, res) => {
+  try {
+    const { courseId, username, firstName, lastName, userType, format } = req.body;
+
+    // Get the user agent string from the request headers
+    const userAgentString = req.headers['user-agent'];
+    const agent = useragent.parse(userAgentString);
+
+    // Get the client's IP address
+    let ipAddress = req.ip;
+    if (req.headers['x-forwarded-for']) {
+      ipAddress = req.headers['x-forwarded-for'].split(',')[0];
+    }
+
+    // Create a new CourseLogs instance
+    const newCourseLog = new CourseLogs({
+      courseId,
+      username,
+      firstName,
+      lastName,
+      userType,
+      format,
+      ipAddress,
+      note: `OS: ${agent.os.toString()}  Browser: ${agent.toAgent()}`,
+    });
+
+    // Save the new course log
+    await newCourseLog.save();
+
+    console.log("Course log saved successfully");
+
+    // Send a success response
+    res.status(200).json({ message: "Course log saved successfully" });
+  } catch (err) {
+    console.log(err);
+    // Send an error response
+    res.status(500).json({ message: "Failed to save course log" });
+  }
+};
+
+exports.getCourseLogs = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const courseLogs = await CourseLogs.find({ courseId: courseId })
+      .exec();
+    res.json(courseLogs);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
 
 exports.login = async (req, res) => {
   try {
@@ -230,3 +289,115 @@ exports.currentAdmin = async (req, res) => {
     console.log(err)
   }
 }
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    const hashedPassword = await hashPassword(newPassword);
+
+    const admin = Admin.findOneAndUpdate({
+      
+      email,
+      passwordResetCode: code,
+
+    },{
+      password:hashedPassword,
+      passwordResetCode:"",
+    }
+    ).exec();
+    res.json({ok:true})
+    
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const shortCode = nanoid(6).toUpperCase();
+    const admin = await Admin.findOneAndUpdate(
+      { email },
+      { passwordResetCode: shortCode }
+    );
+    if (!admin) return res.status(400).send("User not found");
+
+    // prepare for email
+    const params = {
+      Source: process.env.EMAIL_FROM,
+      Destination: {
+        ToAddresses: [email],
+      },
+      Message: {
+        Body: {
+          Html: {
+            Charset: "UTF-8",
+            Data:
+              `<html>
+                <h1>Reset Password link</h1>
+                <p>User is code to reset your password</p>
+                <h2 style="color:red">${shortCode}</h2>
+                <i>EZCLASS.com</>
+               </html>
+              `
+          }
+        },
+        Subject: {
+          Charset: "UTF-8",
+          Data: "Password reset link",
+        }
+      }
+    };
+
+    const emailSent = SES.sendEmail(params).promise();
+    emailSent
+      .then((data) => {
+        console.log(data);
+        res.json({ ok: true });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+      });
+
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+exports.sendTestEmail = async (req, res) => {
+  const params = {
+    Source: process.env.EMAIL_FROM,
+    Destination: {
+      ToAddresses: ['yeennanthawut55@gmail.com'],
+    },
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data:
+            `<html>
+                          <h1>Reset Password link</h1>
+                          <p>Please use the following link to reset your password</p>
+                      </html>`
+        }
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: "Password reset link",
+      }
+    }
+  };
+
+  const emailSent = SES.sendEmail(params).promise();
+  emailSent
+    .then((data) => {
+      console.log(data);
+      res.json({ ok: true });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: err.message });
+    });
+}
+

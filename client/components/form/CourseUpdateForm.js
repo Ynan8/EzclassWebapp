@@ -120,11 +120,13 @@ const CourseUpdateForm = ({
                                 variant="bordered"
                                 startContent={<FaCloudUploadAlt size={25} />}
                                 onClick={handleUploadButtonClick}
+                                className='text-lg'
                             >
                                 เพิ่มรูปรายวิชา
                             </Button>
                             <input
                                 type="file"
+                                accept="image/*"
                                 ref={fileInputRef}
                                 style={{ display: 'none' }}
                                 onChange={handleImage}
@@ -153,6 +155,8 @@ const CourseUpdateForm = ({
 
                     <div className="flex justify-end mt-6">
                         <Button
+                            className='px-24 text-xl'
+                            radius='lg'
                             size='lg'
                             onClick={handleSubmit}
                             color="primary"

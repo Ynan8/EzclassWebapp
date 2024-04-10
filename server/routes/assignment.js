@@ -24,6 +24,7 @@ const {
     updateScore,
     getStdSubmitAll,
     cancelSubmission,
+    completeSubmission,
 } = require('../controllers/assignment')
 
 
@@ -47,6 +48,10 @@ router.get('/check-submit/:id', auth, CheckSubmit);
 router.get('/student-submit/:id', auth, getStdSubmit);
 router.put('/update-score/:assignmentId/:studentId',auth, updateScore);
 router.get('/all/student-submit/:id', auth, getStdSubmitAll);
+
+router.get('/complete-assignment/:id', auth, completeSubmission);
+
+
 
 
 
