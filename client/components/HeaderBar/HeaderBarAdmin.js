@@ -39,7 +39,7 @@ const HeaderBaAdmin = ({
                 axios.defaults.headers.common['authtoken'] = token;
             }
             if (user && user._id) {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/user/${user._id}`);
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/admin/${user._id}`);
                 setUserData(data);
                 setLoading(false);
             }
@@ -48,7 +48,6 @@ const HeaderBaAdmin = ({
             setLoading(false);
         }
     };
-
 
 
     // router

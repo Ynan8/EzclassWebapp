@@ -122,10 +122,51 @@ exports.login = async (req, res) => {
           _id: user._id,
           username: user.username,
           firstName: user.firstName,
-          firstName: user.firstName,
           lastName: user.lastName,
           image: user.image?.Location || "",
           role: user.role,
+        }
+      }
+      // 3. Generate
+      jwt.sign(payload, 'jwtsecret',
+        {
+          expiresIn: "1d",
+        }, (err, token) => {
+          if (err) throw err;
+          res.json({ token, payload })
+        })
+    } else {
+      return res.status(400).send('ไม่พบข้อมูลผู้ใช้!!!')
+    }
+
+  } catch (err) {
+    //code
+    console.log(err)
+    res.status(500).send('Server Error')
+  }
+}
+exports.loginAdmin = async (req, res) => {
+  try {
+    //code
+    // 1. Check User
+    const { email, password } = req.body
+    var user = await Admin.findOneAndUpdate({ email }, { new: true })
+    console.log(user)
+
+    if (user) {
+      const isMatch = await comparePassword(password, user.password)
+
+      if (!isMatch) {
+        return res.status(400).send('รหัสผ่านไม่ถูกต้อง')
+      }
+      // 2. Payload
+      var payload = {
+        user: {
+          _id: user._id,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          image: user.image?.Location || "",
         }
       }
       // 3. Generate
@@ -202,6 +243,16 @@ exports.profileImage = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
+  }
+};
+
+exports.getAdmin = async (req, res) => {
+  try {
+    const user = await Admin.findById(req.params.adminId);
+    if (!user) return res.status(404).send('User not found');
+    res.send(user);
+  } catch (e) {
+    res.status(500).send(e);
   }
 };
 

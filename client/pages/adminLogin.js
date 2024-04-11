@@ -17,7 +17,7 @@ import { RiUserSettingsFill } from 'react-icons/ri'
 
 
 const index = () => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -35,9 +35,9 @@ const index = () => {
             setLoading(true);
 
             const { data } = await axios.post(
-                `${process.env.NEXT_PUBLIC_API}/login`,
+                `${process.env.NEXT_PUBLIC_API}/login-admin`,
                 {
-                    username,
+                    email,
                     password,
                 }
             );
@@ -51,15 +51,7 @@ const index = () => {
             window.localStorage.setItem("user", JSON.stringify(data.payload.user));
             window.localStorage.setItem("token", data.token);
 
-            if (data.payload.user.role === 'teacher') {
-                router.push('/teacher/home');
-            } else if (data.payload.user.role === 'student') {
-                router.push('/student/home');
-            } else if (data.payload.user.role === 'admin') {
-                router.push('/admin/home');
-            }
-
-
+            router.push('/admin/home');
         } catch (err) {
             setLoading(false); // Set loading state to false after error
             toast.error(err.response.data);
@@ -98,8 +90,8 @@ const index = () => {
                                     <label className='text-lg font-medium'>อีเมล</label>
                                     <input
                                         className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:outline-none focus:border-blue-500'
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         placeholder="กรอกอีเมล"
                                         required
                                     />

@@ -101,7 +101,7 @@ const CourseDetails = () => {
     // Show Course Room
     const [courseRoom, setCourseRoom] = useState([]);
     useEffect(() => {
-        if (id) {
+        if (selectedCourseYearId) {
             loadCourseRoom();
         }
     }, [selectedCourseYearId]);
@@ -125,10 +125,12 @@ const CourseDetails = () => {
     const [QuizScoreCourse, setQuizScoreCourse] = useState({});
 
     useEffect(() => {
+        if (selectedCourseYearId) {
         loadQuizScore();
-    }, []);
+    }
+    }, [selectedCourseYearId]);
 
-    const loadQuizScore = async (Id) => {
+    const loadQuizScore = async () => {
         try {
             const token = localStorage.getItem("token");
             if (token) {
@@ -136,7 +138,7 @@ const CourseDetails = () => {
             }
 
             const { data } = await axios.get(
-                `${process.env.NEXT_PUBLIC_API}/quizScoreCourse/${Id}`
+                `${process.env.NEXT_PUBLIC_API}/quizScoreCourse/${id}`
             );
             setQuizScoreCourse(data);
             console.log(data);
@@ -159,17 +161,19 @@ const CourseDetails = () => {
     };
 
     useEffect(() => {
-        if (id) {
+        if (selectedCourseYearId) {
             loadSection();
         }
     }, [course, selectedCourseYearId]);
+    
     useEffect(() => {
-        if (id) {
+        if (selectedCourseYearId) {
             loadAverageScores();
         }
     }, [course, selectedCourseYearId]);
 
     const [section, setSection] = useState([]);
+
     const loadSection = async () => {
         try {
             const { data: sections } = await axios.get(
@@ -244,10 +248,16 @@ const CourseDetails = () => {
 
 
     useEffect(() => {
-        loadCourseYearIdByCourse();
-    }, []);
+        if(id){
+            loadCourseYearIdByCourse();
+        }
+    }, [id]);
 
     const loadCourseYearIdByCourse = async () => {
+        if (!id) {
+            return; // Skip the API request if id is undefined
+        }
+    
         try {
             const { data } = await axios.get(
                 `${process.env.NEXT_PUBLIC_API}/courseYearIdByCourse/${id}`
@@ -260,6 +270,7 @@ const CourseDetails = () => {
             console.error("Error loading course year id by course:", error);
         }
     };
+    
 
     useEffect(() => {
         if (selectedCourseYearId) {
@@ -312,6 +323,8 @@ const CourseDetails = () => {
     const totalCompletionPercentage = roomProgress.reduce((acc, curr) => acc + curr.completionPercentage, 0);
     const courseProgress = totalCompletionPercentage / courseRoom.length;
 
+
+    
     return (
         <>
             <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased  bg-gray-50 dark:bg-gray-700 text-black dark:text-white">

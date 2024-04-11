@@ -13,6 +13,7 @@ const {
     register,
     login ,
     logout,
+    loginAdmin,
     currentUser,
     profileImage,
     UpdateProfile,
@@ -24,7 +25,8 @@ const {
     getCourseLogs,
     sendTestEmail,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getAdmin
     
 } = require("../controllers/auth")
 
@@ -45,6 +47,7 @@ router.put("/update-password", auth, UpdatePassword);
 
 router.post("/register", register);
 router.post("/login", login);
+router.post("/login-admin", loginAdmin);
 router.get("/logout", logout);
 router.get("/current-user",auth, currentUser);
 router.get("/current-teacher",auth, currentTeacher);
@@ -53,6 +56,8 @@ router.get("/current-admin",auth, currentAdmin);
 router.get("/send-email", sendTestEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+router.get("/admin/:adminId", auth, getAdmin);
+
 
 
 module.exports = router;
