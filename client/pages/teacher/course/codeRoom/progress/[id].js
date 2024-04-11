@@ -51,7 +51,10 @@ const ProgressCodeRoom = () => {
     const [courseRoom, setCourseRoom] = useState([])
 
     useEffect(() => {
-        loadCourseRoom()
+        if (courseYear) {
+            loadCourseRoom()
+
+        }
     }, [courseYear])
 
     const loadCourseRoom = async () => {
@@ -162,7 +165,7 @@ const ProgressCodeRoom = () => {
                                                         variant='flat'
                                                         size='lg'
                                                     >
-                                                        ผ่านแล้ว <span className='font-semibold'>{item.score} / {codeRoom.length} ข้อ  </span> 
+                                                        ผ่านแล้ว <span className='font-semibold'>{item.score} / {codeRoom.length} ข้อ  </span>
                                                     </Chip>
                                                 </TableCell>
                                             </TableRow>
