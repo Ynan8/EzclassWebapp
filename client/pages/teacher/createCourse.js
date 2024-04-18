@@ -75,6 +75,14 @@ const createCourse = () => {
 
     const handleImage = (e) => {
         let file = e.target.files[0]
+        
+        // Check if file size exceeds 2MB
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error("ขนาดไฟล์เกินขีดจำกัด 2MB.");
+            return;
+        }
+
+
         setPreview(window.URL.createObjectURL(file));
         setValues({ ...values, loading: true });
         // resize

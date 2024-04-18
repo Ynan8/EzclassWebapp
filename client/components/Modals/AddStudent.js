@@ -23,44 +23,48 @@ const AddStudent = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Basic validation
         if (!firstName || !lastName || !username || !password) {
             toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
             return;
         }
-
+    
         // Additional validation
         if (!username.trim() || /\s/.test(username)) { // Check for white spaces
             toast.error("รหัสนักเรียนไม่ควรมีช่องว่าง");
             return;
         }
-
+    
         if (password.length < 4) {
             toast.error("รหัสผ่านต้องมีอย่างน้อย 4 ตัว");
             return;
         }
-
+    
         try {
-            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
                 firstName,
                 lastName,
                 username,
                 password,
             });
-            setFirstName('')
-            setLastName('')
-            setUsername('')
-            setPassword('')
+            setFirstName('');
+            setLastName('');
+            setUsername('');
+            setPassword('');
             toast.success("เพิ่มนักเรียนสำเร็จ");
             loadStudentCourse();
             onClose();
         } catch (error) {
             console.error("Error adding student :", error);
-            toast.error("ไม่สามารถเพิ่มนักเรียนได้");
+            if (error.response) {
+                toast.error(error.response.data);
+            } else {
+                toast.error("มีข้อผิดพลาดเกิดขึ้น");
+            }
         }
     };
-
+    
 
     return (
         <>

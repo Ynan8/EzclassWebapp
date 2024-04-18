@@ -83,7 +83,7 @@ const UpdateTeacher = ({
                     <Button color="danger" variant="light" onPress={onClose}>
                         ยกเลิก
                     </Button>
-                    <Button onClick={handleUpdateTch} color="primary" onPress={onClose}>
+                    <Button onClick={handleUpdateTch} color="primary">
                         บันทึก
                     </Button>
                 </ModalFooter>

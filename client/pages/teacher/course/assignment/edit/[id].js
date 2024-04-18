@@ -52,25 +52,36 @@ const UpdateAssignment = () => {
 
 
   const handleAssignmentFile = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadButtonText(file.name);
-
-      setValues({ ...values, loading: true });
-
-      const formData = new FormData();
-      formData.append('assignmentFile', file);
-
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignmentFile-upload`, formData, {
-        onUploadProgress: (e) => {
-          setValues({ ...values, loading: Math.round((100 * e.loaded) / e.total) });
-        },
-      });
-
-      setAssignmentFile(data);
+    try {
+      const file = e.target.files[0];
+      
+      // Check if file exists and its size is within the limit
+      if (file && file.size <= 5 * 1024 * 1024) { // Limit size to 5MB
+        setUploadButtonText(file.name);
+        setOriginalFileName(file.name);
+        setValues({ ...values, loading: true });
+  
+        const formData = new FormData();
+        formData.append('assignmentFile', file);
+  
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignmentFile-upload`, formData, {
+          onUploadProgress: (e) => {
+            setValues({ ...values, loading: Math.round((100 * e.loaded) / e.total) });
+          },
+        });
+  
+        setAssignmentFile(data);
+        setValues({ ...values, loading: false });
+      } else {
+        // Handle the case where the file size exceeds the limit
+        toast.error("ขนาดไฟล์เกินขีดจำกัด 5MB.");
+      }
+    } catch (err) {
       setValues({ ...values, loading: false });
+      console.log(err);
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -294,7 +305,7 @@ const UpdateAssignment = () => {
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center  space-y-1">
+        <div className="flex flex-col justify-center item-center space-y-1">
           <div className="flex items-center">
             <Button
               color="default"
@@ -311,6 +322,7 @@ const UpdateAssignment = () => {
               onChange={handleAssignmentFile}
             />
           </div>
+          <p className='mt-2' ><span className='font-semibold' >คำแนะนำ:</span> ไฟล์งานควรมีขนาดไม่เกิน 5 MB</p>
         </div>
         <div className=" flex items-center justify-end w-full  mt-6">
           <Button

@@ -119,7 +119,6 @@ const CourseRoom = () => {
             loadCourseRoom();
             toast.success("แก้ไขห้องเรียนสำเร็จ");
         } catch (error) {
-            console.error(error); // Handle any errors that may occur during the deletion process
             toast.error("ไม่สามารถแก้ไขห้องเรียนได้");
         }
     };
@@ -267,7 +266,7 @@ const CourseRoom = () => {
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
-                 
+
                     <main className="flex-1 mt-10 pb-16 sm:pb-32">
                         <div className="mx-auto max-w-screen-2xl  px-4 sm:px-6 xl:px-12">
                             <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
@@ -316,18 +315,23 @@ const CourseRoom = () => {
                                                     </TableColumn>
                                                 )}
                                             </TableHeader>
-                                            <TableBody>
-                                                {courseRoom && courseRoom
-                                                    .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
-                                                    .map((item, index) => (
-                                                        <TableRow key={item._id}>
-                                                            {columns.map((column) => (
-                                                                <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
-                                                            ))}
-                                                        </TableRow>
-                                                    ))}
-                                            </TableBody>
+                                            {courseRoom.length > 0 ? ( // Check if courseRoom array is not empty
+                                                <TableBody>
+                                                    {courseRoom
+                                                        .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                        .map((item, index) => (
+                                                            <TableRow key={item._id}>
+                                                                {columns.map((column) => (
+                                                                    <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
+                                                                ))}
+                                                            </TableRow>
+                                                        ))}
+                                                </TableBody>
+                                            ) : (
+                                                <TableBody emptyContent={"ยังไม่มีห้องเรียนในรายวิชานี้"}>{[]}</TableBody>
+                                            )}
                                         </Table>
+
                                     )}
                                 </div>
                             </div>

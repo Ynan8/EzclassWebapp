@@ -131,6 +131,7 @@ const CourseCreateForm = ({
                             onChange={handleImage}
                         />
                     </div>
+                    <p className='mt-2' ><span className='font-semibold' >คำแนะนำ:</span> รูปภาพควรมีขนาดไม่เกิน 2 MB</p>
                 </div>
 
                 {preview &&

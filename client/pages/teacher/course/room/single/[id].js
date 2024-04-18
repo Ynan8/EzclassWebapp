@@ -265,7 +265,7 @@ const SingleRoom = () => {
                                 <Link
                                     href={`/teacher/course/room/single/${id}/`}
                                 >
-                                    ภาพรวามห้องเรียน
+                                    ภาพรวมห้องเรียน
                                 </Link>
                             </NavbarItem>
                             <NavbarItem >
@@ -333,7 +333,7 @@ const SingleRoom = () => {
 
                                     <div className='flex flex-col space-y-1'>
                                         <span className="block text-2xl font-semibold">
-                                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'Loading...'}
+                                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'ไม่มีรายชื่อนักเรียน'}
                                         </span>
                                         <span className="block text-gray-500">นักเรียนที่ได้คะแนนสูงสุด</span>
                                     </div>
@@ -379,43 +379,47 @@ const SingleRoom = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {student
-                                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                                            .map((student, index) => {
-                                                const matchingAverageScore = highestAndAverageScoresByStudent.find(
-                                                    (score) => score.studentId === student._id
-                                                );
-                                                return (
-                                                    <tr key={student._id} className="hover:bg-gray-100 transition-colors group">
-                                                        <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                                                        <td className="text-center">{student.firstName} {student.lastName}</td>
-                                                        <td className="text-center">
-                                                            {matchingAverageScore ? (
-                                                                <>
+                                        {student.length > 0 ? (
+                                            student
+                                                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                                                .map((student, index) => {
+                                                    const matchingAverageScore = highestAndAverageScoresByStudent.find(
+                                                        (score) => score.studentId === student._id
+                                                    );
+                                                    return (
+                                                        <tr key={student._id} className="hover:bg-gray-100 transition-colors group">
+                                                            <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                                            <td className="text-center">{student.firstName} {student.lastName}</td>
+                                                            <td className="text-center">
+                                                                {matchingAverageScore ? (
                                                                     <span className="font-bold">{matchingAverageScore.averageScore.toFixed(2)} คะแนน</span>
-                                                                </>
-                                                            ) : (
-                                                                "ยังไม่ทำแบบทดสอบ"
-                                                            )}
-                                                        </td>
-                                                        {/* Render score cells */}
-                                                        {quizzes.map(quiz => {
-                                                            const scoreKey = `${student._id}-${quiz.quizId}`;
-                                                            const scoreData = highestScoresByStudentAndQuiz[scoreKey];
-                                                            return (
-                                                                <td key={quiz.quizId} className="text-center">
-                                                                    {scoreData ? (
-                                                                        <span className="font-bold">{scoreData.score} คะแนน(ทำได้มากที่สุด)</span>
-                                                                    ) : (
-                                                                        "ยังไม่ทำแบบทดสอบ"
-                                                                    )}
-                                                                </td>
-                                                            );
-                                                        })}
+                                                                ) : (
+                                                                    "ยังไม่ทำแบบทดสอบ"
+                                                                )}
+                                                            </td>
+                                                            {/* Render score cells */}
+                                                            {quizzes.map(quiz => {
+                                                                const scoreKey = `${student._id}-${quiz.quizId}`;
+                                                                const scoreData = highestScoresByStudentAndQuiz[scoreKey];
+                                                                return (
+                                                                    <td key={quiz.quizId} className="text-center">
+                                                                        {scoreData ? (
+                                                                            <span className="font-bold">{scoreData.score} คะแนน(ทำได้มากที่สุด)</span>
+                                                                        ) : (
+                                                                            "ยังไม่ทำแบบทดสอบ"
+                                                                        )}
+                                                                    </td>
+                                                                );
+                                                            })}
 
-                                                    </tr>
-                                                );
-                                            })}
+                                                        </tr>
+                                                    );
+                                                })
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="6" className="text-center py-4">ยังไม่มีรายชื่อนักเรียน</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
 

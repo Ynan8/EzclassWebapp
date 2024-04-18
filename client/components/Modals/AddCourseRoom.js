@@ -29,7 +29,7 @@ const AddCourseRoom = ({
             toast.error("กรุณากรอกชื่อห้องเรียน");
             return;
         }
-      
+
         try {
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-courseRoom`, {
                 courseYearId,
@@ -41,9 +41,14 @@ const AddCourseRoom = ({
             setRoomName("");
         } catch (error) {
             console.error("Error adding courseRoom:", error);
-            toast.error("ไม่สามารถเพิ่มห้องเรียนได้");
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("เกิดข้อผิดพลาดบางอย่าง");
+            }
         }
     };
+
 
 
     return (
@@ -51,14 +56,17 @@ const AddCourseRoom = ({
             <ModalHeader className="flex flex-col gap-1">สร้างห้องเรียน</ModalHeader>
             <ModalBody>
                 <Input
+                    size='md'
                     maxLength={10}
                     autoFocus
                     value={roomName}
                     onChange={handleInputChange}
                     placeholder="เช่น ม.1/1"
                     variant="bordered"
+                    style={{ fontSize: '18px' }} 
                 />
-                <div className="text-right text-xs text-gray-500 mt-1">
+
+                <div className="text-right text-sm text-gray-500 mt-1">
                     {roomName.length}/10
                 </div>
             </ModalBody>

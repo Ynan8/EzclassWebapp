@@ -296,9 +296,9 @@ const EditContentLesson = () => {
                                     <Switch onChange={(e) => handleChangeStatus(e)} size='sm' defaultSelected aria-label="Automatic updates" />
                                 </div>
                             </button>
-                            <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            {/* <button class="flex items-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                 ตัวอย่าง
-                            </button>
+                            </button> */}
                         </div>
                     </div>
 

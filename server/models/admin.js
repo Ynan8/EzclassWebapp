@@ -14,9 +14,7 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  image: {
-    type: String, // Assuming you are storing the image URL
-  },
+  image: {},
   passwordResetCode: {
     type: String,
     default: "",

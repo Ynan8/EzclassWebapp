@@ -9,6 +9,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Pagination,
   useDisclosure,
 } from "@nextui-org/react";
 import { FaEdit, FaFileExcel, FaPlus, FaTrash } from "react-icons/fa";
@@ -105,8 +106,9 @@ const ManageTeacher = () => {
         `${process.env.NEXT_PUBLIC_API}/teacher/${currentTch._id}`,
         currentTch
       );
-      loadDataTch();
       toast.success("แก้ไขข้อมูลผู้สอนสำเร็จ");
+      onOpenChangeModalUpdate(false);
+      loadDataTch();
     } catch (error) {
       console.error(error);
       toast.error("ไม่สามารถแก้ไขข้อมูลผู้สอนได้");
@@ -152,6 +154,10 @@ const ManageTeacher = () => {
         teacher.username.toLowerCase().includes(searchTerm.toLowerCase()) // Search by username as well
     );
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(teacherList.length / itemsPerPage);
 
   return (
     <div>
@@ -235,13 +241,13 @@ const ManageTeacher = () => {
                 >
                   <span className="ml-2 hidden md:inline">เพิ่มผู้สอน</span>
                 </Button>
-              
+
               </div>
             </div>
 
             <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
               {/* <pre>{JSON.stringify(student,null,4)}</pre> */}
-              <div className="mt-4 overflow-x-auto">
+              <div className="mt-4">
                 <table className="w-full min-w-max border-b border-gray-200 text-xs sm:text-sm md:text-base whitespace-nowrap">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr className="text-xs sm:text-sm md:text-lg lg:text-xl font-medium border-gray-200">
@@ -258,50 +264,62 @@ const ManageTeacher = () => {
                       <th className=" py-1 px-4 text-center sm:py-2">จัดการ</th>
                     </tr>
                   </thead>
-                  <tbody className="text-xs sm:text-sm md:text-lg">
-                    {getFilteredTeachers().map((teacher, index) => (
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 h-16 transition-colors group">
-                        <td className="text-center py-2">{index + 1}</td>
-                        <td className="text-center py-2">{teacher.username}</td>
-                        <td className="text-center py-2">
-                          {teacher.firstName} {teacher.lastName}
-                        </td>
-                        <td className="text-center py-2 sm:py-2">
-                          {moment(teacher.createdAt)
-                            .locale("th")
-                            .format("D MMMM YYYY เวลา HH:mm น.")}
-                        </td>
+                      <tbody className="text-xs sm:text-sm md:text-lg">
+                        {getFilteredTeachers()
+                          .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                          .map((teacher, index) => (
+                            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 h-16 transition-colors group">
+                              <td className="text-center py-2">{index + 1}</td>
+                              <td className="text-center py-2">{teacher.username}</td>
+                              <td className="text-center py-2">
+                                {teacher.firstName} {teacher.lastName}
+                              </td>
+                              <td className="text-center py-2 sm:py-2">
+                                {moment(teacher.createdAt)
+                                  .locale("th")
+                                  .format("D MMMM YYYY เวลา HH:mm น.")}
+                              </td>
 
-                        <td className="flex justify-center  text-center pt-4">
-                          <div className="flex justify-center items-center space-x-2">
-                            <div
-                              className="flex flex-col justify-center sm:flex-row items-center px-1 py-1 bg-yellow-100 text-center text-yellow-500 rounded-md flex-shrink-0 whitespace-nowrap hover:bg-yellow-200 cursor-pointer"
-                              onClick={() => {
-                                onOpenModalUpdate();
-                                setCurrentTch(teacher);
-                              }}
-                            >
-                              <RiEdit2Line size={20} className="sm:mr-1" />
-                              <span className="hidden sm:inline-block text-xs sm:text-sm px-1 py-1">
-                                แก้ไขผู้ใช้
-                              </span>
-                            </div>
+                              <td className="flex justify-center  text-center pt-4">
+                                <div className="flex justify-center items-center space-x-2">
+                                  <div
+                                    className="flex flex-col justify-center sm:flex-row items-center px-1 py-1 bg-yellow-100 text-center text-yellow-500 rounded-md flex-shrink-0 whitespace-nowrap hover:bg-yellow-200 cursor-pointer"
+                                    onClick={() => {
+                                      onOpenModalUpdate();
+                                      setCurrentTch(teacher);
+                                    }}
+                                  >
+                                    <RiEdit2Line size={20} className="sm:mr-1" />
+                                    <span className="hidden sm:inline-block text-xs sm:text-sm px-1 py-1">
+                                      แก้ไขผู้ใช้
+                                    </span>
+                                  </div>
 
-                            <div
-                              className="flex flex-col justify-center sm:flex-row items-center px-1 py-1 bg-red-100 text-center text-red-400 rounded-md flex-shrink-0 whitespace-nowrap hover:bg-red-200 cursor-pointer"
-                              onClick={() => openDeleteModal(teacher._id)}
-                            >
-                              <RiDeleteBinLine size={20} className="sm:mr-1" />
-                              <span className="hidden sm:inline-block text-xs sm:text-sm px-1 py-1">
-                                ลบผู้ใช้
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                                  <div
+                                    className="flex flex-col justify-center sm:flex-row items-center px-1 py-1 bg-red-100 text-center text-red-400 rounded-md flex-shrink-0 whitespace-nowrap hover:bg-red-200 cursor-pointer"
+                                    onClick={() => openDeleteModal(teacher._id)}
+                                  >
+                                    <RiDeleteBinLine size={20} className="sm:mr-1" />
+                                    <span className="hidden sm:inline-block text-xs sm:text-sm px-1 py-1">
+                                      ลบผู้ใช้
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
                 </table>
+                <div className="flex justify-center mt-2">
+                  <Pagination
+                    size='lg'
+                    total={totalPages}
+                    initialPage={1}
+                    page={currentPage}
+                    onChange={(page) => setCurrentPage(page)}
+                  />
+
+                </div>
               </div>
             </div>
           </div>

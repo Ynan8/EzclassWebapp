@@ -18,6 +18,8 @@ const {
     profileImage,
     UpdateProfile,
     UpdatePassword,
+    UpdateProfileAdmin,
+    UpdatePasswordAdmin,
     currentTeacher,
     currentStudent,
     currentAdmin,
@@ -43,6 +45,10 @@ router.get("/course-logs/:id", getCourseLogs);
 router.post("/course/profile-image", profileImage);
 router.put("/updateProfile/:id", auth, UpdateProfile);
 router.put("/update-password", auth, UpdatePassword);
+router.put("/updateProfile-admin/:id", auth, UpdateProfileAdmin);
+router.put("/update-passwordAdmin", auth, UpdatePasswordAdmin);
+
+
 
 
 router.post("/register", register);

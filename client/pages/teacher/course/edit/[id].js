@@ -11,6 +11,7 @@ const CourseEdit = () => {
     const router = useRouter();
     const { id } = router.query;
 
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedLevel, setSelectedLevel] = useState("");
     const [values, setValues] = useState({
         courseName: '',
@@ -31,7 +32,7 @@ const CourseEdit = () => {
             try {
                 const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course/${id}`);
                 setValues(data);
-                 if (data && data.image) setImage(data.image)
+                if (data && data.image) setImage(data.image)
             } catch (error) {
                 console.error("Error loading course:", error);
             }
@@ -87,9 +88,17 @@ const CourseEdit = () => {
     const [imageSelected, setImageSelected] = useState(false);
 
     const handleImage = (e) => {
-        let file = e.target.files[0]
+        let file = e.target.files[0];
+
+        // Check if file size exceeds 2MB
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error("ขนาดไฟล์เกินขีดจำกัด 2MB.");
+            return;
+        }
+
         setPreview(window.URL.createObjectURL(file));
         setValues({ ...values, loading: true });
+
         // resize
         Resizer.imageFileResizer(file, 720, 500, "JPEG", 100, 0, async (uri) => {
             try {
@@ -97,11 +106,11 @@ const CourseEdit = () => {
                     image: uri,
                 });
                 console.log("Image uploaded", data);
+
                 // set image in the state
                 setImage(data)
                 setValues({ ...values, loading: false });
                 setImageSelected(true);
-
             } catch (err) {
                 console.log(err)
                 setValues({ ...values, loading: false })
@@ -109,6 +118,7 @@ const CourseEdit = () => {
             }
         })
     }
+
 
 
     const handleImageRemove = async () => {
@@ -176,6 +186,9 @@ const CourseEdit = () => {
             return;
         }
 
+        setIsLoading(true);
+
+
         try {
             const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API}/course/${id}`, {
                 ...values,
@@ -185,6 +198,9 @@ const CourseEdit = () => {
             router.push(`/teacher/home`)
         } catch (err) {
             toast.error(err.response.data);
+        }
+        finally {
+            setIsLoading(false);
         }
     };
 
@@ -215,6 +231,7 @@ const CourseEdit = () => {
                     preview={preview}
                     handleImage={handleImage}
                     handleImageRemove={handleImageRemove}
+                    isLoading={isLoading}
                 />
             </div>
         </div>

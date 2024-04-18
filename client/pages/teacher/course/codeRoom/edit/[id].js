@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import FirstForm from '../../../../../components/CodeRoomForm/FirstForm'
-import SecondForm from '../../../../../components/CodeRoomForm/SecondForm'
-import ThirdForm from '../../../../../components/CodeRoomForm/ThirdForm'
+import React, { useEffect, useState } from 'react'
+import FirstForm from '../../../../../components/CodeRoomForm/Edit/FirstForm'
+import SecondForm from '../../../../../components/CodeRoomForm/Edit/SecondForm'
+import ThirdForm from '../../../../../components/CodeRoomForm/Edit/ThirdForm'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
@@ -9,7 +9,7 @@ import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
 import { Avatar, Button } from '@nextui-org/react'
 
-const createCodeRoom = () => {
+const editCodeRoom = () => {
     const router = useRouter();
     const { id, courseYear } = router.query;
     const formList = ["FirstForm", "SecondForm", "ThirdForm"];
@@ -36,8 +36,6 @@ const createCodeRoom = () => {
     const handlePrev = () => {
         setPage(page === 0 ? formLength - 1 : page - 1);
     };
-   
-    
     const handleNext = () => {
         // Validation check for the current step's form fields
         switch (page) {
@@ -62,7 +60,6 @@ const createCodeRoom = () => {
         }
         setPage(page === formLength - 1 ? 0 : page + 1);
     };
-    
 
     
     const [selectedPublish, setSelectedPublish] = useState("public");
@@ -124,8 +121,8 @@ const createCodeRoom = () => {
 
     const handleSubmit = async (e) => {
         try {
-            // e.preventDefault();
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/codeRoom/${id}/${courseYear}`, {
+            e.preventDefault();
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/codeRoom/${id}/${courseYear}`, {
                 ...values,
                 Published: selectedPublish,
                 Difficulty: selectedDifficulty,
@@ -138,28 +135,29 @@ const createCodeRoom = () => {
     };
 
 
+    useEffect(() => {
+        loadCodeRoom();
+    }, [id]);
 
-
-    const setForm = (e) => {
-        const name = e.target.innerText;
-        switch (name) {
-            case "Person Info": {
-                return setPage(0);
+    const loadCodeRoom = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['authtoken'] = token;
             }
-            case "Other Info": {
-                return setPage(1);
-            }
-            case "Login Info": {
-                return setPage(2);
-            }
-            default:
-                setPage(0);
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/problem/${id}`);
+            setValues(data);
+        } catch (error) {
+            console.error('Error loading problem:', error);
         }
     };
 
+
+
+
     return (
         <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-            <SideBarTeacher  courseYearId={courseYear} />
+            <SideBarTeacher courseYearId={courseYear} />
             <HeaderBarTeacher />
             <div class="h-full ml-14 mt-28 mb-10 md:ml-64">
                 <div className="px-10">
@@ -174,7 +172,7 @@ const createCodeRoom = () => {
                                 <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
                             </li>
                             <li>
-                                <a href="#" class=" text-blue-500 font-bold" aria-current="page">สร้างห้องเรียนเขียนโค้ด</a>
+                                <a href="#" class=" text-blue-500 font-bold" aria-current="page">แก้ไขห้องเรียนเขียนโค้ด</a>
                             </li>
                         </ol>
                     </nav>
@@ -254,4 +252,4 @@ const createCodeRoom = () => {
     )
 }
 
-export default createCodeRoom
+export default editCodeRoom

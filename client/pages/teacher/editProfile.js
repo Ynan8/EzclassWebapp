@@ -225,7 +225,6 @@ function editprofile() {
         </button>
       </div>
       <div className="mx-auto  max-w-screen-lg w-full px-4 pt-2 pb-20 space-y-12">
-
         {/* <pre>{JSON.stringify(userData, null, 4)}</pre> */}
         <h1 className="text-2xl font-semibold mt-5">แก้ไขข้อมูลส่วนตัว</h1>
         <div className="bg-gray-100 min-h-max rounded-xl p-5">

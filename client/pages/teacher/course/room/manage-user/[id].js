@@ -193,7 +193,7 @@ const ManageUser = () => {
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
                 >
-                  ภาพรวามห้องเรียน
+                  ภาพรวมห้องเรียน
                 </Link>
               </NavbarItem>
               <NavbarItem>

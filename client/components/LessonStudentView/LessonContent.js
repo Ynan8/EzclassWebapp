@@ -13,6 +13,8 @@ const LessonContent = ({
     selectedLessonContent,
     selectedLesson,
     goToNextLesson,
+    goToNextLessonCompleted,
+    completedLessons,
     goToPreviousLesson,
     markExerciseAnswer,
     userAnswers,
@@ -154,51 +156,58 @@ const LessonContent = ({
                                 </Button>
 
                                 {hasExercisesInLesson ? (
-                                     <>
-                                    <Button
-                                        onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
-                                        className='w-full sm:w-auto px-8 py-6'
-                                        radius='sm'
-                                        variant='shadow'
-                                        size='lg'
-                                        color="primary"
-                                        isDisabled={!allExercisesCorrect}
-                                        endContent={<AiOutlineArrowRight />}>
-                                        บทเรียนถัดไป
-                                    </Button>
-                                     {/* <Button
-                                     onClick={() => markCompleted(selectedLesson._id)}
-                                     className='w-full sm:w-auto px-8 py-6'
-                                     radius='sm'
-                                     variant='shadow'
-                                     size='lg'
-                                     color="primary"
-                                     endContent={<AiOutlineArrowRight />}>
-                                     เรียนสำเร็จ
-                                 </Button> */}
-                                </>
+                                    <>
+                                        {completedLessons.includes(selectedLesson._id) ? (
+                                            <Button
+                                                onClick={() => selectedLesson && goToNextLessonCompleted()}
+                                                className='w-full sm:w-auto px-8 py-6'
+                                                radius='sm'
+                                                variant='shadow'
+                                                size='lg'
+                                                color="primary"
+                                                endContent={<AiOutlineArrowRight />}>
+                                                บทเรียนถัดไป
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
+                                                className='w-full sm:w-auto px-8 py-6'
+                                                radius='sm'
+                                                variant='shadow'
+                                                size='lg'
+                                                color="primary"
+                                                endContent={<AiOutlineArrowRight />}>
+                                                บทเรียนถัดไป
+                                            </Button>
+                                        )}
+                                    </>
                                 ) : (
                                     <>
-                                        <Button
-                                            onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
-                                            className='w-full sm:w-auto px-8 py-6'
-                                            radius='sm'
-                                            variant='shadow'
-                                            size='lg'
-                                            color="primary"
-                                            endContent={<AiOutlineArrowRight />}>
-                                            บทเรียนถัดไป
-                                        </Button>
-                                        {/* <Button
-                                            onClick={() => markCompleted(selectedLesson._id)}
-                                            className='w-full sm:w-auto px-8 py-6'
-                                            radius='sm'
-                                            variant='shadow'
-                                            size='lg'
-                                            color="primary"
-                                            endContent={<AiOutlineArrowRight />}>
-                                            เรียนสำเร็จ
-                                        </Button> */}
+                                        {completedLessons.includes(selectedLesson._id) ? (
+                                            <Button
+                                                onClick={() => selectedLesson && goToNextLessonCompleted()}
+                                                className='w-full sm:w-auto px-8 py-6'
+                                                radius='sm'
+                                                variant='shadow'
+                                                size='lg'
+                                                color="primary"
+                                                endContent={<AiOutlineArrowRight />}>
+                                                บทเรียนถัดไป
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => selectedLesson && goToNextLesson(selectedLesson._id)}
+                                                className='w-full sm:w-auto px-8 py-6'
+                                                radius='sm'
+                                                variant='shadow'
+                                                size='lg'
+                                                color="primary"
+                                                endContent={<AiOutlineArrowRight />}>
+                                                บทเรียนถัดไป
+                                            </Button>
+                                        )}
+
+
                                     </>
                                 )}
                             </div>
@@ -206,9 +215,10 @@ const LessonContent = ({
 
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                </div >
+            )
+            }
+        </div >
     );
 };
 

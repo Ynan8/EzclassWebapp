@@ -8,6 +8,9 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import moment from "moment/min/moment-with-locales";
+import Image from 'next/image';
+import find from '../../public/find.png'
+
 
 
 const AssignmentAccordionTeacher = ({
@@ -35,7 +38,20 @@ const AssignmentAccordionTeacher = ({
     return (
         <>
             {section.map((item, index) => (
-                item.AssignmentData && item.AssignmentData.length > 0 && ( // Check if AssignmentData exists and has length greater than 0
+                item.AssignmentData && item.AssignmentData.length === 0 ? ( // Check if AssignmentData exists and has length greater than 0
+                    <div className="flex flex-col text-center mt-4">
+                        <div className="flex flex-col items-center justify-center w-full h-[400px]">
+                            <Image
+                                width={250}
+                                height={200}
+                                alt="No course"
+                                src={find}
+                            />
+                            <p className="md:text-2xl sm:text-lg text-gray-800">ยังไม่มีงานที่มอบหมาย</p>
+
+                        </div>
+                    </div>
+                ) : (
                     <Listbox variant="flat" aria-label="Listbox menu with sections" key={index}>
                         <ListboxSection
                             title={

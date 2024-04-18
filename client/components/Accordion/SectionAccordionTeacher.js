@@ -242,7 +242,7 @@ const SectionAccordion = ({
                                             title={
                                                 <div className='flex items-center text-lg' >
                                                     <p>
-                                                        <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
+                                                        <span className='font-semibold' >งานชิ้นที่ {lessonIndex + 1}</span> {assignment.assignmentName}
                                                     </p>
                                                     <div className="flex items-center space-x-4 mr-4 ml-auto">
                                                         <Link href={`/teacher/course/assignment/edit/${assignment._id}?courseYear=${courseYearId}`}>

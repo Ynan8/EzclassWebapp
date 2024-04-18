@@ -275,10 +275,57 @@ exports.UpdateProfile = async (req, res) => {
     res.status(500).json({ ok: false, message: 'Internal server error' });
   }
 };
+
+exports.UpdateProfileAdmin = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updatedUserData = req.body; // Assuming the request body contains the updated user data
+
+    // Update the user in the database
+    const updatedUser = await Admin.findByIdAndUpdate(userId, updatedUserData, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ ok: false, message: 'User not found' });
+    }
+
+    // Return the updated user data
+    res.status(200).json({ ok: true, user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, message: 'Internal server error' });
+  }
+};
+
 exports.UpdatePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
     const user = await User.findById(req.user._id);
+
+    // Check if the old password is correct
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Invalid old password' });
+    }
+
+    // Hash and update the new password using the hashPassword function
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+
+    // Save the updated user
+    await user.save();
+
+    res.json({ message: 'เปลี่ยนรหัสผ่านสำเร็จ' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.UpdatePasswordAdmin = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user = await Admin.findById(req.user._id);
 
     // Check if the old password is correct
     const isPasswordValid = await bcrypt.compare(oldPassword, user.password);

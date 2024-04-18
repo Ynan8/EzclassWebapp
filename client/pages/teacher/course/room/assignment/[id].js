@@ -11,6 +11,9 @@ import { MdAssignment } from 'react-icons/md';
 import Link from 'next/link';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
+import Image from 'next/image';
+import find from '../../../../../public/find.png'
+
 
 
 const AssignmentRoom = () => {
@@ -221,7 +224,7 @@ const AssignmentRoom = () => {
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
                 >
-                  ภาพรวามห้องเรียน
+                  ภาพรวมห้องเรียน
                 </Link>
               </NavbarItem>
               <NavbarItem isActive >
@@ -274,7 +277,7 @@ const AssignmentRoom = () => {
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
             <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
               <div className="flex flex-col space-y-4">
-                <h1 className=" text-2xl font-semibold text-gray-700"
+                <h1 className=" text-2xl font-semibold "
                 >
                   ตรวจงาน
                 </h1>
@@ -290,6 +293,7 @@ const AssignmentRoom = () => {
                 />
               </div>
             </div>
+           
           </main>
         </div>
       </div >

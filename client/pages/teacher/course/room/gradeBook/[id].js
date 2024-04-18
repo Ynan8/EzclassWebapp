@@ -277,7 +277,7 @@ const GradeBookRoom = () => {
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
                 >
-                  ภาพรวามห้องเรียน
+                  ภาพรวมห้องเรียน
                 </Link>
               </NavbarItem>
               <NavbarItem  >
@@ -328,12 +328,11 @@ const GradeBookRoom = () => {
           </div>
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
             <div className="mx-auto max-w-screen-xl px-4 sm:px-6 xl:px-12">
-              <div className="overflow-x-auto">
+              <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10 overflow-x-auto">
                 <div className="flex justify-between items-center">
-                  <h1 className=" text-2xl font-semibold text-gray-700"
-                  >
+                  <p className='md:text-2xl  sm:text-lg font-semibold'>
                     ผลการเรียน
-                  </h1>
+                  </p>
                   <Button
                     onPress={downloadExcel}
                     radius='sm'
@@ -347,17 +346,24 @@ const GradeBookRoom = () => {
                   </Button>
                 </div>
                 {/* <pre>{JSON.stringify(assignmentScoreRoom, null, 4)}</pre> */}
-                <table className="min-w-full bg-white">
+                <table className="w-full border-b border-gray-200">
+
                   <thead>
                     <tr className="w-full h-24 border-gray-300 border-b py-8">
-                      <th className="text-center pl-14 text-gray-600 font-normal pr-6 tracking-normal leading-4">
+                      <th
+                        className="text-center pl-14 pr-6"
+                      >
                         รหัสนักเรียน
                       </th>
-                      <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
+                      <th
+                        className="text-center pl-14 pr-6"
+                      >
                         ชื่อ
                       </th>
                       {uniqueAssignments.map((assignment, index) => (
-                        <th key={index} className="text-center text-gray-600 font-normal pr-6 tracking-normal leading-4">
+                        <th key={index}
+                          className="text-center pl-14 pr-6"
+                        >
                           <div className="flex flex-col items-center space-y-3">
                             <span className="text-base font-semibold">{assignment.assignmentName}</span>
                             <span className="  rounded p-2">
@@ -372,10 +378,14 @@ const GradeBookRoom = () => {
                       {/* <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
                         คะแนนห้องเรียนเขียนโค้ด
                       </th> */}
-                      <th className="text-center text-gray-600 font-normal pr-6  tracking-normal leading-4">
+                      <th
+                        className="text-center pl-14 pr-6"
+                      >
                         คะแนนรวม
                       </th>
-                      <th className="text-center text-gray-600 font-normal pr-6 tracking-normal leading-4">
+                      <th
+                        className="text-center pl-14 pr-6"
+                      >
                         เกรด
                       </th>
                     </tr>
@@ -390,24 +400,31 @@ const GradeBookRoom = () => {
 
                         return (
                           <tr className="h-20 border-gray-300 border-b" key={stud._id}>
-                            <td className="text-center pl-14 pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                            <td
+                              className="text-center pl-14 pr-6">
                               {stud.username}
                             </td>
-                            <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                            <td
+                              className="text-center pl-14 pr-6"
+                            >
                               {stud.firstName} {stud.lastName}
                             </td>
                             {studentAssignments.map((assignment, assignmentIndex) => (
-                              <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4" key={assignmentIndex}>
+                              <td
+                                className="text-center pl-14 pr-6" key={assignmentIndex}>
                                 {(assignment.score / assignment.scoreLimit) * assignment.weight.toFixed(2)}
                               </td>
                             ))}
                             {/* <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
                               Insert code room score here if applicable
                             </td> */}
-                            <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                            <td 
+                             className="text-center pl-14 pr-6"
+                            >
                               {totalWeightedScore.toFixed(2)}
                             </td>
-                            <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
+                            <td 
+                            className="text-center pl-14 pr-6">
                               {calculateGrade(totalWeightedScore)}
                             </td>
                           </tr>

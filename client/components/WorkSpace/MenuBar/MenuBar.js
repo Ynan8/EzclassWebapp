@@ -110,7 +110,7 @@ const MenuBar = ({
 
     useEffect(() => {
         getMessages();
-    }, [messages,id]);
+    }, [id]);
 
 
     useEffect(() => {

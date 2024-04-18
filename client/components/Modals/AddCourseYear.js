@@ -58,9 +58,10 @@ const AddCourseYear = ({
                     variant="bordered"
                     maxLength={4}
                     value={values.year}
+                    style={{ fontSize: '18px' }} 
                 />
                 <div className="ml-auto flex  space-x-4 mt-1">
-                    <p className="text-gray-500 text-xs">{values.year.length}/4</p>
+                    <p className="text-gray-500 text-sm">{values.year.length}/4</p>
                 </div>
             </ModalBody>
             <ModalFooter>

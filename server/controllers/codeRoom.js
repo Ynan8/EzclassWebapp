@@ -22,6 +22,29 @@ exports.create = async (req, res) => {
     }
 }
 
+exports.update = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+
+        const updated = await CodeRoom.findOneAndUpdate(
+            { _id: roomId },
+            req.body,
+            { new: true }
+        ).exec();
+
+        if (!updated) {
+            return res.status(404).json({ error: 'Code room not found' });
+        }
+        res.json(updated);
+        console.log("Update Code room", updated);
+
+
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send('ไม่สามารถแก้ไขห้องเรียนเขียนโค้ดได้ ลองอีกครั้ง!=');
+    }
+}
+
 exports.getCodeRoom = async (req, res) => {
     try {
         const { courseYearId } = req.query;
@@ -48,8 +71,8 @@ exports.getProblem = async (req, res) => {
 exports.getStdSubmitCode = async (req, res) => {
     try {
         const { codeRoomId } = req.params;
-       
-        const stdSubmitCode = await SubmissionCode.findOne({codeRoomId:codeRoomId, studentId:req.user._id});
+
+        const stdSubmitCode = await SubmissionCode.findOne({ codeRoomId: codeRoomId, studentId: req.user._id });
         res.json(stdSubmitCode);
         // console.log(stdSubmitCode)
     } catch (err) {
@@ -59,8 +82,8 @@ exports.getStdSubmitCode = async (req, res) => {
 };
 exports.getStdSubmitCodeAll = async (req, res) => {
     try {
-       
-        const stdSubmitCodeAll = await SubmissionCode.find({ studentId:req.user._id});
+
+        const stdSubmitCodeAll = await SubmissionCode.find({ studentId: req.user._id });
         res.json(stdSubmitCodeAll);
         // console.log(stdSubmitCode)
     } catch (err) {
@@ -101,8 +124,8 @@ exports.submitCode = async (req, res) => {
 
         // Check if a submission already exists for this student and code room
         let submission = await SubmissionCode.findOne({
-            studentId:req.user._id,
-            codeRoomId 
+            studentId: req.user._id,
+            codeRoomId
         });
 
         if (submission) {
@@ -156,21 +179,21 @@ exports.joinRoom = async (req, res) => {
 
 exports.deleteCodeRoom = async (req, res) => {
     const codeRoomId = req.params.id;
-  
+
     try {
-      // Delete the course year by ID
-      const deletedCodeRoom = await CodeRoom.findByIdAndDelete(codeRoomId);
-  
-      // Check if the course year exists
-      if (!deletedCodeRoom) {
-        return res.status(404).json({ error: 'Code room not found.' });
-      }
-  
-      // Return success response
-      res.status(200).json({ message: 'Code room deleted successfully.' });
+        // Delete the course year by ID
+        const deletedCodeRoom = await CodeRoom.findByIdAndDelete(codeRoomId);
+
+        // Check if the course year exists
+        if (!deletedCodeRoom) {
+            return res.status(404).json({ error: 'Code room not found.' });
+        }
+
+        // Return success response
+        res.status(200).json({ message: 'Code room deleted successfully.' });
     } catch (error) {
-      console.error('Error deleting course year:', error);
-      res.status(500).json({ error: 'Failed to delete course.' });
+        console.error('Error deleting course year:', error);
+        res.status(500).json({ error: 'Failed to delete course.' });
     }
-  };
+};
 

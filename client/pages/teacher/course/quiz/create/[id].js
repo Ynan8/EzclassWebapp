@@ -45,7 +45,7 @@ const CreateQuiz = () => {
 
   const handleAddQuizData = async () => {
     // Validate quiz data
-   
+
     if (!timeLimit || timeLimit <= 0) {
       toast.error('กรุณากรอกเวลาที่กำหนด');
       return;
@@ -65,21 +65,26 @@ const CreateQuiz = () => {
         toast.error('กรุณากรอกคำถาม');
         return;
       }
-      if (question.questionType === 'multiple-choice' || question.questionType === 'single-choice') {
-        if (question.options.length < 2) {
-          toast.error('กรุณาเพิ่มอย่างน้อยสองตัวเลือก');
+      if (question.options.length < 2) {
+        toast.error('กรุณาเพิ่มอย่างน้อยสองตัวเลือก');
+        return;
+      }
+      // Check if all options have non-empty text
+      const allOptionsNonEmpty = question.options.every(option => option.trim() !== '');
+      if (!allOptionsNonEmpty) {
+        toast.error('กรุณากรอกคำตอบ');
+        return;
+      }
+
+      if (question.questionType === 'multiple-choice') {
+        if (!question.correctOptionIndex.length) {
+          toast.error('กรุณาเลือกอย่างน้อยหนึ่งคำตอบที่ถูกต้อง');
           return;
         }
-        if (question.questionType === 'multiple-choice') {
-          if (!question.correctOptionIndex.length) {
-            toast.error('กรุณาเลือกอย่างน้อยหนึ่งคำตอบที่ถูกต้อง');
-            return;
-          }
-        } else if (question.questionType === 'single-choice') {
-          if (question.correctAnswerIndex === null || question.correctAnswerIndex === undefined) {
-            toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
-            return;
-          }
+      } else if (question.questionType === 'single-choice') {
+        if (question.correctAnswerIndex === null || question.correctAnswerIndex === undefined) {
+          toast.error('กรุณาเลือกคำตอบที่ถูกต้อง');
+          return;
         }
       } else if (question.questionType === 'true-false') {
         if (question.trueFalseOptions === null || question.trueFalseOptions === undefined) {
@@ -91,7 +96,7 @@ const CreateQuiz = () => {
 
     try {
       const quizData = {
-        quizName: `${section?.sectionName}`, 
+        quizName: `${section?.sectionName}`,
         maxAttempts: attemptAllowance,
         passingThreshold: passingGrade,
         timeLimitMinutes: timeLimit,

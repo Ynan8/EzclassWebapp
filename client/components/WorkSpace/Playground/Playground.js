@@ -295,8 +295,9 @@ const Playground = ({
                                             className='text-sm px-6 py-2 sm:px-14 text-white'
                                             // onClick={submitCode}
                                             onPress={onOpenChangeModalSubmit}
+                                            isLoading={isLoadingSubmit}
                                         >
-                                            {isLoadingSubmit ? "" : "Submit"}
+                                            {isLoadingSubmit ? "กำลังโหลด" : "Submit"}
                                         </Button>
                                     </div>
 
@@ -395,7 +396,6 @@ const Playground = ({
                                     ))}
                                 </Accordion>
                             </Tab>
-
                         </Tabs>
 
                     </div>
@@ -481,7 +481,9 @@ const Playground = ({
                                 <Button
                                     isLoading={isLoadingSubmit}
                                     color="primary"
-                                    onPress={submitCode}>
+                                    onPress={onClose}
+                                    onClick={submitCode}
+                                    >
                                     {isLoading ? "" : "ยืนยัน"}
                                 </Button>
                             </ModalFooter>

@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 import { AiOutlineUpload } from 'react-icons/ai';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -19,25 +20,25 @@ const UploadStudentFile = ({
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         setUploadButtonText(file.name);
-    
+
         if (!file) {
             return;
         }
-    
+
         setLoading(true);
-    
+
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-    
+
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { raw: false });
-    
-    
-                setStudents(jsonData); 
+
+
+                setStudents(jsonData);
                 setLoading(false);
             } catch (error) {
                 console.error('Error parsing Excel file:', error);
@@ -45,10 +46,10 @@ const UploadStudentFile = ({
                 setLoading(false);
             }
         };
-    
+
         reader.readAsArrayBuffer(file);
     };
-    
+
     const importStudents = async () => {
         try {
             setLoading(true);
@@ -71,11 +72,39 @@ const UploadStudentFile = ({
         }
     };
 
+
+    const handleDownloadTemplate = () => {
+        const workSheetData = () => {
+            const records = [
+                {
+                    'รหัสนักเรียน': "1001",
+                    'ชื่อจริง': "สมชาย",
+                    'นามสกุล': "ใจดี",
+                    'password': "1001",
+                }
+            ];
+            return records;
+        };
+
+
+        // Generate worksheet
+        const workSheet = XLSX.utils.json_to_sheet(workSheetData());
+        const workBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workBook, workSheet, "Template");
+
+        // Generate buffer
+        const excelBuffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'array' });
+
+        // Convert to Blob and save using FileSaver
+        const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        saveAs(data, 'Template.xlsx');
+    };
+
     return (
         <div>
             <ModalHeader className="flex flex-col gap-1">Import Excel</ModalHeader>
             <ModalBody>
-                <p className="text-center text-lg font-semibold mb-4">รายชื่อนักเรียนที่จะถูกเพิ่ม</p>
+                {/* <p className="text-center text-lg font-semibold mb-4">รายชื่อนักเรียนที่จะถูกเพิ่ม</p> */}
                 <div className="mt-4">
                     <table className="w-full ">
                         <thead>
@@ -99,11 +128,16 @@ const UploadStudentFile = ({
                     </table>
                 </div>
                 {students.length === 0 && (
-                    <div className="flex flex-col text-center item-center justify-center my-20">
-                        <p className='text-lg' >
-                            ยังไม่มีข้อมูลนักเรียน กรุณาอัปโหลดไฟล์ Excel ที่ปุ่ม{' '}
-                            <span className='text-blue-500 '>อัพโหลดไฟล์</span>
+                    <div className="flex flex-col item-center justify-center my-6">
+                        <p className='text-lg font-semibold mb-1' >
+                            วิธีการการนำเข้ารายชื่อนักเรียนด้วยไฟล์ Excel
                         </p>
+                        <div className="flex space-y-1 flex-col text-lg justify-center">
+                            <p>1.ดาวโหลด <span className='underline cursor-pointer font-semibold hover:text-blue-500 duration-200' onClick={handleDownloadTemplate}>Template</span></p>
+                            <p>2.เพิ่มข้อมูลนักเรียน</p>
+                            <p>3.บันทึกไฟล์ excel</p>
+                            <p>4.อัพโหลดไฟล์ และกดปุ่มบันทึก</p>
+                        </div>
                     </div>
                 )}
                 <div className="flex justify-center items-center mt-4">

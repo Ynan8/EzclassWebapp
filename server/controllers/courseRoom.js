@@ -17,7 +17,7 @@ exports.addCourseRoom = async (req, res) => {
     // Check if the classroom already exists
     const existingClassroom = await CourseRoom.findOne({ roomName, courseYearId, }).exec();
     if (existingClassroom) {
-      return res.status(400).json({ error: 'Classroom already exists' });
+      return res.status(400).json({ error: 'มีชื่อห้องเรียนแล้ว' });
     }
 
     // Create and save the classroom

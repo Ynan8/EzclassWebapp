@@ -237,7 +237,7 @@ const LessonStudent = () => {
 
     const noCompleted = totalTodo - completedProgress;
 
-    
+
 
     return (
         <StudentRoute>
@@ -321,28 +321,35 @@ const LessonStudent = () => {
                                 </div>
 
                             )}
-                            <Card className='p-3 mt-8'>
-                                <CardBody>
-                                    <div className="flex justify-between items-center flex-col md:flex-row">
-                                        <p className='text-2xl text-gray-700 font-semibold'>สิ่งที่ต้องทำ</p>
-                                        <div className="flex items-center space-x-4 md:space-x-12 mt-4 md:mt-0">
-                                            <div className="flex flex-col items-center text-default-500">
-                                                <p className='text-2xl md:text-3xl font-semibold'>{section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length + cur.AssignmentData.length, 0)}</p>
-                                                <p className='text-lg'>สิ่งที่ต้องทำ</p>
-                                            </div>
+                            {isSectionsLoading ? (
+                                <Skeleton className=" mt-8 rounded-lg">
+                                    <div className="h-24 rounded-lg bg-default-100"></div>
+                                </Skeleton>
+                            ) : (
+                                <Card className='p-3 mt-8'>
+                                    <CardBody>
+                                        <div className="flex justify-between items-center flex-col md:flex-row">
+                                            <p className='text-2xl text-gray-700 font-semibold'>สิ่งที่ต้องทำ</p>
+                                            <div className="flex items-center space-x-4 md:space-x-12 mt-4 md:mt-0">
+                                                <div className="flex flex-col items-center text-default-500">
+                                                    <p className='text-2xl md:text-3xl font-semibold'>{section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length + cur.AssignmentData.length, 0)}</p>
+                                                    <p className='text-lg'>สิ่งที่ต้องทำ</p>
+                                                </div>
 
-                                            <div className="flex flex-col items-center text-green-500">
-                                                <p className='text-2xl md:text-3xl font-semibold'>{completedProgress}</p>
-                                                <p className='text-lg'>ทำเสร็จแล้ว</p>
-                                            </div>
-                                            <div className="flex flex-col items-center text-red-500">
-                                                <p className='text-2xl md:text-3xl font-semibold'>{noCompleted}</p>
-                                                <p className='text-lg'>ยังไม่เสร็จ</p>
+                                                <div className="flex flex-col items-center text-green-500">
+                                                    <p className='text-2xl md:text-3xl font-semibold'>{completedProgress}</p>
+                                                    <p className='text-lg'>ทำเสร็จแล้ว</p>
+                                                </div>
+                                                <div className="flex flex-col items-center text-red-500">
+                                                    <p className='text-2xl md:text-3xl font-semibold'>{noCompleted}</p>
+                                                    <p className='text-lg'>ยังไม่เสร็จ</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </CardBody>
-                            </Card>
+                                    </CardBody>
+                                </Card>
+
+                            )}
 
                             <div className="flex justify-between items-center mt-4">
                                 <h1 className="p-3 text-2xl font-semibold text-gray-700"
@@ -371,10 +378,10 @@ const LessonStudent = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </StudentRoute>
+                    </div >
+                </div >
+            </div >
+        </StudentRoute >
     )
 }
 

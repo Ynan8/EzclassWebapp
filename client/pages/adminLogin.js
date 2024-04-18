@@ -78,66 +78,50 @@ const index = () => {
 
 
     return (
-        <>
-            <div className="flex flex-col lg:flex-row w-full h-screen">
-                {/* <HeaderBar /> */}
-                <div className="w-full bg-blue-500 flex items-center justify-center ">
-                    <div className=' w-11/12 max-w-[700px] px-10 py-16 rounded-3xl bg-white border-2 border-gray-100'>
-                        <h1 className='text-4xl text-center font-semibold'>สำหรับแอดมิน</h1>
-                        <form onSubmit={handleSubmit}>
-                            <div className='mt-8'>
-                                <div className='flex flex-col'>
-                                    <label className='text-lg font-medium'>อีเมล</label>
-                                    <input
-                                        className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:outline-none focus:border-blue-500'
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="กรอกอีเมล"
-                                        required
-                                    />
-                                </div>
-                                <div className='flex flex-col mt-4'>
-                                    <label className='text-lg font-medium'>รหัสผ่าน</label>
-                                    <input
-                                        className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:outline-none focus:border-blue-500'
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="กรอกรหัสผ่าน"
-                                        required
-                                        type='password'
-                                    />
-                                </div>
-                                <div className='mt-8 flex justify-between items-center'>
-                                    <div>
-
-                                    </div>
-
-                                    <Link href="/forgot-password" >
-                                        <button
-                                            className='font-medium text-base text-blue-500'
-                                        >ลืมรหัสผ่าน ?
-                                        </button>
-                                    </Link>
-
-                                </div>
-                                <div className='mt-8 flex flex-col gap-y-4'>
-                                    <Button size='lg' type="submit" color="primary" isLoading={loading}>
-                                        {loading ? "กำลังโหลด..." : "เข้าสู่ระบบ"}
-                                    </Button>
-                                </div>
-                                <div className='mt-8 flex justify-center items-center'>
-                                    <Link href="/" >
-                                        <button
-                                            className='ml-2 font-medium text-base text-blue-500'>กลับหน้าแรก
-                                        </button>
-                                    </Link>
-                                </div>
-                            </div>
-                        </form>
+        <div className="flex justify-center items-center h-screen">
+            <div className="w-full sm:w-3/4 md:w-1/2 lg:w-2/5 xl:w-1/3 px-4">
+                <h1 className="text-4xl font-semibold text-center mb-8">สำหรับแอดมิน</h1>
+                <form onSubmit={handleSubmit}>
+                    <div className="mt-4">
+                        <label htmlFor="email" className="text-lg font-medium">อีเมล</label>
+                        <input
+                            type="email"
+                            id="email"
+                            className="w-full border-2 border-gray-200 rounded-xl p-3 mt-1 focus:outline-none focus:border-blue-500"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="กรอกอีเมล"
+                            required
+                        />
                     </div>
-                </div>
+                    <div className="mt-4">
+                        <label htmlFor="password" className="text-lg font-medium">รหัสผ่าน</label>
+                        <input
+                            type="password"
+                            id="password"
+                            className="w-full border-2 border-gray-200 rounded-xl p-3 mt-1 focus:outline-none focus:border-blue-500"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="กรอกรหัสผ่าน"
+                            required
+                        />
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                        <Link href="/forgot-password">
+                            <p className="text-blue-500 text-base font-medium">ลืมรหัสผ่าน ?</p>
+                        </Link>
+                        <Button type="submit" color="primary" size="lg" isLoading={loading}>
+                            {loading ? "กำลังโหลด..." : "เข้าสู่ระบบ"}
+                        </Button>
+                    </div>
+                    <div className="mt-4 flex justify-center items-center">
+                        <Link href="/">
+                            <p className="text-blue-500 text-base font-medium">กลับหน้าแรก</p>
+                        </Link>
+                    </div>
+                </form>
             </div>
-        </>
+        </div>
 
     )
 }

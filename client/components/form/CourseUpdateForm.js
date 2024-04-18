@@ -17,6 +17,7 @@ const CourseUpdateForm = ({
     preview,
     handleImage,
     handleImageRemove,
+    isLoading,
 }) => {
 
 
@@ -132,6 +133,7 @@ const CourseUpdateForm = ({
                                 onChange={handleImage}
                             />
                         </div>
+                    <p className='mt-2' ><span className='font-semibold' >คำแนะนำ:</span> รูปภาพควรมีขนาดไม่เกิน 2 MB</p>
                     </div>
 
 
@@ -160,9 +162,13 @@ const CourseUpdateForm = ({
                             size='lg'
                             onClick={handleSubmit}
                             color="primary"
-                            isLoading={values.loading}
+                            isLoading=
+                            {
+                                values.loading ||
+                                isLoading
+                            }
                         >
-                            {values.loading ? "กำลังโหลด..." : "บันทึก"}
+                            {values.loading || isLoading ? "กำลังโหลด..." : "บันทึก"}
                         </Button>
                     </div>
 

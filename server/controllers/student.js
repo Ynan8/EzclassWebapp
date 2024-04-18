@@ -172,40 +172,39 @@ exports.listCompletedExercises = async (req, res) => {
 exports.markCompletedQuiz = async (req, res) => {
   const { courseId, quizId } = req.body;
 
- 
-
-  const existingQuiz = await CompletedQuiz.findOne({
-    quiz: quizId
-  }).exec();
-
   const existing = await CompletedQuiz.findOne({
     studentId: req.user._id,
-    courseId: courseId,
+    quiz: quizId
   }).exec();
-  if (existingQuiz) {
-  } else {
-    if (existing) {
-      // update
-      const updated = await CompletedQuiz.findOneAndUpdate({
-        studentId: req.user._id,
-        courseId: courseId
-      },
+  if (existing) {
+    // Check if the quizId is already in the quiz array
+    if (!existing.quiz.includes(quizId)) {
+      // Update
+      const updated = await CompletedQuiz.findOneAndUpdate(
+        {
+          studentId: req.user._id,
+          courseId: courseId,
+        },
         {
           $addToSet: { quiz: quizId },
         }
       ).exec();
       res.json({ ok: true });
     } else {
+      // quizId is already in the quiz array, no need to update
+      res.json({ message: 'Quiz already completed' });
+    }
+  } 
+    else {
       // create
       const created = await new CompletedQuiz({
         studentId: req.user._id,
         courseId: courseId,
-        quiz: quizId,
+        quiz: [quizId],
       }).save();
       res.json({ ok: true })
     }
-  }
-};
+  };
 
 
 exports.addQuizScore = async (req, res) => {

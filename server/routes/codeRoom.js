@@ -12,6 +12,7 @@ auth,
 const { 
  
     create,
+    update,
     getCodeRoom,
     getProblem,
     joinRoom,
@@ -20,10 +21,13 @@ const {
     getStdSubmitCodeAll,
     getStdSubmitCodeCourse,
     deleteCodeRoom,
+
 } = require("../controllers/codeRoom")
 
 
 router.post("/codeRoom/:courseId/:courseYearId", auth, create);
+router.put("/codeRoom/:roomId/:courseYearId", auth, update);
+
 router.post("/join-room", joinRoom);
 router.get("/codeRoom", auth, getCodeRoom);
 router.get("/problem/:codeRoomId", auth, getProblem);

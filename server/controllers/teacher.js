@@ -300,7 +300,7 @@ exports.addStudent = async (req, res) => {
 
     var user = await User.findOne({ username }).exec();
     if (user) {
-      return res.status(400).send("มีบัญชีผู้ใช้แล้ว");
+      return res.status(400).send("มีรหัสนักเรียนแล้ว");
     }
 
     // hash password

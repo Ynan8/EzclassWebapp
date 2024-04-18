@@ -257,6 +257,25 @@ const LessonView = () => {
     }
   };
 
+// Check lessonId have in complete? else markCompleted working
+  const goToNextLessonCompleted = () => {
+    if (selectedSectionIndex !== null) {
+      const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
+        (lesson) => lesson._id === activeLessonId
+      );
+      const totalLessons = section[selectedSectionIndex].lessonData.length;
+      if (currentLessonIndex < totalLessons - 1) {
+        // If there is a lesson after the current one, show it
+        const nextLessonId = section[selectedSectionIndex].lessonData[currentLessonIndex + 1]._id;
+        showLessonContent(selectedSectionIndex, nextLessonId);
+      } else {
+        // If there is no lesson after the current one, move to the next section
+        // goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
+        goToLessonQuiz()
+      }
+    }
+  };
+
 
 
   const [completedLessons, setCompletedLessons] = useState([]);
@@ -496,6 +515,7 @@ const LessonView = () => {
             selectedLesson={selectedLesson}
             toggleLesson={toggleLesson}
             goToNextLesson={goToNextLesson}
+            goToNextLessonCompleted={goToNextLessonCompleted}
             goToPreviousLesson={goToPreviousLesson}
             goToLessonQuiz={goToLessonQuiz}
             ExerciseAnswer={ExerciseAnswer}
@@ -503,6 +523,7 @@ const LessonView = () => {
             handleAnswerChange={handleAnswerChange}
             isLastLesson={isLastLesson}
             markCompleted={markCompleted}
+            completedLessons={completedLessons }
           />
           {/* Content Quiz */}
           {selectedQuizContent !== null && (

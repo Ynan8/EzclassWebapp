@@ -38,7 +38,8 @@ const createAssignment = () => {
     try {
       const assignmentFile = e.target.files[0];
 
-      if (assignmentFile) {
+      // Check if assignmentFile exists and its size is within the limit
+      if (assignmentFile && assignmentFile.size <= 5 * 1024 * 1024) { // Limit size to 5MB
         setUploadButtonText(assignmentFile.name); // Update the button text
         setOriginalFileName(assignmentFile.name)
         setValues({ ...values, loading: true });
@@ -54,12 +55,16 @@ const createAssignment = () => {
 
         setAssignmentFile(data);
         setValues({ ...values, loading: false });
+      } else {
+        // Handle the case where the file size exceeds the limit
+        toast.error("ขนาดไฟล์เกินขีดจำกัด 5MB.");
       }
     } catch (err) {
       setValues({ ...values, loading: false });
       console.log(err);
     }
   };
+
 
 
   const handleSubmit = async (e) => {
@@ -92,13 +97,17 @@ const createAssignment = () => {
 
       let assignmentData = {
         ...values,
-        assignmentFile: {
+      };
+
+      // Check if assignmentFile exists before including it in assignmentData
+      if (assignmentFile) {
+        assignmentData.assignmentFile = {
           originalName: originalFileName,
           location: assignmentFile.Location,
           bucket: assignmentFile.Bucket,
           key: assignmentFile.Key,
-        },
-      };
+        };
+      }
 
       const formData = {
         sectionId: id,
@@ -115,7 +124,7 @@ const createAssignment = () => {
     } finally {
       setValues({ ...values, loading: false });
     }
-  };
+  }
 
 
 
@@ -292,7 +301,7 @@ const createAssignment = () => {
                     const newValue = Math.max(1, parseInt(e.target.value, 10));
                     handleChange({ target: { name: 'weight', value: newValue } });
                   }}
-                  step="1"  
+                  step="1"
                 />
 
               </div>
@@ -314,11 +323,11 @@ const createAssignment = () => {
                 const newValue = Math.max(1, parseInt(e.target.value, 10));
                 handleChange({ target: { name: 'scoreLimit', value: newValue } });
               }}
-              step="1"  
+              step="1"
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center  space-y-1">
+        <div className="flex flex-col justify-center item-center  space-y-1">
           <div className="flex items-center">
             <Button
               color="default"
@@ -335,7 +344,7 @@ const createAssignment = () => {
               onChange={handleAssignmentFile}
             />
           </div>
-
+          <p className='mt-2' ><span className='font-semibold' >คำแนะนำ:</span> ไฟล์งานควรมีขนาดไม่เกิน 5 MB</p>
         </div>
         <div className=" flex items-center justify-end w-full  mt-6">
           <Button

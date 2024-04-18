@@ -213,7 +213,6 @@ const CourseLogs = () => {
                                             <TableColumn><p className='text-lg'>วัน/เวลา</p></TableColumn>
                                             <TableColumn><p className='text-lg'>ชื่อผู้ใช้งาน</p></TableColumn>
                                             <TableColumn><p className='text-lg'>ชื่อ - สกุล</p></TableColumn>
-                                            <TableColumn><p className='text-lg'>ประเภทผู้ใช้งาน</p></TableColumn>
                                             <TableColumn><p className='text-lg'>รูปแบบ</p></TableColumn>
                                             <TableColumn><p className='text-lg'>จาก IP</p></TableColumn>
                                             <TableColumn><p className='text-lg'>หมายเหตุ</p></TableColumn>
@@ -230,17 +229,15 @@ const CourseLogs = () => {
                                                         </TableCell>
                                                         <TableCell className='text-lg'>{log.username}</TableCell>
                                                         <TableCell className='text-lg'>{`${log.firstName} ${log.lastName}`}</TableCell>
-                                                        <TableCell className='text-lg'>
-                                                            {log.userType === "student" ? "นักเรียน" : log.userType}
-                                                        </TableCell>
                                                         <TableCell className='text-lg'>{log.format} {course.courseName}</TableCell>
                                                         <TableCell className='text-lg'>{log.ipAddress}</TableCell>
                                                         <TableCell className='text-lg'>{log.note}</TableCell>
                                                     </TableRow>
                                                 ))}
                                         </TableBody>
-
+                                        <TableBody emptyContent="ไม่มีประวัติการเข้าใช้งานรายวิชา" />
                                     </Table>
+
                                 </div>
                                 <div className="flex justify-center mt-2">
                                     <Pagination
