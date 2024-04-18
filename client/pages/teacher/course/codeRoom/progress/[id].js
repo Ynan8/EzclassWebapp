@@ -179,6 +179,31 @@ const ProgressCodeRoom = () => {
                                 ) : (
                                     <TableBody emptyContent={"ยังไม่มีความคืบหน้าห้องเรียน"}>{[]}</TableBody>
                                 )}
+                                <TableBody>
+                                    {sortedData.filter(item =>
+                                        item.studentId.firstName.toLowerCase().includes(nameFilter.toLowerCase()) &&
+                                        (roomNameFilter.length === 0 || roomNameFilter.includes(item.codeRoomId.codeRoomName))
+                                    ).map((item, index) => {
+                                        const matchedCourseRoom = courseRoom.find(room => room.studentId.includes(item.studentId._id));
+                                        return (
+                                            <TableRow key={index}>
+                                                <TableCell className="text-lg">{index + 1}</TableCell>
+                                                <TableCell className="text-lg">{item.studentId.firstName} {item.studentId.lastName}</TableCell>
+                                                <TableCell className="text-lg">{matchedCourseRoom ? matchedCourseRoom.roomName : ""}</TableCell>
+                                                <TableCell className="text-lg">
+                                                    <Chip
+                                                        startContent={<FaCheckCircle size={20} />}
+                                                        color='success'
+                                                        variant='flat'
+                                                        size='lg'
+                                                    >
+                                                        ผ่านแล้ว <span className='font-semibold'>{item.score} / {codeRoom.length} ข้อ  </span>
+                                                    </Chip>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
                             </Table>
 
                         </div>
