@@ -278,10 +278,10 @@ const CourseDetails = () => {
         }
     }, [selectedCourseYearId]);
 
-    const loadSelectedCourseData = async (courseYearId) => {
+    const loadSelectedCourseData = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.NEXT_PUBLIC_API}/selected-course-data/${courseYearId}`
+                `${process.env.NEXT_PUBLIC_API}/selected-course-data/${selectedCourseYearId}`
             );
             setSelectedCourseData(data);
         } catch (error) {
@@ -292,7 +292,7 @@ const CourseDetails = () => {
     const handleYearChange = (event) => {
         const selectedYearId = event.target.value;
         setSelectedCourseYearId(selectedYearId);
-        loadSelectedCourseData(selectedYearId); // Fetch data based on the selected year ID
+        loadSelectedCourseData(selectedYearId);
     };
 
 
@@ -309,10 +309,10 @@ const CourseDetails = () => {
     }, [selectedCourseYearId]);
 
     // Function to load the progress data for each room
-    const loadRoomProgress = async (courseYearId) => {
+    const loadRoomProgress = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.NEXT_PUBLIC_API}/room-progress/${courseYearId}`
+                `${process.env.NEXT_PUBLIC_API}/room-progress/${selectedCourseYearId}`
             );
             setRoomProgress(data);
         } catch (error) {

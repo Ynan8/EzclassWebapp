@@ -112,9 +112,10 @@ const SectionAccordion = ({
                             className='p-3'
                             title={
                                 <div className='flex items-center' >
-                                    <p className='text-xl' >
-                                        <span className='font-semibold ' >บทที่ {index + 1}</span> {item.sectionName}
+                                    <p className='text-lg md:text-xl' >
+                                        <span className='font-semibold'>บทที่ {index + 1}</span> {item.sectionName}
                                     </p>
+
                                     <div className="flex space-x-4 mr-4 ml-auto">
                                         <span
                                             onClick={() => {
@@ -140,179 +141,146 @@ const SectionAccordion = ({
                             }
                             startContent={< FaBookOpen size={25} className="text-primary" />}
                         >
-                            <Listbox variant="flat" aria-label="Listbox menu with sections">
-                                <ListboxSection title="บทเรียนย่อย" showDivider>
-                                    {item.lessonData?.map((lesson, lessonIndex) => (
-                                        <ListboxItem
-                                            className='mb-2'
-                                            key={lessonIndex}
-                                            title={
-                                                <div className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
-                                                    </p>
-                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.lessonData?.map((lesson, lessonIndex) => (
+                                    <div className='flex justify-between items-center bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2'>
+                                            <div className="bg-primary/10 text-primary p-2 rounded-md">
+                                                <MdLibraryBooks size={25} className="text-primary" />
+                                            </div>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span>
+                                            <p className='sm:text-sm md:text-lg'>{lesson.lessonName}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-4 mr-4">
+                                            <Chip
+                                                className="capitalize"
+                                                color={lesson.published === "true" ? "success" : "default"}
+                                                size="md"
+                                                variant="flat"
+                                            >
+                                                {lesson.published === "true" ? "เผยแพร่" : "แบบร่าง"}
+                                            </Chip>
+                                            <Link href={`/teacher/course/lesson/edit/${lesson._id}?courseYear=${courseYearId}`}>
+                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                    <CiEdit size={23} />
+                                                </span>
+                                            </Link>
+                                            <span
+                                                onClick={() => {
+                                                    openDeleteModalLesson(lesson._id)
+                                                    onOpenModalDeleteLesson()
+                                                }}
+                                                className="text-lg text-danger cursor-pointer active:opacity-50">
+                                                <GoTrash size={20} className="" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
 
-                                                        <Chip
-                                                            className="capitalize"
-                                                            color={lesson.published === "true" ? "success" : "default"}
-                                                            size="md"
-                                                            variant="flat"
-                                                        >
-                                                            {lesson.published === "true" ? "เผยแพร่" : "แบบร่าง"}
-                                                        </Chip>
-                                                        <Link href={`/teacher/course/lesson/edit/${lesson._id}?courseYear=${courseYearId}`}>
 
-                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                <CiEdit size={23} className="ml-auto" />
-                                                            </span>
-                                                        </Link>
-                                                        <span
-                                                            onClick={() => {
-                                                                openDeleteModalLesson(lesson._id)
-                                                                onOpenModalDeleteLesson()
-                                                            }}
-                                                            className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                            <GoTrash size={20} className="" />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            }
-                                            startContent={
-                                                <div className="bg-primary/10 text-primary p-2 rounded-md">
-                                                    <MdLibraryBooks size={25} className="text-primary" />
-                                                </div>
-                                            }
-                                        >
-                                        </ListboxItem>
-                                    ))}
-                                </ListboxSection>
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.quizData?.map((quiz, lessonIndex) => (
+                                    <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2' >
+                                            <div className="bg-danger/10 text-danger p-2 rounded-md">
+                                                <MdQuiz size={25} className="text-danger" />
+                                            </div>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>แบบทดสอบท้ายบทเรียน </span>
+                                            <p className='sm:text-sm md:text-lg'>{quiz.quizName}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-4 mr-4 ml-auto">
+                                            <Chip
+                                                className="capitalize"
+                                                color={quiz.published === "true" ? "success" : "default"}
+                                                size="md"
+                                                variant="flat"
+                                            >
+                                                {quiz.published === "true" ? "เผยแพร่" : "แบบร่าง"}
+                                            </Chip>
+                                            <Link href={`/teacher/course/quiz/edit/${quiz._id}?courseYear=${courseYearId}`}>
+                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                    <CiEdit size={23} className="ml-auto" />
+                                                </span>
+                                            </Link>
 
-                                <ListboxSection title="แบบทดสอบท้ายบทเรียน" showDivider>
-                                    {item.quizData?.map((quiz, lessonIndex) => (
-                                        <ListboxItem
-                                            key="delete"
-                                            title={
-                                                <div className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
-                                                    </p>
-                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                        <Chip
-                                                            className="capitalize"
-                                                            color={quiz.published === "true" ? "success" : "default"}
-                                                            size="md"
-                                                            variant="flat"
-                                                        >
-                                                            {quiz.published === "true" ? "เผยแพร่" : "แบบร่าง"}
-                                                        </Chip>
-                                                        <Link href={`/teacher/course/quiz/edit/${quiz._id}?courseYear=${courseYearId}`}>
-                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                <CiEdit size={23} className="ml-auto" />
-                                                            </span>
-                                                        </Link>
+                                            <span
+                                                onClick={() => {
+                                                    openDeleteModalQuiz(quiz._id)
+                                                    onOpenModalDeleteQuiz()
+                                                }}
+                                                className="text-lg text-danger cursor-pointer active:opacity-50">
+                                                <GoTrash size={20} className="" />
+                                            </span>
 
-                                                        <span
-                                                            onClick={() => {
-                                                                openDeleteModalQuiz(quiz._id)
-                                                                onOpenModalDeleteQuiz()
-                                                            }}
-                                                            className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                            <GoTrash size={20} className="" />
-                                                        </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
 
-                                                    </div>
-                                                </div>
-                                            }
-                                            startContent={
-                                                <div className="bg-danger/10 text-danger p-2 rounded-md">
-                                                    <MdQuiz size={25} className="text-danger" />
-                                                </div>
-                                            }
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.AssignmentData?.map((assignment, lessonIndex) => (
+                                    <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2' >
+                                            <div className="bg-warning/10 text-warning p-2 rounded-md">
+                                                <MdAssignment size={25} className="text-warning" />
+                                            </div>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>งานชิ้นที่ {lessonIndex + 1} </span>
+                                            <p className='sm:text-sm md:text-lg'>{assignment.assignmentName}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-4 mr-4 ml-auto">
+                                            <Link href={`/teacher/course/assignment/edit/${assignment._id}?courseYear=${courseYearId}`}>
+                                                <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                                    <CiEdit size={23} className="ml-auto" />
+                                                </span>
+                                            </Link>
+                                            <span
+                                                onClick={() => {
+                                                    openDeleteModalAssignment(assignment._id)
+                                                    onOpenModalDeleteAssignment()
+                                                }}
+                                                className="text-lg text-danger cursor-pointer active:opacity-50">
+                                                <GoTrash size={20} className="" />
+                                            </span>
 
-                                        >
-                                        </ListboxItem>
-                                    ))}
-                                </ListboxSection>
-
-                                <ListboxSection title="งานที่มอบหมาย" showDivider>
-                                    {item.AssignmentData?.map((assignment, lessonIndex) => (
-                                        <ListboxItem
-                                            key="delete"
-                                            title={
-                                                <div className='flex items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >งานชิ้นที่ {lessonIndex + 1}</span> {assignment.assignmentName}
-                                                    </p>
-                                                    <div className="flex items-center space-x-4 mr-4 ml-auto">
-                                                        <Link href={`/teacher/course/assignment/edit/${assignment._id}?courseYear=${courseYearId}`}>
-                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                <CiEdit size={23} className="ml-auto" />
-                                                            </span>
-                                                        </Link>
-                                                        <span
-                                                            onClick={() => {
-                                                                openDeleteModalAssignment(assignment._id)
-                                                                onOpenModalDeleteAssignment()
-                                                            }}
-                                                            className="text-lg text-danger cursor-pointer active:opacity-50">
-                                                            <GoTrash size={20} className="" />
-                                                        </span>
-
-                                                    </div>
-                                                </div>
-                                            }
-                                            startContent={
-                                                <div className="bg-warning/10 text-warning p-2 rounded-md">
-                                                    <MdAssignment size={25} className="text-warning" />
-                                                </div>
-                                            }
-
-                                        >
-                                        </ListboxItem>
-                                    ))}
-                                </ListboxSection>
-
-                                <ListboxItem variant="light" className="hover:bg-transparent">
-                                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                        <Link href={`/teacher/course/lesson/create/${item._id}?courseYear=${courseYearId}`}>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                                    <Link href={`/teacher/course/lesson/create/${item._id}?courseYear=${courseYearId}`}>
+                                        <Button className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="primary" variant="ghost">
+                                            บทเรียนย่อย
+                                        </Button>
+                                    </Link>
+                                    {item.lessonData?.length === 0 ? (
+                                        <Button onClick={handleNoLessonsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
+                                            แบบทดสอบท้ายบทเรียน
+                                        </Button>
+                                    ) : item.quizData?.length > 0 ? (
+                                        <Button onClick={handleQuizExistsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
+                                            แบบทดสอบท้ายบทเรียน
+                                        </Button>
+                                    ) : (
+                                        <Link href={`/teacher/course/quiz/create/${item._id}?courseYear=${courseYearId}`}>
                                             <Button className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="primary" variant="ghost">
-                                                บทเรียนย่อย
+                                                แบบทดสอบท้ายบทเรียน
                                             </Button>
                                         </Link>
-                                        {item.lessonData?.length === 0 ? (
-                                            <Button onClick={handleNoLessonsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
-                                                แบบทดสอบท้ายบทเรียน
-                                            </Button>
-                                        ) : item.quizData?.length > 0 ? (
-                                            <Button onClick={handleQuizExistsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
-                                                แบบทดสอบท้ายบทเรียน
-                                            </Button>
-                                        ) : (
-                                            <Link href={`/teacher/course/quiz/create/${item._id}?courseYear=${courseYearId}`}>
-                                                <Button className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="primary" variant="ghost">
-                                                    แบบทดสอบท้ายบทเรียน
-                                                </Button>
-                                            </Link>
-                                        )}
+                                    )}
 
-                                        {item.lessonData?.length === 0 ? (
-                                            <Button onClick={handleNoLessonsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
+                                    {item.lessonData?.length === 0 ? (
+                                        <Button onClick={handleNoLessonsToast} className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="default" variant="faded">
+                                            มอบหมายงาน
+                                        </Button>
+                                    ) : (
+                                        <Link href={`/teacher/course/assignment/create/${item._id}?courseYear=${courseYearId}`}>
+                                            <Button className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="primary" variant="ghost">
                                                 มอบหมายงาน
                                             </Button>
-                                        ) : (
-                                            <Link href={`/teacher/course/assignment/create/${item._id}?courseYear=${courseYearId}`}>
-                                                <Button className="text-base w-full sm:w-auto" startContent={<FaPlus />} color="primary" variant="ghost">
-                                                    มอบหมายงาน
-                                                </Button>
-                                            </Link>
-                                        )}
-                                    </div>
-                                </ListboxItem>
-
-
-
-                            </Listbox>
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
                         </AccordionItem >
                     ))}
                 </Accordion>

@@ -249,7 +249,7 @@ const LessonCourse = () => {
                         {/* Modal */}
 
                     </div>
-                    <div className="px-12 w-full">
+                    <div className="px-4 w-full">
                         <div className=" flex flex-col item-center justify-center">
                             {/* <pre>{JSON.stringify(section,null,4)}</pre> */}
                             {/* SectionAccordion */}

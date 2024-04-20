@@ -60,7 +60,7 @@ const courseTch = () => {
                                             ครูผู้สอน
                                         </th>
                                         <th scope="col" className="text-center px-6 py-3 text-xs sm:text-sm md:text-base lg:text-lg">
-                                            Action
+                                            
                                         </th>
                                     </tr>
                                 </thead>
@@ -102,7 +102,7 @@ const courseTch = () => {
                                                                     className="text-black-500 cursor-pointer mr-1 hover:text-gray-500"
                                                                 />
                                                                 <span className="hidden md:inline-block md:text-sm lg:text-base px-1 py-1">
-                                                                    ดูห้องเรียน
+                                                                    ดูเพิ่มเติม
                                                                 </span>
                                                             </div>
                                                         </Link>

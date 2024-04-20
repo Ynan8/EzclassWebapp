@@ -410,7 +410,7 @@ const CreateContentLesson = () => {
           </div>
         </div>
         <div className={`flex-grow ml-1/4`} style={{ paddingLeft: isSidebarOpen ? '20%' : 0 }}>
-          <div class=" flex-grow h-full  mt-20 mb-10 ">
+          <div class=" flex-grow h-full  mt-20 mb-10">
             {/* content */}
             <ContentLesson
               values={values}

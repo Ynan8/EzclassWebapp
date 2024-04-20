@@ -306,13 +306,13 @@ function editprofile() {
 
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center z-50 gray-background">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
               <div className="flex justify-end">
                 <button onClick={handleCloseModal} className="text-gray-500 hover:text-gray-700">
                   <IoMdClose size={20} />
                 </button>
               </div>
-              <p className="text-lg" >กรุณาเปลี่ยนรหัสผ่าน</p>
+              <p className="text-lg text-white">กรุณาเปลี่ยนรหัสผ่าน</p>
 
               {/* ฟอร์มเปลี่ยนรหัสผ่าน */}
 
@@ -322,7 +322,7 @@ function editprofile() {
                   value={formData.oldPassword}
                   onChange={(e) => setFormData({ ...formData, oldPassword: e.target.value })}
                   label="รหัสผ่านเก่า"
-                  variant="bordered"
+                  variant="flat"
                   placeholder="กรอกรหัสผ่านเก่า"
                   endContent={
                     <button className="focus:outline-none" type="button" onClick={toggleVisibilityOld}>
@@ -341,7 +341,7 @@ function editprofile() {
                   value={formData.newPassword}
                   onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                   label="รหัสผ่านใหม่"
-                  variant="bordered"
+                  variant="flat"
                   placeholder="กรอกรหัสผ่านใหม่"
                   endContent={
                     <button className="focus:outline-none" type="button" onClick={toggleVisibilityNew}>
@@ -360,7 +360,7 @@ function editprofile() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   label="รหัสผ่านยืนยัน"
-                  variant="bordered"
+                  variant="flat"
                   placeholder="กรอกรหัสผ่านยืนยัน"
                   endContent={
                     <button className="focus:outline-none" type="button" onClick={toggleVisibilityConfirm}>

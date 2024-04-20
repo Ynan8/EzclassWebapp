@@ -183,6 +183,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
           showConfetti={showConfetti}
           setShowConfetti={setShowConfetti}
           clients={clients}
+          userData={userData}
         />
       </div>
 

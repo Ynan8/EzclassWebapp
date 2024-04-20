@@ -206,17 +206,13 @@ const Playground = ({
             setStdSubmitCode(data);
             console.log("Loading student submit code", data);
         } catch (error) {
-            console.error("Error loading course:", error);
+            console.error("Error loading submit code:", error);
         } finally {
         }
     };
+ 
 
-
-
-
-
-
-    return (
+     return (
         <div className=" bg-[#282827] min-h-screen  overflow-x-hidden">
             <nav className="flex justify-between items-center bg-[#1e1e1e] px-4 py-2">
                 <div className="text-white">
@@ -289,16 +285,21 @@ const Playground = ({
                                         >
                                             Run
                                         </Button>
-                                        <Button
-                                            color='success'
-                                            size='md'
-                                            className='text-sm px-6 py-2 sm:px-14 text-white'
-                                            // onClick={submitCode}
-                                            onPress={onOpenChangeModalSubmit}
-                                            isLoading={isLoadingSubmit}
-                                        >
-                                            {isLoadingSubmit ? "กำลังโหลด" : "Submit"}
-                                        </Button>
+                                        {userData && userData.role === "teacher" ? (
+                                            ""
+                                        ) : (
+                                            <Button
+                                                color='success'
+                                                size='md'
+                                                className='text-sm px-6 py-2 sm:px-14 text-white'
+                                                // onClick={submitCode}
+                                                onPress={onOpenChangeModalSubmit}
+                                                isLoading={isLoadingSubmit}
+                                            >
+                                                {isLoadingSubmit ? "กำลังโหลด" : "Submit"}
+                                            </Button>
+                                        )}
+
                                     </div>
 
 
@@ -483,7 +484,7 @@ const Playground = ({
                                     color="primary"
                                     onPress={onClose}
                                     onClick={submitCode}
-                                    >
+                                >
                                     {isLoading ? "" : "ยืนยัน"}
                                 </Button>
                             </ModalFooter>

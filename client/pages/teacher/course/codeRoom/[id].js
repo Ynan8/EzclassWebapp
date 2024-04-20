@@ -121,9 +121,11 @@ const CodeRoom = () => {
 
     const handleEdit = (roomId) => () => {
         router.push({
-            pathname: `teacher/course/codeRoom/edit/${roomId}/?courseYear=${id}`,
+            pathname: `/teacher/course/codeRoom/edit/${roomId}`,
+            query: { courseYear: id },
         });
     };
+
 
 
 
@@ -149,7 +151,7 @@ const CodeRoom = () => {
         );
     };
 
-    // Delete Course Year
+    // Delete Code room
     const [codeRoomId, setCodeRoomId] = useState("");
 
     const openDeleteModal = (id) => {
@@ -199,23 +201,23 @@ const CodeRoom = () => {
                         </Breadcrumbs>
                     </div>
 
-                    <div className="flex p-8 ">
+                    <div className="flex p-8">
                         <div className="flex space-x-2 ml-auto">
-                            <Link href={`/teacher/course/codeRoom/create/${courseId}/?courseYear=${id}`} >
+                            <Link href={`/teacher/course/codeRoom/create/${courseId}/?courseYear=${id}`}>
                                 <Button color="primary" variant="shadow" size='lg' radius="md" startContent={<FaPlus />}>
                                     สร้างห้องเรียนเขียนโค้ด
                                 </Button>
                             </Link>
-                            <Link href={`/teacher/course/codeRoom/progress/${courseId}/?courseYear=${id}`} >
+                            <Link href={`/teacher/course/codeRoom/progress/${courseId}/?courseYear=${id}`}>
                                 <Button color="warning" className='text-white' variant="shadow" size='lg' radius="md" startContent={<GiProgression />}>
                                     ดูความคืบหน้า
                                 </Button>
                             </Link>
                         </div>
-                        {/* Modal */}
-
                     </div>
-                    <div className="px-12 w-full">
+
+
+                    <div className=" w-full">
                         <div className="px-[40px] flex flex-col item-center justify-center">
                             {isLoading ? (
                                 Array.from({ length: 3 }).map((_, index) => (
@@ -237,39 +239,30 @@ const CodeRoom = () => {
                                                     statusColor = codeRoom.Published === "public" ? "success" : "default";
                                                     return (
                                                         <ListboxItem
+                                                            onClick={handleEdit(codeRoom._id)}
                                                             className="mb-2 p-3"
                                                             key={codeRoom._id}
                                                             title={
                                                                 <div className="flex items-center text-lg">
                                                                     <div className="flex flex-col space-y-2 p-3">
-                                                                        <p>
+                                                                        <p className='text-lg md:text-xl' >
                                                                             <span className="font-semibold p-2">{codeRoom.codeRoomName}</span>
                                                                         </p>
-                                                                        <div className="flex text-sm p-2 items-center font-normal border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
-                                                                            <span className="mr-1">ระดับความยาก:</span>
+                                                                        <div className="flex p-2 items-center font-normal border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
+                                                                            <span className="mr-1 text-sm md:text-base hidden md:inline-block">ระดับความยาก:</span>
                                                                             {renderStars(codeRoom.Difficulty)}
                                                                         </div>
+
                                                                     </div>
                                                                     <div className="flex items-center space-x-4 mr-4 ml-auto">
                                                                         <Chip
                                                                             className="capitalize"
                                                                             color={statusColor}
-                                                                            size="md"
+                                                                            size="lg"
                                                                             variant="flat"
                                                                         >
                                                                             {codeRoom.Published === "public" ? "เผยแพร่" : "แบบร่าง"}
                                                                         </Chip>
-                                                                        <Link href={`/teacher/course/codeRoom/edit/${codeRoom._id}/?courseYear=${id}`}>
-                                                                            <span className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                                                                <CiEdit size={23} className="ml-auto" />
-                                                                            </span>
-                                                                        </Link>
-                                                                        <span
-                                                                            className="text-lg text-danger cursor-pointer active:opacity-50"
-                                                                            onClick={() => openDeleteModal(codeRoom._id)}
-                                                                        >
-                                                                            <GoTrash size={20} className="" />
-                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             }

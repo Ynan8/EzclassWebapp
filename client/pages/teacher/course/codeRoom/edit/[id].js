@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import FirstForm from '../../../../../components/CodeRoomForm/Edit/FirstForm'
 import SecondForm from '../../../../../components/CodeRoomForm/Edit/SecondForm'
 import ThirdForm from '../../../../../components/CodeRoomForm/Edit/ThirdForm'
@@ -7,12 +7,26 @@ import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
-import { Avatar, Button } from '@nextui-org/react'
+import { Avatar, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react'
+import { AiOutlineLeft } from 'react-icons/ai'
+import { Context } from '../../../../../context'
 
 const editCodeRoom = () => {
+    const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onOpenChange: onOpenChangeModalDelete } = useDisclosure();
     const router = useRouter();
     const { id, courseYear } = router.query;
+
+    const { state: { user }, dispatch } = useContext(Context);
+    const [firstName, setFirstName] = useState('');
+
+    useEffect(() => {
+        if (user && user.firstName) {
+            setFirstName(user.firstName);
+        }
+    }, [user]);
+
     const formList = ["FirstForm", "SecondForm", "ThirdForm"];
+
 
     const formLength = formList.length;
 
@@ -61,7 +75,7 @@ const editCodeRoom = () => {
         setPage(page === formLength - 1 ? 0 : page + 1);
     };
 
-    
+
     const [selectedPublish, setSelectedPublish] = useState("public");
 
     const handleButtonClick = (option) => {
@@ -153,6 +167,29 @@ const editCodeRoom = () => {
     };
 
 
+    const handleStartTeaching = (roomId) => () => {
+        router.push({
+            pathname: `/editor/${roomId}`,
+            query: { firstName },
+        });
+    };
+
+    const [codeRoomId, setCodeRoomId] = useState("");
+    const openDeleteModal = (id) => {
+        setCodeRoomId(id);
+        onOpenModalDelete();
+    };
+
+    const handleDeleteCodeRoom = async (codeRoomId) => {
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API}/delete-codeRoom/${codeRoomId}`);
+            router.push(`/teacher/course/codeRoom/${courseYear}`);
+            toast.success('ลบห้องเรียนเขียนโค้ดสำเร็จ');
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast.error('ไม่สามารถลบห้องเรียนเขียนโค้ดได้');
+        }
+    };
 
 
     return (
@@ -161,21 +198,13 @@ const editCodeRoom = () => {
             <HeaderBarTeacher />
             <div class="h-full ml-14 mt-28 mb-10 md:ml-64">
                 <div className="px-10">
-                    <nav class="text-gray-500" aria-label="Breadcrumb">
-                        <ol class="list-none p-0 inline-flex">
-                            <li class="flex items-center">
-                                <a href="#">หน้าหลัก</a>
-                                <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
-                            </li>
-                            <li class="flex items-center">
-                                <a href="#">ห้องเรียนเขียนโค้ด</a>
-                                <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
-                            </li>
-                            <li>
-                                <a href="#" class=" text-blue-500 font-bold" aria-current="page">แก้ไขห้องเรียนเขียนโค้ด</a>
-                            </li>
-                        </ol>
-                    </nav>
+                    <button
+                        onClick={() => router.push(`/teacher/course/codeRoom/${courseYear}`)}
+                        className=" text-lg"
+                    >
+                        <AiOutlineLeft size={25} className="inline-block align-text-bottom mx-2" />
+                        ย้อนกลับ
+                    </button>
                     <div class="max-w-4xl mx-auto bg-white p-16">
                         <ul className="flex justify-between w-full mb-16">
                             <li className={`rounded-lg relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
@@ -213,14 +242,32 @@ const editCodeRoom = () => {
                                 </span>
                             </li>
                         </ul>
-
-
+                        <div className="flex space-x-2 justify-end mb-10">
+                            <Button
+                                onClick={() => openDeleteModal(values._id)}
+                                className='px-10'
+                                radius='lg'
+                                size='lg'
+                                color="danger"
+                            >
+                                ลบ
+                            </Button>
+                            <Button
+                                onClick={handleStartTeaching(values._id)}
+                                className='px-10 text-white'
+                                radius='lg'
+                                size='lg'
+                                color="warning"
+                            >
+                                เข้าห้องเรียน
+                            </Button>
+                        </div>
                         {handleForms()}
                     </div>
                     <div className="flex space-x-20 item-center justify-center">
                         <Button
                             className='px-12'
-                            size='md'
+                            size='lg'
                             disabled={page === 0}
                             onClick={handlePrev}
                             color="primary"
@@ -231,7 +278,7 @@ const editCodeRoom = () => {
                         {page === 2 ? (
                             <Button
                                 className='px-12'
-                                size='md'
+                                size='lg'
                                 onClick={handleSubmit}
                                 color="primary">
                                 เสร็จสิ้น
@@ -239,7 +286,7 @@ const editCodeRoom = () => {
                         ) : (
                             <Button
                                 className='px-12'
-                                size='md'
+                                size='lg'
                                 onClick={handleNext}
                                 color="primary">
                                 ดำเนินการต่อ
@@ -248,6 +295,39 @@ const editCodeRoom = () => {
                     </div>
                 </div>
             </div>
+            {/* Delete */}
+            < Modal
+                isOpen={isOpenModalDelete}
+                onOpenChange={onOpenChangeModalDelete}
+                placement="top-center"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <p className="text-lg font-medium leading-6 text-gray-900"
+                                >
+                                    คุณต้องลบห้องเรียนเขียนโค้ดหรือไม่ ?
+                                </p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p className="text-base text-gray-500">
+                                    การลบห้องเรียนเขียนโค้ดจะไม่สามารถกู้คืนได้ แน่ใจหรือไม่ว่าต้องการดำเนินการต่อ ?
+                                </p>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    ยกเลิก
+                                </Button>
+                                <Button color="danger" onPress={onClose} onClick={() => handleDeleteCodeRoom(codeRoomId)}>
+                                    ยืนยัน
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal >
         </div>
     )
 }

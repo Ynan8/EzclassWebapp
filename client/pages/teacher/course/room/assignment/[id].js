@@ -275,7 +275,7 @@ const AssignmentRoom = () => {
 
           </div>
           <main className="flex-1 mt-10 pb-16 sm:pb-32">
-            <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
+            <div className="mx-auto max-w-screen-6xl  px-4 sm:px-6 xl:px-12">
               <div className="flex flex-col space-y-4">
                 <h1 className=" text-2xl font-semibold "
                 >

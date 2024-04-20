@@ -239,7 +239,7 @@ const SingleRoom = () => {
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 {/* <SidebarTeacherRoom mobileSidebarOpen={mobileSidebarOpen} id={id} /> */}
                 <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={courseYearId} />
-                <HeaderBarTeacher mobileSidebarOpen={mobileSidebarOpen} />
+                <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
                 <div className="h-full  mt-16 mb-10 md:ml-64">
                     {/* <pre>{JSON.stringify(courseRoomSingle,null,4)}</pre> */}
                     <Navbar
@@ -260,7 +260,7 @@ const SingleRoom = () => {
                             ],
                         }}
                     >
-                        <NavbarContent className=" gap-6" justify="center">
+                        <NavbarContent justify="start">
                             <NavbarItem isActive >
                                 <Link
                                     href={`/teacher/course/room/single/${id}/`}
@@ -314,7 +314,7 @@ const SingleRoom = () => {
                         </Breadcrumbs>
                     </div>
 
-                    <div className="px-12 w-full my-8">
+                    <div className="px-4 w-full my-8">
                         <div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 my-8">
                                 <div className="flex items-center p-4 bg-white shadow-md shadow-purple-500/50 rounded-lg">

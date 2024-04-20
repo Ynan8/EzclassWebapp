@@ -69,7 +69,7 @@ const AddStudent = ({
     return (
         <>
             <div>
-                <ModalHeader className="flex flex-col gap-1">เพิ่มผู้สอน</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">เพิ่มนักเรียน</ModalHeader>
                 <ModalBody>
                     <div className="w-full  px-3 mb-6 md:mb-0">
                         <Input
