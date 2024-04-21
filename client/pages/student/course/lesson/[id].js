@@ -322,7 +322,7 @@ const LessonStudent = () => {
                                 </div>
 
                             )}
-                            {isSectionsLoading ? (
+                            {/* {isSectionsLoading ? (
                                 <Skeleton className=" mt-8 rounded-lg">
                                     <div className="h-24 rounded-lg bg-default-100"></div>
                                 </Skeleton>
@@ -350,7 +350,7 @@ const LessonStudent = () => {
                                     </CardBody>
                                 </Card>
 
-                            )}
+                            )} */}
 
                             <div className="flex justify-between items-center mt-4">
                                 <h1 className="p-3 text-2xl font-semibold text-gray-700"
