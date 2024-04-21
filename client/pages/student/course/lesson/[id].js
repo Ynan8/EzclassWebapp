@@ -232,7 +232,7 @@ const LessonStudent = () => {
     }
     let completedProgress = 0;
 
-    completedProgress = completedQuiz.length + completedLessons.length 
+    completedProgress = completedQuiz.length + completedLessons.length + + completedAssignments.length
 
     const totalTodo = section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length, 0)
 
