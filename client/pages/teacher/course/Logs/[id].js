@@ -51,7 +51,7 @@ const CourseLogs = () => {
         if (id) {
             loadCourse();
         }
-    }, [courseId]);
+    }, [id]);
 
 
     const loadCourse = async () => {
@@ -68,22 +68,27 @@ const CourseLogs = () => {
 
     // Show Course Logs
     const [courseLogs, setCourseLogs] = useState([])
+   
     useEffect(() => {
-        loadCourseLogs()
-    }, [courseId])
+        if (courseId) { // Check if courseId is defined
+            loadCourseLogs();
+        }
+    }, [courseId]);
 
     const loadCourseLogs = async () => {
         setIsLoading(true);
         try {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course-logs/${courseId}`);
-            setCourseLogs(data);
-            console.log("course logs data ", data);
+            if (courseId) { // Double check courseId before making the API call
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/course-logs/${courseId}`);
+                setCourseLogs(data);
+                console.log("course logs data ", data);
+            }
         } catch (error) {
             console.error('Error loading courses logs:', error);
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -127,6 +132,7 @@ const CourseLogs = () => {
     useEffect(() => {
         filterLogs();
     }, [nameFilter, roleFilter, dateFilter, courseLogs]);
+
 
 
     return (
@@ -235,7 +241,7 @@ const CourseLogs = () => {
                                                     </TableRow>
                                                 ))}
                                         </TableBody>
-                                        <TableBody emptyContent="ไม่มีประวัติการเข้าใช้งานรายวิชา" />
+                                        {/* <TableBody emptyContent="ไม่มีประวัติการเข้าใช้งานรายวิชา" /> */}
                                     </Table>
 
                                 </div>

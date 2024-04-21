@@ -230,8 +230,9 @@ const LessonStudent = () => {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API}/complete-assignment/${id}`)
         setCompletedAssignments(data)
     }
+    let completedProgress = 0;
 
-    const completedProgress = completedQuiz.length + completedLessons.length + completedAssignments.length
+    completedProgress = completedQuiz.length + completedLessons.length + completedAssignments.length
 
     const totalTodo = section.reduce((acc, cur) => acc + cur.lessonData.length + cur.quizData.length + cur.AssignmentData.length, 0)
 

@@ -174,7 +174,7 @@ exports.markCompletedQuiz = async (req, res) => {
 
   const existing = await CompletedQuiz.findOne({
     studentId: req.user._id,
-    quiz: quizId
+    courseId: courseId,
   }).exec();
   if (existing) {
     // Check if the quizId is already in the quiz array
