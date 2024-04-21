@@ -331,9 +331,9 @@ const SingleRoom = () => {
                                         <FaTrophy size={30} />
                                     </div>
 
-                                    <div className='flex flex-col space-y-1'>
+                                    <div className='flex flex-col space-y-1'>   
                                         <span className="block text-2xl font-semibold">
-                                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'ไม่มีรายชื่อนักเรียน'}
+                                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'ยังไม่มีนักเรียนทำแบบทดสอบ'}
                                         </span>
                                         <span className="block text-gray-500">นักเรียนที่ได้คะแนนสูงสุด</span>
                                     </div>

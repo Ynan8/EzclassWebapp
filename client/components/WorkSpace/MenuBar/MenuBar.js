@@ -271,7 +271,7 @@ const MenuBar = ({
                         {/* <pre>{JSON.stringify(clients, null, 4)}</pre> */}
                         <div className=" text-lg pl-3 mt-6 text-white">ผู้เข้าร่วม {clients.length} คน</div>
                         <div
-                            onClick={() => userData.role === "teacher" ? onOpen() : null}
+                            // onClick={() => userData.role === "teacher" ? onOpen() : null}
                             className="cursor-pointer grid grid-cols-2 gap-4 my-4 max-h-[500px] overflow-y-auto">
                             {clients.map((client) => (
                                 <Client

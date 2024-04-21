@@ -123,7 +123,7 @@ const HeaderBarTeacher = ({
                                         }}
                                         className="uppercase transition-transform"
                                         description={userData?.role}
-                                        name={`${userData?.firstName}   `}
+                                        name={`${userData?.firstName} ${userData?.lastName} `}
                                     />
 
                                 </DropdownTrigger>

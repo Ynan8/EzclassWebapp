@@ -285,7 +285,7 @@ const RoomDetail = () => {
 
                         <div className='flex flex-col space-y-1'>
                           <span className="block text-2xl font-semibold">
-                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'Loading...'}
+                            {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'ยังไม่มีนักเรียนทำแบบทดสอบ'}
                           </span>
                           <span className="block text-gray-500">นักเรียนที่ได้คะแนนสูงสุด</span>
                         </div>

@@ -269,7 +269,7 @@ const ManageTeacher = () => {
                           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                           .map((teacher, index) => (
                             <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 h-16 transition-colors group">
-                              <td className="text-center py-2">{index + 1}</td>
+                              <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                               <td className="text-center py-2">{teacher.username}</td>
                               <td className="text-center py-2">
                                 {teacher.firstName} {teacher.lastName}

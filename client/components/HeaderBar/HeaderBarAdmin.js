@@ -119,7 +119,7 @@ const HeaderBaAdmin = ({
                                             src: userData.image ? userData.image.Location : '/profile.png'
                                         }}
                                         className="uppercase transition-transform"
-                                        description={userData?.role}
+                                        description={"ADMIN"}
                                         name={`${userData?.firstName} ${userData?.lastName}`}
                                     />
 

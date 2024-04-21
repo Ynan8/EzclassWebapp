@@ -217,8 +217,8 @@ const CodeRoom = () => {
                     </div>
 
 
-                    <div className=" w-full">
-                        <div className="px-[40px] flex flex-col item-center justify-center">
+                    <div className="px-4 w-full">
+                        <div className=" flex flex-col item-center justify-center">
                             {isLoading ? (
                                 Array.from({ length: 3 }).map((_, index) => (
                                     <div key={index} className="p-4 w-full flex items-center gap-3">
@@ -289,7 +289,6 @@ const CodeRoom = () => {
                             )}
                         </div>
                     </div>
-
                 </div>
             </div>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

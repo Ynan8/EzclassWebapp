@@ -60,7 +60,7 @@ const Sidebar = ({
     const completionPercentage = (completedProgress / (totalLessonCount + totalQuizCount)) * 100;
 
     return (
-        <div className={`fixed top-[60px] left-0 w-80 bg-white h-full transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className={`fixed top-[60px] overflow-y-auto left-0 w-80 bg-white h-full transition-all duration-300 z-10 sidebar p-2 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
 
             {/* <div className="flex items-center h-14 bg-blue-500 ">
                 <Link href={`/student/course/lesson/${id}`} >

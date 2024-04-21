@@ -196,7 +196,7 @@ const editCodeRoom = () => {
         <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
             <SideBarTeacher courseYearId={courseYear} />
             <HeaderBarTeacher />
-            <div class="h-full ml-14 mt-28 mb-10 md:ml-64">
+            <div className="h-full mt-28 mb-10 md:ml-64">
                 <div className="px-10">
                     <button
                         onClick={() => router.push(`/teacher/course/codeRoom/${courseYear}`)}
@@ -205,94 +205,95 @@ const editCodeRoom = () => {
                         <AiOutlineLeft size={25} className="inline-block align-text-bottom mx-2" />
                         ย้อนกลับ
                     </button>
-                    <div class="max-w-4xl mx-auto bg-white p-16">
-                        <ul className="flex justify-between w-full mb-16">
-                            <li className={`rounded-lg relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <Avatar
-                                    name='1'
-                                    className={` text-lg ${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
-                                >
-                                    <span className="text-2xl p-2 ">1</span>
-                                </Avatar>
-                                <span className={`${page === 0 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
-                                    ข้อมูลทั่วไป
-                                </span>
-                            </li>
-
-                            <li className={`rounded-lg relative flex items-center ${page === 1 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300 py-4 px-14'}`}>
-                                <Avatar
-                                    name='2'
-                                    className={`text-lg ${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
-                                >
-                                    <span className="text-2xl">2</span>
-                                </Avatar>
-                                <span className={`${page === 1 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
-                                    กรณีทดสอบ
-                                </span>
-                            </li>
-
-                            <li className={`rounded-lg relative flex items-center ${page === 2 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
-                                <Avatar
-                                    name='3'
-                                    className={`text-lg ${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
-                                    <span className="text-2xl">3</span>
-                                </Avatar>
-                                <span className={`${page === 2 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300 cursor-pointer'}`}>
-                                    การเผยแพร่
-                                </span>
-                            </li>
-                        </ul>
-                        <div className="flex space-x-2 justify-end mb-10">
-                            <Button
-                                onClick={() => openDeleteModal(values._id)}
-                                className='px-10'
-                                radius='lg'
-                                size='lg'
-                                color="danger"
+                </div>
+                <div class="max-w-4xl mx-auto bg-white p-16">
+                    {/* Change using Card next ui  */}
+                    <ul className="flex justify-center space-x-2 w-full mb-16">
+                        <li className={`rounded-lg relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
+                            <Avatar
+                                name='1'
+                                className={` text-lg ${page === 0 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
                             >
-                                ลบ
-                            </Button>
-                            <Button
-                                onClick={handleStartTeaching(values._id)}
-                                className='px-10 text-white'
-                                radius='lg'
-                                size='lg'
-                                color="warning"
+                                <span className="text-2xl p-2 ">1</span>
+                            </Avatar>
+                            <span className={`${page === 0 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
+                                ข้อมูลทั่วไป
+                            </span>
+                        </li>
+
+                        <li className={`rounded-lg relative flex items-center ${page === 1 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300 py-4 px-14'}`}>
+                            <Avatar
+                                name='2'
+                                className={`text-lg ${page === 1 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}
                             >
-                                เข้าห้องเรียน
-                            </Button>
-                        </div>
-                        {handleForms()}
+                                <span className="text-2xl">2</span>
+                            </Avatar>
+                            <span className={`${page === 1 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300'}`}>
+                                กรณีทดสอบ
+                            </span>
+                        </li>
+
+                        <li className={`rounded-lg relative flex items-center ${page === 2 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>
+                            <Avatar
+                                name='3'
+                                className={`text-lg ${page === 2 ? 'bg-white text-blue-500' : 'bg-blue-300'}`} size={50}>
+                                <span className="text-2xl">3</span>
+                            </Avatar>
+                            <span className={`${page === 2 ? 'ml-2 text-white font-medium' : 'ml-2 text-blue-300 cursor-pointer'}`}>
+                                การเผยแพร่
+                            </span>
+                        </li>
+                    </ul>
+                    <div className="flex space-x-2 justify-end mb-10">
+                        <Button
+                            onClick={() => openDeleteModal(values._id)}
+                            className='px-10'
+                            radius='lg'
+                            size='lg'
+                            color="danger"
+                        >
+                            ลบ
+                        </Button>
+                        <Button
+                            onClick={handleStartTeaching(values._id)}
+                            className='px-10 text-white'
+                            radius='lg'
+                            size='lg'
+                            color="warning"
+                        >
+                            เข้าห้องเรียน
+                        </Button>
                     </div>
-                    <div className="flex space-x-20 item-center justify-center">
+                    {handleForms()}
+                </div>
+                <div className="flex space-x-20 item-center justify-center">
+                    <Button
+                        className='px-12'
+                        size='lg'
+                        disabled={page === 0}
+                        onClick={handlePrev}
+                        color="primary"
+                        variant='bordered'
+                    >
+                        ย้อนกลับ
+                    </Button>
+                    {page === 2 ? (
                         <Button
                             className='px-12'
                             size='lg'
-                            disabled={page === 0}
-                            onClick={handlePrev}
-                            color="primary"
-                            variant='bordered'
-                        >
-                            ย้อนกลับ
+                            onClick={handleSubmit}
+                            color="primary">
+                            เสร็จสิ้น
                         </Button>
-                        {page === 2 ? (
-                            <Button
-                                className='px-12'
-                                size='lg'
-                                onClick={handleSubmit}
-                                color="primary">
-                                เสร็จสิ้น
-                            </Button>
-                        ) : (
-                            <Button
-                                className='px-12'
-                                size='lg'
-                                onClick={handleNext}
-                                color="primary">
-                                ดำเนินการต่อ
-                            </Button>
-                        )}
-                    </div>
+                    ) : (
+                        <Button
+                            className='px-12'
+                            size='lg'
+                            onClick={handleNext}
+                            color="primary">
+                            ดำเนินการต่อ
+                        </Button>
+                    )}
                 </div>
             </div>
             {/* Delete */}
