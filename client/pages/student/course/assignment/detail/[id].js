@@ -190,23 +190,23 @@ const DetailAssignment = () => {
                 username,
                 firstName,
                 lastName,
-                userType: userRole, 
-                format: action, 
+                userType: userRole,
+                format: action,
             });
         } catch (error) {
             console.error('Error logging user action:', error);
         }
     };
-    
+
     const handleSubmit = async () => {
         try {
             if (!assignmentFile) {
                 // Show an error message or handle the case where no file is selected
                 return;
             }
-    
+
             setValues({ ...values, loading: true });
-    
+
             const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/submit/${id}/${courseRoom._id}`, {
                 fileSubmit: {
                     originalName: originalFileName,
@@ -215,7 +215,7 @@ const DetailAssignment = () => {
                     key: assignmentFile.Key,
                 },
             });
-    
+
             toast.success('บันทึกการส่งงานสำเร็จ!');
             router.push(`/student/course/lesson/${courseId}`);
             logUser(user.username, user.role, user.firstName, user.lastName, 'อัปโหลดไฟล์');
@@ -226,16 +226,16 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: false });
         }
     };
-    
+
     const handleCancelSubmit = async () => {
         try {
             setValues({ ...values, loading: true });
-    
+
             // Call the API to cancel the submission
             await axios.post(`${process.env.NEXT_PUBLIC_API}/assignment/cancel-submit`, {
                 assignmentId: id,
             });
-    
+
             toast.success("การส่งงานถูกยกเลิกสำเร็จ");
             setCheckSubmit({}); // Clear the submission data
             logUser(user.username, user.role, user.firstName, user.lastName, 'ยกเลิกอัปโหลดไฟล์');
@@ -246,7 +246,7 @@ const DetailAssignment = () => {
             setValues({ ...values, loading: false });
         }
     };
-    
+
 
 
 
@@ -313,18 +313,12 @@ const DetailAssignment = () => {
                                                 <Link
                                                     href={assignments.assignmentFile.location}
                                                     download={assignments.assignmentFile.originalName}
+                                                    className="flex items-center cursor-pointer space-x-1 border-2 rounded-md px-2 py-1.5 max-w-max shadow-sm focus:outline-none transition hover:bg-gray-100"
                                                 >
-                                                    <div
-                                                        onClick={handleFileClick}
-                                                        className="flex space-x-2 items-center cursor-pointer shadow-md py-3 px-2 border-2 rounded-md w-full focus:outline-none transition hover:bg-gray-100">
-                                                        <BsFilePdf size={25} />
-                                                        <div className="flex flex-col">
-                                                            <p>{assignments.assignmentFile.originalName}</p>
-                                                        </div>
-                                                    </div>
+                                                    <BsFilePdf size={25} />  <span>{assignments.assignmentFile.originalName}</span>
                                                 </Link>
                                             ) : (
-                                                ""
+                                                <span>No file uploaded</span>
                                             )}
                                         </div>
                                     </div>

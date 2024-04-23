@@ -20,6 +20,7 @@ const CheckAssignment = () => {
 
     const { id, courseRoomId } = router.query;
 
+    const [loading, setLoading] = useState(true);
 
     // Show assignment
     const [studentSubmit, setStudentSubmit] = useState([])
@@ -169,6 +170,7 @@ const CheckAssignment = () => {
                         ย้อนกลับ
                     </button>
                 </div>
+
                 <div className="px-4 w-full">
                     <div className=" flex flex-col item-center justify-center mt-6">
                         <Tabs className='flex items-center justify-center' size='lg' color='primary' >
@@ -246,29 +248,34 @@ const CheckAssignment = () => {
                                 title="ตรวจงาน"
                             >
                                 <div className="mt-6 w-full flex flex-col md:flex-row gap-6">
-                                    {/* <pre>{JSON.stringify(student, null, 4)}</pre> */}
+                                    {/* <pre>{JSON.stringify(assignments, null, 4)}</pre> */}
+                                    {/* <pre>{JSON.stringify(studentSubmit, null, 4)}</pre> */}
                                     <div className="w-full md:basis-[40%] bg-white rounded-lg">
-                                        <table className="w-full border-b border-gray-200">
+                                        <table className="text-lg w-full border-b border-gray-200">
                                             <thead>
-                                                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                                                <tr className="font-medium text-gray-700 border-b border-gray-200">
                                                     <th className="py-4 px-4 text-center font-bold">ลำดับ</th>
                                                     <th className="py-4 px-4 text-center font-bold">ชื่อ - สกุล</th>
                                                     <th className="py-4 px-4 text-center font-bold">คะแนน</th>
                                                     <th className="py-4 px-4 text-center font-bold">สถานะ</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody className='cursor-pointer'>
                                                 {student.length > 0 ? (
                                                     student.map((stud, index) => {
                                                         // Find the corresponding submission for this student
                                                         const submission = studentSubmit.find(sub => sub.studentId === stud._id);
+                                                        // Calculate the difference between assignmentDue and createdAt
+                                                        const assignmentDue = new Date(assignments.assignmentDue);
+                                                        const submissionDate = new Date(submission?.createdAt);
+                                                        const isLateSubmission = submissionDate > assignmentDue;
+
                                                         return (
                                                             <tr
-                                                                className="hover:bg-gray-100 transition-colors group"
+                                                                className={`hover:bg-gray-100 transition-colors group ${isLateSubmission ? 'text-red-500' : ''}`}
                                                                 key={stud._id}
                                                                 onClick={() => showStudentSubmit(stud._id)}
                                                             >
-
                                                                 <td className="text-center py-4">{index + 1}</td>
                                                                 <td className="text-center">{stud.firstName} {stud.lastName}</td>
                                                                 <td className="text-center">
@@ -277,18 +284,22 @@ const CheckAssignment = () => {
                                                                 <td className="py-4 px-4 text-center">
                                                                     <div className="flex flex-col items-center justify-center space-y-1">
                                                                         <Chip
+                                                                            size='lg'
                                                                             className="capitalize"
                                                                             color={
                                                                                 submission
-                                                                                    ? submission.status === 'ตรวจแล้ว'
-                                                                                        ? 'success'
-                                                                                        : 'primary'
-                                                                                    : 'error'
+                                                                                    ? isLateSubmission
+                                                                                        ? 'danger'
+                                                                                        : submission.status === 'ตรวจแล้ว'
+                                                                                            ? 'success'
+                                                                                            : 'primary'
+                                                                                    : 'primary'
                                                                             }
                                                                             variant="flat"
                                                                         >
-                                                                            {submission ? submission.status : 'ยังไม่ส่งงาน'}
+                                                                            {submission ? (isLateSubmission ? 'ส่งงานช้า' : submission.status) : 'ยังไม่ส่งงาน'}
                                                                         </Chip>
+
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -301,6 +312,7 @@ const CheckAssignment = () => {
                                                         </td>
                                                     </tr>
                                                 )}
+
                                             </tbody>
                                         </table>
 
@@ -346,19 +358,26 @@ const CheckAssignment = () => {
                                                     <div className="flex items-center space-x-2">
                                                         <div className="flex-1 relative">
                                                             {selectedStudent ? (
-                                                                <iframe
-                                                                    title="Document Viewer"
-                                                                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedStudent.fileSubmit.location)}&embedded=true`}
-                                                                    width="100%"
-                                                                    height="450px"
-                                                                ></iframe>
-
+                                                                <>
+                                                                    {selectedStudent.fileSubmit ? ( // Check if fileSubmit exists
+                                                                        <iframe
+                                                                            title="Document Viewer"
+                                                                            src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedStudent.fileSubmit.location)}&embedded=true`}
+                                                                            width="100%"
+                                                                            height="450px"
+                                                                            onLoad={() => setLoading(false)} // Set loading to false when iframe is loaded
+                                                                        ></iframe>
+                                                                    ) : (
+                                                                        <div>Loading...</div> // Display loading indicator while waiting for the iframe to load
+                                                                    )}
+                                                                </>
                                                             ) : (
                                                                 ""
                                                             )}
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
