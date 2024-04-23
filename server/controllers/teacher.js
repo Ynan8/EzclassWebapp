@@ -118,42 +118,37 @@ exports.ImportStudent = async (req, res) => {
     if (existingStudents.length > 0) {
       return res.status(400).send("มีรหัสนักเรียนแล้ว กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
     }
+    students.map(async (studentData) => {
+      const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName, password, } = studentData;
 
+      // Check if the username already exists
+      const existingUser = await User.findOne({ username });
 
+      if (existingUser) {
+        // If the user already exists, update their information
+        existingUser.firstName = firstName;
+        existingUser.lastName = lastName;
+        existingUser.password = await hashPassword(password);
+        await existingUser.save();
+        existingStudentsUpdated.push(existingUser);
+      } else {
+        // If the user doesn't exist, create a new one
+        const hashedPassword = await hashPassword(password);
 
-    await Promise.all(
-      students.map(async (studentData) => {
-        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName, password, } = studentData;
+        // Create a new student instance
+        const newStudent = new User({
+          firstName,
+          lastName,
+          username,
+          password: hashedPassword,
+          role: "student",
+        });
 
-        // Check if the username already exists
-        const existingUser = await User.findOne({ username });
-
-        if (existingUser) {
-          // If the user already exists, update their information
-          existingUser.firstName = firstName;
-          existingUser.lastName = lastName;
-          existingUser.password = await hashPassword(password);
-          await existingUser.save();
-          existingStudentsUpdated.push(existingUser);
-        } else {
-          // If the user doesn't exist, create a new one
-          const hashedPassword = await hashPassword(password);
-
-          // Create a new student instance
-          const newStudent = new User({
-            firstName,
-            lastName,
-            username,
-            password: hashedPassword,
-            role: "student",
-          });
-
-          // Save the new student to the database
-          await newStudent.save();
-          savedStudents.push(newStudent);
-        }
-      })
-    );
+        // Save the new student to the database
+        await newStudent.save();
+        savedStudents.push(newStudent);
+      }
+    })
 
     console.log('Saved student data:', savedStudents);
     console.log('Updated existing students:', existingStudentsUpdated);
@@ -164,6 +159,46 @@ exports.ImportStudent = async (req, res) => {
     }
 
     res.status(200).json({ message, students: savedStudents.concat(existingStudentsUpdated) });
+  } catch (error) {
+    console.error('Error importing students:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.ImportStudentCourse = async (req, res) => {
+  try {
+    const { students } = req.body;
+    const { id } = req.params;
+
+    // Extract usernames from student data
+    const usernames = students.map(studentData => studentData['รหัสนักเรียน']);
+
+    // Query the database to find existing students with the given usernames
+    const existingStudents = await User.find({ username: { $in: usernames } });
+
+    // Process and save each student to the database
+    const savedStudents = await Promise.all(
+      students.map(async (studentData) => {
+        const { 'รหัสนักเรียน': username, 'ชื่อจริง': firstName, 'นามสกุล': lastName } = studentData;
+
+        // Find the existing student with the given username
+        const existingStudent = existingStudents.find(student => student.username === username);
+
+        if (existingStudent) {
+          // Update existing student
+          const updatedCourseRoom = await CourseRoom.findByIdAndUpdate(
+            id,
+            {
+              $addToSet: { studentId: existingStudent._id },
+            },
+            { new: true }
+          ).exec();
+          return updatedCourseRoom; // Return the updated CourseRoom document
+        }
+      })
+    );
+
+    res.status(200).json(savedStudents.filter(student => student)); 
   } catch (error) {
     console.error('Error importing students:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -394,9 +429,9 @@ exports.addStudent = async (req, res) => {
 };
 
 exports.addStudentCourse = async (req, res) => {
-  const { id } = req.params; 
+  const { id } = req.params;
   try {
-    const { selectedStudent } = req.body; 
+    const { selectedStudent } = req.body;
 
     // Check if the selected student already exists in the course room
     const existingCourseRoom = await CourseRoom.findOne({ _id: id, studentId: selectedStudent._id }).exec();

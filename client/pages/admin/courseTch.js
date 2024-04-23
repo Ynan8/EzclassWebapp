@@ -70,8 +70,7 @@ const courseTch = () => {
                                         .map((course) => (
                                             <tr key={course._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                                 <td className="text-center px-6 py-4">
-                                                    <div
-                                                        className="w-full md:w-1/2 sm:w-1/2 bg-white  place-items-center flex justify-center max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto">
+                                                    <div className="w-full md:w-1/2 place-items-center mx-auto">
                                                         <img
                                                             className="object-cover rounded"
                                                             src={course.image.Location}

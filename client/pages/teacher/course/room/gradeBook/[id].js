@@ -141,7 +141,7 @@ const GradeBookRoom = () => {
       });
 
       // Add code room score, total weighted score, and grade
-      record['คะแนนห้องเรียนเขียนโค้ด'] = ''; // Assign code room score if applicable
+   //  record['คะแนนห้องเรียนเขียนโค้ด'] = ''; // Assign code room score if applicable
       record['คะแนนรวม'] = totalWeightedScore.toFixed(2);
       record['เกรด'] = grade;
 

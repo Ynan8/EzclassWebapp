@@ -22,7 +22,8 @@ const {
     getStudentData,
     getSectionData,
     getAssignmentRoom,
-    UpdateStudent
+    UpdateStudent,
+    ImportStudentCourse
 } = require('../controllers/teacher')
 
 
@@ -30,6 +31,7 @@ router.get("/teacher-courses", auth, TeacherCourses);
 
 
 router.post("/import-students", auth, ImportStudent);
+router.post("/import-students/:id", auth, ImportStudentCourse);
 router.post("/add-student", addStudent);
 router.post("/add-student/:id", addStudentCourse);
 router.get("/studentRoom/:id", auth, getStdRoom);

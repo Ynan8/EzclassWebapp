@@ -20,6 +20,7 @@ import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
 import moment from "moment/min/moment-with-locales";
 import AddStudentRoom from '../../../../../components/Modals/AddStudentRoom';
 import { RiDeleteBinLine } from 'react-icons/ri';
+import UploadStudentFileCourse from '../../../../../components/Modals/UploadStudentFileCourse';
 
 
 
@@ -289,7 +290,7 @@ const ManageUser = () => {
                     >
                       <p class=" font-medium leading-none">เพิ่มนักเรียน</p>
                     </Button>
-                    {/* <Button
+                    <Button
                       onPress={onOpenModalExcel}
                       radius='sm'
                       className="ml-3 flex items-center text-white "
@@ -301,7 +302,7 @@ const ManageUser = () => {
                       }
                     >
                       <p class=" font-medium leading-none">Import Excel</p>
-                    </Button> */}
+                    </Button>
                   </div>
 
                 </div>
@@ -417,12 +418,13 @@ const ManageUser = () => {
         size={'4xl'}
         isOpen={isOpenModalExcel}
         onClose={onOpenChangeModalExcel}
+        placement="top-center"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <UploadStudentFile
-                courseRoomId={id}
+              <UploadStudentFileCourse
+                id={id}
                 onClose={onClose}
                 loadStudentCourse={loadStudentCourse}
               />
