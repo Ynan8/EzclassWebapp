@@ -505,11 +505,11 @@ const QuizContent = ({
                                 <>
                                     {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
                                         // "score height"
-                                        <div className="h-full mt-28 mb-10 md:ml-20">
+                                        <div className="h-full mt-28 mb-10 ">
                                             <div className="px-4">
                                                 <div className="flex flex-col item-center justify-center">
                                                     <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                                                        <div className="md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
+                                                        <div className="flex-col md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
                                                             <p>
                                                                 แบบทดสอบท้ายบทที่ <span className='font-semibold'>{selectedQuizContent.quizName}</span>
                                                             </p>
@@ -637,11 +637,11 @@ const QuizContent = ({
 
             )}
             {showScore && (
-                <div className="h-full mt-28 mb-10 md:ml-20">
+                <div className="h-full mt-28 mb-10 ">
                     <div className="px-4">
                         <div className="flex flex-col item-center justify-center">
                             <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                                <div className="md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
+                                <div className="flex-col  md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
                                     <p>
                                         แบบทดสอบท้ายบทที่ <span className='font-semibold'>{selectedQuizContent.quizName}</span>
                                     </p>

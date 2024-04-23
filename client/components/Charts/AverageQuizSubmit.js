@@ -21,7 +21,7 @@ function DoughnutChart({
             //ctx.fillRect(x - 10, y - 10, 20, 20);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.font = 'bold 50px sans-serif';
+            ctx.font = 'bold 40px sans-serif';
             ctx.fillText(text, x, y);
         }
     }

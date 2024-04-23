@@ -237,7 +237,8 @@ const ManageUser = () => {
 
           <div className="main-content  flex flex-col flex-grow p-4  container">
             {/* TABS */}
-            <div className="flex w-full flex-col">
+            <div className="relative shadow-md sm:rounded-lg whitespace-nowrap">
+
               <Tabs
                 size="lg"
                 aria-label="Options">
@@ -513,6 +514,7 @@ const ManageUser = () => {
         isOpen={isOpenModalCreate}
         onOpenChange={onOpenChangeModalCreate}
         placement="top-center"
+        
       >
         <ModalContent>
           {(onClose) => (
@@ -592,6 +594,8 @@ const ManageUser = () => {
         size={'4xl'}
         isOpen={isOpenModalExcel}
         onClose={onOpenChangeModalExcel}
+        placement="top-center"
+
       >
         <ModalContent>
           {(onClose) => (
@@ -610,6 +614,7 @@ const ManageUser = () => {
         size={'xl'}
         isOpen={isOpenModalStudent}
         onClose={onOpenChangeModalStudent}
+        placement="top-center"
       >
         <ModalContent>
           {(onClose) => (

@@ -2,10 +2,10 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
 import CourseUpdateForm from '../../../../components/form/CourseUpdateForm';
-import { Link } from '@nextui-org/react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import Resizer from "react-image-file-resizer"
 import toast from 'react-hot-toast';
+import Link from 'next/link'
 
 const CourseEdit = () => {
     const router = useRouter();

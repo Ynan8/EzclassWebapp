@@ -46,6 +46,7 @@ function DoughnutChart({
                 text: "World Wide Wine Production 2018"
             },
             cutout: '80%'
+            
         },
         plugins: [centerText]
     };

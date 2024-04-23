@@ -5,7 +5,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import moment from "moment/min/moment-with-locales";
-import { AiOutlineArrowLeft, AiOutlineCloudDownload } from 'react-icons/ai';
+import { AiOutlineArrowLeft, AiOutlineCloudDownload, AiOutlineLeft } from 'react-icons/ai';
 import Link from 'next/link';
 import { FaRegEdit, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -157,13 +157,20 @@ const CheckAssignment = () => {
     return (
         <TeacherRoute>
             <div>
-                <Link href={`/teacher/course/room/assignment/${courseRoomId}`} >
-                    <div className="p-2 m-2">
-                        <AiOutlineArrowLeft size={30} />
-                    </div>
-                </Link>
-                <div className="px-12 w-full">
-                    <div className="px-[40px] flex flex-col item-center justify-center mt-6">
+                <div className="pl-5 flex items-center text-black  w-96 md:w-96 h-12  border-none pt-10">
+                    <button
+                        onClick={() => router.push(`/teacher/course/room/assignment/${courseRoomId}`)}
+                        className=" text-lg"
+                    >
+                        <AiOutlineLeft
+                            size={25}
+                            className="inline-block align-text-bottom mx-2"
+                        />
+                        ย้อนกลับ
+                    </button>
+                </div>
+                <div className="px-4 w-full">
+                    <div className=" flex flex-col item-center justify-center mt-6">
                         <Tabs className='flex items-center justify-center' size='lg' color='primary' >
                             <Tab
                                 title="มอบหมายงาน"
