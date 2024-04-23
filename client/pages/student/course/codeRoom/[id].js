@@ -257,7 +257,7 @@ const CodeRoomStudent = () => {
                             </Button>
                         </div>
                     </div> */}
-                    <div className="px-12 pt-8 w-full">
+                    <div className="px-4 pt-8 w-full">
                         <div className="px-[40px] flex flex-col item-center justify-center">
                             {/* <pre>{JSON.stringify(stdSubmitCodeAll, null, 4)}</pre> */}
                             {isStartingLearning ? (
@@ -294,7 +294,7 @@ const CodeRoomStudent = () => {
                                                                     <span className='font-semibold p-2'>{codeRoom.codeRoomName}</span>
                                                                 </p>
                                                                 <div className="flex text-sm p-2 items-center font-normal border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
-                                                                    <span className='mr-1'>ระดับความยาก:</span>
+                                                                    <span className="mr-1 text-sm md:text-base hidden md:inline-block">ระดับความยาก:</span>
                                                                     {renderStars(codeRoom.Difficulty)}
                                                                 </div>
                                                             </div>
@@ -302,9 +302,9 @@ const CodeRoomStudent = () => {
                                                                 <Chip
                                                                     className={`capitalize ${statusColor === 'success' ? 'text-green-500' : statusColor === 'danger' ? 'text-red-500' : 'text-gray-500'}`}
                                                                     color={statusColor}
-                                                                    size="lg"
+                                                                    size="md"
                                                                     variant="flat"
-                                                                    startContent={submission && submission.status === 'passed' ? <FaCheckCircle size={30} /> : <IoAlertCircle size={30} />}
+                                                                    startContent={submission && submission.status === 'passed' ? <FaCheckCircle size={25} /> : <IoAlertCircle size={25} />}
                                                                 >
                                                                     <span className='font-semibold'>{statusText}</span>
 

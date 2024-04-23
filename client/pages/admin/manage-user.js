@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SideBarAdmin from "../../components/Sidebar/SideBarAdmin";
 import HeaderBarAdmin from "../../components/HeaderBar/HeaderBarAdmin";
 import axios from "axios";
-import { Tabs, Tab, Card, CardBody, Pagination } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody, Pagination, Input } from "@nextui-org/react";
 import {
   Button,
   Modal,
@@ -22,8 +22,9 @@ import UpdateTeacher from "../../components/Modals/UpdateTeacher";
 import AddStudent from "../../components/Modals/AddStudent";
 import UpdateStudent from "../../components/Modals/UpdateStudent";
 import UploadStudentFile from "../../components/Modals/UploadStudentFile";
+import { CiSearch } from "react-icons/ci";
 
-const ManageTeacher = () => {
+const ManageUser = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -246,70 +247,41 @@ const ManageTeacher = () => {
                       <div className="flex space-x-4 md:py-7 px-4 md:px-8 xl:px-10">
 
                         <div className="mr-auto">
-                          <form action="#">
-                            <div className="hidden md:flex relative">
-                              <input
-                                type="search"
-                                name="search"
-                                className="text-sm sm:text-base placeholder-gray-500 rounded-l pl-2  border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
-                                placeholder="ค้นหาผู้สอน"
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                              />
-                              <button
-                                class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                                type="button"
-                                id="button-addon1"
-                                data-te-ripple-init
-                                data-te-ripple-color="light"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  class="h-5 w-5"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                                    clip-rule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                            <div className="flex md:hidden">
-                              <button
-                                class="relative z-[2] flex items-center rounded bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                                type="button"
-                                id="button-addon1"
-                                data-te-ripple-init
-                                data-te-ripple-color="light"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  class="h-5 w-5"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                                    clip-rule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </form>
+                         
+                          <Input
+                            isClearable
+                            className="w-full sm:w-auto sm:flex-grow"
+                            placeholder="ค้นหาชื่อผู้สอน..."
+                            size="sm"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            startContent={<CiSearch size={25} className="text-default-300" />}
+                            variant="bordered"
+                          />
+
                         </div>
 
-                        <div className="flex ml-auto space-x-2">
-                          <button
+                        <div className="flex item-center ml-auto space-x-2">
+                          {/* <button
                             onClick={onOpenModalCreate}
                             className="inline-flex items-center justify-center px-4 sm:px-3  py-1 sm:py-2 text-xs sm:text-sm md:text-sm lg:text-base bg-primary-500 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring focus:ring-primary-300"
                           >
                             <FaPlus className="text-center" />
                             <span className="ml-2 hidden md:inline">เพิ่มผู้สอน</span>
-                          </button>
+                          </button> */}
+                          <Button
+                            onPress={onOpenModalCreate}
+                            radius='sm'
+                            className="ml-3 flex items-center text-white "
+                            color="primary"
+                            startContent={
+                              <FaPlus
+                                size={20}
+                              />
+                            }
+                          >
+                            <p class=" font-medium leading-none">เพิ่มผู้สอน</p>
+                          </Button>
                         </div>
                       </div>
 
@@ -400,60 +372,18 @@ const ManageTeacher = () => {
                       <div className="flex space-x-4 md:py-7 px-4 md:px-8 xl:px-10">
 
                         <div className="mr-auto">
-                          <form action="#">
-                            <div className="hidden md:flex relative">
-                              <input
-                                type="search"
-                                name="search"
-                                className="text-sm sm:text-base placeholder-gray-500 rounded-l pl-2  border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
-                                placeholder="ค้นหานักเรียน"
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                              />
-                              <button
-                                class="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                                type="button"
-                                id="button-addon1"
-                                data-te-ripple-init
-                                data-te-ripple-color="light"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  class="h-5 w-5"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                                    clip-rule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                            <div className="flex md:hidden">
-                              <button
-                                class="relative z-[2] flex items-center rounded bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                                type="button"
-                                id="button-addon1"
-                                data-te-ripple-init
-                                data-te-ripple-color="light"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  class="h-5 w-5"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                                    clip-rule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </form>
+                         
+                           <Input
+                            isClearable
+                            className="w-full sm:w-auto sm:flex-grow"
+                            placeholder="ค้นหาชื่อนักเรียน..."
+                            size="sm"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            startContent={<CiSearch size={25} className="text-default-300" />}
+                            variant="bordered"
+                          />
+
                         </div>
 
                         <div className="flex">
@@ -758,4 +688,4 @@ const ManageTeacher = () => {
   );
 };
 
-export default ManageTeacher;
+export default ManageUser;

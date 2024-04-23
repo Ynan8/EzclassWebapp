@@ -39,28 +39,6 @@ const SectionAccordionStd = ({
                                     <p className='text-lg md:text-xl' >
                                         <span className='font-semibold'>บทที่ {index + 1}</span> {item.sectionName}
                                     </p>
-
-                                    <div className="flex space-x-4 mr-4 ml-auto">
-                                        <span
-                                            onClick={() => {
-                                                onOpenModalUpdate();
-                                                handleSetCurrentSection(item._id);
-                                            }}
-                                            className="text-lg text-default-600 cursor-pointer active:opacity-50">
-                                            <CiEdit size={23} className="ml-auto" />
-                                        </span>
-
-                                        <span
-
-                                            className="text-lg text-danger cursor-pointer active:opacity-50">
-                                            <GoTrash
-                                                onClick={() => {
-                                                    onOpenModalDelete();
-                                                    openDeleteModal(item._id);
-                                                }}
-                                                size={20} className="" />
-                                        </span>
-                                    </div>
                                 </div>
                             }
                             startContent={< FaBookOpen size={25} className="text-primary" />}

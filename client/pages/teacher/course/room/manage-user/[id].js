@@ -18,6 +18,8 @@ import Link from 'next/link';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher';
 import moment from "moment/min/moment-with-locales";
+import AddStudentRoom from '../../../../../components/Modals/AddStudentRoom';
+import { RiDeleteBinLine } from 'react-icons/ri';
 
 
 
@@ -163,6 +165,33 @@ const ManageUser = () => {
   const itemsPerPage = 5;
   const totalPages = Math.ceil(student.length / itemsPerPage);
 
+  const {
+    isOpen: isOpenModalAddStudent,
+    onOpen: onOpenModalAddStudent,
+    onOpenChange: onOpenChangeModalAddStudent,
+  } = useDisclosure();
+
+  //list teacher
+  const [studentList, setStudentList] = useState([]);
+
+  useEffect(() => {
+    if (id) {
+      loadDataStd();
+    }
+  }, [id]);
+
+  const loadDataStd = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["authtoken"] = token;
+    }
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API}/list-student`
+    );
+    setStudentList(data);
+  };
+
+
 
   return (
     <TeacherRoute>
@@ -248,7 +277,7 @@ const ManageUser = () => {
                   <p className='md:text-2xl  sm:text-lg font-semibold'>ข้อมูลนักเรียน</p>
                   <div className="flex">
                     <Button
-                      onPress={onOpenModalStudent}
+                      onPress={onOpenModalAddStudent}
                       radius='sm'
                       className="ml-3 flex items-center text-white "
                       color="primary"
@@ -260,7 +289,7 @@ const ManageUser = () => {
                     >
                       <p class=" font-medium leading-none">เพิ่มนักเรียน</p>
                     </Button>
-                    <Button
+                    {/* <Button
                       onPress={onOpenModalExcel}
                       radius='sm'
                       className="ml-3 flex items-center text-white "
@@ -272,20 +301,19 @@ const ManageUser = () => {
                       }
                     >
                       <p class=" font-medium leading-none">Import Excel</p>
-                    </Button>
+                    </Button> */}
                   </div>
 
                 </div>
                 <div class="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                   <div class="overflow-x-auto">
-                    {/* <pre>{JSON.stringify(student,null,4)}</pre> */}
+                    {/* <pre>{JSON.stringify(studentList,null,4)}</pre> */}
                     <table className="w-full border-b border-gray-200">
                       <thead>
                         <tr className="text-lg md:text-base sm:text-sm border-b border-gray-200">
                           <th className="py-1 px-4 text-center">ลำดับ</th>
                           <th className="py-1 px-4 text-center">รหัสนักเรียน</th>
                           <th className="py-1 px-4 text-center">ชื่อ-สกุล</th>
-                          <th className="py-1 px-4 text-center">วันที่เพิ่ม</th>
                         </tr>
                       </thead>
                       <tbody className="text-lg md:text-base sm:text-sm">
@@ -296,24 +324,28 @@ const ManageUser = () => {
                               <td className="text-center py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                               <td className="text-center py-2">{student.username}</td>
                               <td className="text-center py-2">{student.firstName} {student.lastName}</td>
-                              <td className="text-center py-2">
-                                {moment(student.createdAt)
-                                  .locale('th')
-                                  .format('LL HH:mm')}
-                              </td>
                               <td className="flex justify-center items-center text-center">
-                                <div
+                                {/* <div
                                   onClick={() => {
                                     onOpenModalUpdate();
                                     setCurrentStd(student);
                                   }}
                                   className="flex items-center space-x-2 duration-200 hover:text-yellow-500 justify-center w-full py-4 cursor-pointer">
                                   <CiEdit size={25} />
-                                </div>
-                                <div
+                                </div> */}
+                                {/* <div
                                   onClick={() => openDeleteModal(student._id)}
                                   className="flex items-center duration-200 hover:text-red-500 justify-center w-full py-4 cursor-pointer">
                                   <GoTrash size={23} />
+                                </div> */}
+                                <div
+                                  className="flex items-center justify-center my-4 space-x-2 px-1 py-1 cursor-pointer duration-200 bg-red-100 text-red-400 rounded-md hover:bg-red-200"
+                                  onClick={() => openDeleteModal(student._id)}
+                                >
+                                  <RiDeleteBinLine size={20} className="sm:mr-1" />
+                                  <span className="hidden sm:inline-block text-xs sm:text-sm px-1 py-1">
+                                    ลบผู้ใช้
+                                  </span>
                                 </div>
                               </td>
                             </tr>
@@ -356,6 +388,31 @@ const ManageUser = () => {
           </main>
         </div>
       </div>
+
+      <Modal
+        isOpen={isOpenModalAddStudent}
+        onOpenChange={onOpenChangeModalAddStudent}
+        placement="top-center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                เพิ่มนักเรียน
+              </ModalHeader>
+              <ModalBody>
+                <AddStudentRoom
+                  onClose={onClose}
+                  studentList={studentList}
+                  loadStudentCourse={loadStudentCourse}
+                  id={id}
+                />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
       <Modal
         size={'4xl'}
         isOpen={isOpenModalExcel}
@@ -373,7 +430,7 @@ const ManageUser = () => {
           )}
         </ModalContent>
       </Modal>
-      <Modal
+      {/* <Modal
         size={'xl'}
         isOpen={isOpenModalStudent}
         onClose={onOpenChangeModalStudent}
@@ -397,7 +454,7 @@ const ManageUser = () => {
             </>
           )}
         </ModalContent>
-      </Modal>
+      </Modal> */}
 
       {/* Update */}
       <Modal

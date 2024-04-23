@@ -113,11 +113,11 @@ exports.ImportStudent = async (req, res) => {
     const savedStudents = [];
     const existingStudentsUpdated = [];
 
-   const existingStudents = await User.find({ username: { $in: usernames } });
+    const existingStudents = await User.find({ username: { $in: usernames } });
 
-   if (existingStudents.length > 0) {
-    return res.status(400).send("มีรหัสนักเรียนแล้ว กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
-  }
+    if (existingStudents.length > 0) {
+      return res.status(400).send("มีรหัสนักเรียนแล้ว กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
+    }
 
 
 
@@ -392,6 +392,34 @@ exports.addStudent = async (req, res) => {
     res.status(500).send("Server Error!");
   }
 };
+
+exports.addStudentCourse = async (req, res) => {
+  const { id } = req.params; 
+  try {
+    const { selectedStudent } = req.body; 
+
+    // Check if the selected student already exists in the course room
+    const existingCourseRoom = await CourseRoom.findOne({ _id: id, studentId: selectedStudent._id }).exec();
+    if (existingCourseRoom) {
+      return res.status(400).send("มีนักเรียนในรายวิชานี้แล้ว");
+    }
+
+    // Add the selected student to the course room
+    const updatedCourseRoom = await CourseRoom.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { studentId: selectedStudent._id },
+      },
+      { new: true }
+    ).exec();
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error!");
+  }
+};
+
 
 exports.getStudentData = async (req, res) => {
   try {

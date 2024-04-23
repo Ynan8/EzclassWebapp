@@ -304,7 +304,7 @@ const Playground = ({
 
 
                                 </div>
-                                <div className="mt-5 pb-7 w-full flex flex-row">
+                                <div className="mt-5 pb-7 space-x-2 w-full flex flex-row">
                                     <div className="w-full  mb-4 sm:mb-0">
                                         <p className="text-sm mb-1 ml-4">Input:</p>
                                         <Textarea
@@ -446,7 +446,7 @@ const Playground = ({
                     )}
                 </ModalContent>
             </Modal>
-            <Modal isOpen={isOpenModalSubmit} onOpenChange={onOpenChangeModalSubmit}>
+            <Modal isOpen={isOpenModalSubmit} onOpenChange={onOpenChangeModalSubmit} placement='top-center'>
                 <ModalContent  >
                     {(onClose) => (
                         <>

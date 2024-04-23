@@ -37,8 +37,8 @@ const SideBarAdmin = ({ mobileSidebarOpen, setMobileSidebarOpen }) => { // State
 
                     <li className="my-px py-2 ">
                         <Link
-                            href="/admin/manage-teacher"
-                            className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/admin/manage-teacher`)
+                            href="/admin/manage-user"
+                            className={`relative flex flex-row items-center rounded-lg h-11 px-3.5 focus:outline-none text-white-600 hover:text-white-800 border-l-4 border-transparent pr-6 ${isLinkActive(`/admin/manage-user`)
                                 ? 'bg-gray-100 text-blue-700'
                                 : 'text-gray-100 hover:bg-gray-100 hover:text-blue-700 duration-300'
                                 }`}
