@@ -97,7 +97,7 @@ const SectionAccordionStd = ({
 
                             <div className="flex flex-col space-y-2 mb-2">
                                 {item.AssignmentData?.map((assignment, lessonIndex) => (
-                                    <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
+                                    <Link key={lessonIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
                                         <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md cursor-pointer'>
                                             <div className='flex items-center space-x-2' >
                                                 <div className="bg-warning/10 text-warning p-2 rounded-md">
