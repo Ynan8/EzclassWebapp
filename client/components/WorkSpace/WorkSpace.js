@@ -66,52 +66,57 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
         console.log('socket err=>', e);
         toast.error('Socket connection failed!!');
       };
-  
+
       // Use userData to join the room
       socketRef.current.emit('join', {
-        roomId:joinCode,
+        roomId: joinCode,
         user: userData,
-        
+
       });
-  
+
       socketRef.current.on('joined', ({ clients, user, socketId }) => {
         if (user) {
           toast.success(`${user.firstName} เข้าร่วมห้องเรียน.`);
         }
         setClients(clients);
       });
-  
+
       socketRef.current.on('code-change', ({ code, user }) => {
         setFetchedCode(code);
       });
-  
+
+      socketRef.current.emit('code-change', {
+        roomId: joinCode,
+        code: fetchedCode,
+      });
+
+
       socketRef.current.on('disconnected', ({ socketId, user }) => {
         toast.success(`${user.firstName} ออกจากห้องเรียน`);
         setClients((prev) => prev.filter((client) => client.socketId !== socketId));
       });
     };
     init();
-  
+
     // Remove listeners on cleanup
     return () => {
-  if (socketRef.current) {
-    socketRef.current.disconnect();
-    socketRef.current.off('connect_error');
-    socketRef.current.off('connect_failed');
-    socketRef.current.off('joined');
-    socketRef.current.off('code-change');
-    socketRef.current.off('disconnected');
-  }
-};
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off('connect_error');
+        socketRef.current.off('connect_failed');
+        socketRef.current.off('joined');
+        socketRef.current.off('code-change');
+        socketRef.current.off('disconnected');
+      }
+    };
   }, [roomId, userData]);
-  
+
 
   const onCodeChange = (newCode) => {
     setFetchedCode(newCode);
     socketRef.current.emit('code-change', {
-      roomId:joinCode,
+      roomId: joinCode,
       code: newCode,
-      firstName,
     });
   };
 

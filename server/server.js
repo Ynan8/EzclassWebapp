@@ -78,12 +78,12 @@ io.on("connection", (socket) => {
     });
 
 
-
     socket.on("code-change", ({ roomId, code }) => {
         // Broadcast the 'code-change' event to all clients in the room
         io.to(roomId).emit("code-change", { code });
-    });    // for user editing the code to reflect on his/her screen
+    });
 
+  
     // socket.on("sync-code", ({socketId, code}) => {
     //     io.on(socketId).emit("sync-code", {code});
     // });

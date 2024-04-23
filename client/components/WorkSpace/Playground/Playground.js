@@ -265,7 +265,6 @@ const Playground = ({
                         value={fetchedCode}
                         onChange={onCodeChange}
                         options={{ fontSize: fontSize }}
-                        onMount={onMount}
                     />
                 </div>
                 <div className='text-white p-4 mt-2 rounded-b-md'>
