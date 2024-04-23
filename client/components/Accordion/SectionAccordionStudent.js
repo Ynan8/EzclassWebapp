@@ -46,7 +46,7 @@ const SectionAccordionStd = ({
                             <div className="flex flex-col space-y-2 mb-2">
                                 {item.lessonData?.map((lesson, lessonIndex) => (
                                     <Link href={`/student/course/lesson/view/${id}`}>
-                                        <div className='flex justify-between items-center bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex justify-between items-center bg-gray-100 p-4 rounded-md cursor-pointer'>
                                             <div className='flex items-center space-x-2'>
                                                 <div className="bg-primary/10 text-primary p-2 rounded-md">
                                                     <MdLibraryBooks size={25} className="text-primary" />
@@ -73,7 +73,7 @@ const SectionAccordionStd = ({
                                 {item.quizData?.map((quiz, lessonIndex) => (
                                     <Link href={`/student/course/lesson/view/${id}`}>
 
-                                        <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md cursor-pointer'>
                                             <div className='flex items-center space-x-2' >
                                                 <div className="bg-danger/10 text-danger p-2 rounded-md">
                                                     <MdQuiz size={25} className="text-danger" />
@@ -97,28 +97,28 @@ const SectionAccordionStd = ({
 
                             <div className="flex flex-col space-y-2 mb-2">
                                 {item.AssignmentData?.map((assignment, lessonIndex) => (
-                                    <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
-                                        <div className='flex items-center space-x-2' >
-                                            <div className="bg-warning/10 text-warning p-2 rounded-md">
-                                                <MdAssignment size={25} className="text-warning" />
+                                    <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
+                                        <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md cursor-pointer'>
+                                            <div className='flex items-center space-x-2' >
+                                                <div className="bg-warning/10 text-warning p-2 rounded-md">
+                                                    <MdAssignment size={25} className="text-warning" />
+                                                </div>
+                                                <span className='font-semibold mr-2 sm:text-sm md:text-lg'>งานชิ้นที่ {lessonIndex + 1} </span>
+                                                <p className='sm:text-sm md:text-lg'>{assignment.assignmentName}</p>
                                             </div>
-                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>งานชิ้นที่ {lessonIndex + 1} </span>
-                                            <p className='sm:text-sm md:text-lg'>{assignment.assignmentName}</p>
+                                            {
+                                                completedAssignments.some(completedId => completedId.assignmentId === assignment._id) ? (
+                                                    <span>
+                                                        <FaCheckCircle size={25} className='text-green-500' />
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        <IoAlertCircle size={27} className='text-red-500' />
+                                                    </span>
+                                                )
+                                            }
                                         </div>
-                                        {
-                                            completedAssignments.some(completedId => completedId.assignmentId === assignment._id) ? (
-                                                <span>
-                                                    <FaCheckCircle size={25} className='text-green-500' />
-                                                </span>
-                                            ) : (
-                                                <span>
-                                                    <IoAlertCircle size={27} className='text-red-500' />
-                                                </span>
-                                            )
-                                        }
-                                    </div>
-
-
+                                    </Link>
                                 ))}
                             </div>
                         </AccordionItem >
