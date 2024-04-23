@@ -8,7 +8,7 @@ const UpdateStudent = ({
     onClose,
     currentStd,
     setCurrentStd,
-    loadStudentCourse,
+    loadDataStd,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
@@ -32,7 +32,7 @@ const UpdateStudent = ({
             );
             toast.success("แก้ไขข้อมูลนักเรียนสำเร็จ");
             onClose();
-            loadStudentCourse();
+            loadDataStd();
         } catch (error) {
             console.error(error);
             toast.error("ไม่สามารถแก้ไขข้อมูลนักเรียนได้");

@@ -251,14 +251,14 @@ const LessonView = () => {
         showLessonContent(selectedSectionIndex, nextLessonId);
       } else {
         // If there is no lesson after the current one, move to the next section
-        // goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
+        goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
         goToLessonQuiz()
       }
     }
   };
 
 // Check lessonId have in complete? else markCompleted working
-  const goToNextLessonCompleted = () => {
+  const goToNextLessonCompleted = (lessonId) => {
     if (selectedSectionIndex !== null) {
       const currentLessonIndex = section[selectedSectionIndex].lessonData.findIndex(
         (lesson) => lesson._id === activeLessonId
@@ -270,7 +270,7 @@ const LessonView = () => {
         showLessonContent(selectedSectionIndex, nextLessonId);
       } else {
         // If there is no lesson after the current one, move to the next section
-        // goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
+        goToNextLessonQuiz(lessonId);  // Modified to call goToNextLessonQuiz
         goToLessonQuiz()
       }
     }

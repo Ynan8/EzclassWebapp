@@ -159,7 +159,7 @@ const LessonContent = ({
                                     <>
                                         {completedLessons.includes(selectedLesson._id) ? (
                                             <Button
-                                                onClick={() => selectedLesson && goToNextLessonCompleted()}
+                                                onClick={() => selectedLesson && goToNextLessonCompleted(selectedLesson._id)}
                                                 className='w-full sm:w-auto px-8 py-6'
                                                 radius='sm'
                                                 variant='shadow'
@@ -187,7 +187,7 @@ const LessonContent = ({
                                     <>
                                         {completedLessons.includes(selectedLesson._id) ? (
                                             <Button
-                                                onClick={() => selectedLesson && goToNextLessonCompleted()}
+                                                onClick={() => selectedLesson && goToNextLessonCompleted(selectedLesson._id)}
                                                 className='w-full sm:w-auto px-8 py-6'
                                                 radius='sm'
                                                 variant='shadow'

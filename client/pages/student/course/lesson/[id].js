@@ -262,7 +262,7 @@ const LessonStudent = () => {
                             <BreadcrumbItem>บทเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
-                    <div className="px-12 w-full mt-10">
+                    <div className="px-4 w-full mt-10">
                         <div className="flex flex-col item-center justify-center">
                             {isLoading ? (
                                 // Render Skeleton components when data is loading
@@ -295,11 +295,11 @@ const LessonStudent = () => {
                                         </p>
                                         <div className="flex flex-col md:flex-row mt-4 space-y-2 md:space-y-0 md:space-x-4">
                                             <p className="text-base md:text-lg">
-                                                <span className='font-black'>ระดับชั้น:</span>
+                                                <span className='font-black'>ระดับชั้น: </span>
                                                 <span className='text-gray-600'>{courseRoomStd.roomName}</span>
                                             </p>
                                             <p className="text-base md:text-lg">
-                                                <span className='font-black'>ปีการศึกษา:</span>
+                                                <span className='font-black'>ปีการศึกษา: </span>
                                                 <span className='text-gray-600'>{courseYear.year}</span>
                                             </p>
                                         </div>

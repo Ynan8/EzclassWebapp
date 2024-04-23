@@ -219,7 +219,7 @@ const AssignmentRoom = () => {
               ],
             }}
           >
-            <NavbarContent className=" gap-6" justify="center">
+            <NavbarContent className="gap-3" justify="start">
               <NavbarItem  >
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
@@ -283,7 +283,7 @@ const AssignmentRoom = () => {
                 </h1>
                 {/* <pre>{JSON.stringify(section, null, 4)}</pre> */}
               </div>
-              <div className="flex flex-col  mt-2">
+              <div className="flex flex-col w-full mt-2">
                 <AssignmentAccordionTeacher
                   section={section}
                   courseYearId={courseYearId}

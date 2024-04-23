@@ -9,6 +9,9 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { IoAlertCircle } from "react-icons/io5";
+import Image from 'next/image';
+import find from '../../public/find.png'
+
 
 const SectionAccordionStd = ({
     section,
@@ -19,138 +22,107 @@ const SectionAccordionStd = ({
     completedAssignments,
 }) => {
 
-   
+
 
 
     return (
         <>
             {/* <pre>{JSON.stringify(completedAssignments, null, 4)}</pre> */}
-            <Accordion selectionMode="multiple" variant="splitted">
-                {section.map((item, index) => (
-                    <AccordionItem
-                        key={index}
-                        className='p-3'
-                        title={
-                            <div className='flex items-center' >
-                                <p className='text-xl' >
-                                    <span className='font-semibold ' >บทที่ {index + 1}</span> {item.sectionName}
-                                </p>
-                            </div>
-                        }
-                        startContent={< FaBookOpen size={25} className="text-primary" />}
-                    >
-                        <Listbox variant="flat" aria-label="Listbox menu with sections">
-                            <ListboxSection title="บทเรียนย่อย" showDivider>
-                                {item.lessonData?.filter(lesson => lesson.published === "true").map((lesson, lessonIndex) => (
-                                    <ListboxItem
-                                        className='mb-2'
-                                        key={lessonIndex}
-                                        title={
-                                            <Link href={`/student/course/lesson/view/${id}`}>
+            {section.length > 0 ? (
+                <Accordion selectionMode="multiple" variant="splitted">
+                    {section.map((item, index) => (
+                        <AccordionItem
+                            key={index}
+                            className='p-3'
+                            title={
+                                <div className='flex items-center' >
+                                    <p className='text-lg md:text-xl' >
+                                        <span className='font-semibold'>บทที่ {index + 1}</span> {item.sectionName}
+                                    </p>
 
-                                                <div className='flex justify-between items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span> {lesson.lessonName}
-                                                    </p>
-                                                    {completedLessons.includes(lesson._id) ? (
-                                                        <span>
-                                                            <FaCheckCircle size={25} className='text-green-500' />
-                                                        </span>
-                                                    ) : (
-                                                        <span>
-                                                            <IoAlertCircle size={27} className='text-red-500' />
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </Link>
-                                        }
-                                        startContent={
+                                    <div className="flex space-x-4 mr-4 ml-auto">
+                                        <span
+                                            onClick={() => {
+                                                onOpenModalUpdate();
+                                                handleSetCurrentSection(item._id);
+                                            }}
+                                            className="text-lg text-default-600 cursor-pointer active:opacity-50">
+                                            <CiEdit size={23} className="ml-auto" />
+                                        </span>
+
+                                        <span
+
+                                            className="text-lg text-danger cursor-pointer active:opacity-50">
+                                            <GoTrash
+                                                onClick={() => {
+                                                    onOpenModalDelete();
+                                                    openDeleteModal(item._id);
+                                                }}
+                                                size={20} className="" />
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                            startContent={< FaBookOpen size={25} className="text-primary" />}
+                        >
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.lessonData?.map((lesson, lessonIndex) => (
+                                    <div className='flex justify-between items-center bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2'>
                                             <div className="bg-primary/10 text-primary p-2 rounded-md">
                                                 <MdLibraryBooks size={25} className="text-primary" />
                                             </div>
-                                        }
-                                    >
-                                    </ListboxItem>
-                                ))}
-                            </ListboxSection>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>บทเรียนย่อยที่ {index + 1}.{lessonIndex + 1}</span>
+                                            <p className='sm:text-sm md:text-lg'>{lesson.lessonName}</p>
+                                        </div>
 
-                            <ListboxSection title="แบบทดสอบท้ายบทเรียน" showDivider>
-                                {item.quizData?.filter(quiz => quiz.published === "true").map((quiz, quizIndex) => (
-                                    <ListboxItem
-                                        key={quizIndex}
-                                        title={
-                                            <Link href={`/student/course/lesson/view/${id}`}>
-                                                <div className='flex justify-between items-center text-lg' >
-                                                    <p>
-                                                        <span className='font-semibold' >แบบทดสอบท้ายบทเรียน</span> {quiz.quizName}
-                                                    </p>
-                                                    {completedQuiz.includes(quiz._id) ? (
-                                                        <span>
-                                                            <FaCheckCircle size={25} className='text-green-500' />
-                                                        </span>
-                                                    ) : (
-                                                        <span>
-                                                            <IoAlertCircle size={27} className='text-red-500' />
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </Link>
-                                        }
-                                        startContent={
+                                    </div>
+                                ))}
+                            </div>
+
+
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.quizData?.map((quiz, lessonIndex) => (
+                                    <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2' >
                                             <div className="bg-danger/10 text-danger p-2 rounded-md">
                                                 <MdQuiz size={25} className="text-danger" />
                                             </div>
-                                        }
-                                    >
-                                    </ListboxItem>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>แบบทดสอบท้ายบทเรียน </span>
+                                            <p className='sm:text-sm md:text-lg'>{quiz.quizName}</p>
+                                        </div>
+                                    </div>
                                 ))}
-                            </ListboxSection>
+                            </div>
 
-                            <ListboxSection title="งานที่มอบหมาย" showDivider>
-                                {item.AssignmentData?.map((assignment, assignmentIndex) => (
-                                    assignment.courseRoom.includes(courseRoomStd._id) ? (
-                                        <ListboxItem
-                                            key={assignmentIndex}
-                                            title={
-                                                    <Link key={assignmentIndex} href={`/student/course/assignment/detail/${assignment._id}?courseId=${id}`}>
+                            <div className="flex flex-col space-y-2 mb-2">
+                                {item.AssignmentData?.map((assignment, lessonIndex) => (
+                                    <div className='flex justify-between items-center text-lg bg-gray-100 p-4 rounded-md'>
+                                        <div className='flex items-center space-x-2' >
+                                            <div className="bg-warning/10 text-warning p-2 rounded-md">
+                                                <MdAssignment size={25} className="text-warning" />
+                                            </div>
+                                            <span className='font-semibold mr-2 sm:text-sm md:text-lg'>งานชิ้นที่ {lessonIndex + 1} </span>
+                                            <p className='sm:text-sm md:text-lg'>{assignment.assignmentName}</p>
+                                        </div>
 
-                                                        <div className='flex justify-between items-center text-lg' >
-                                                            <p>
-                                                                <span className='font-semibold' >งานชิ้นที่ 1</span> {assignment.assignmentName}
-                                                            </p>
-                                                            {completedAssignments.some(completedId => completedId.assignmentId === assignment._id) ? (
-                                                                <span>
-                                                                    <FaCheckCircle size={25} className='text-green-500' />
-                                                                </span>
-                                                            ) : (
-                                                                <span>
-                                                                    <IoAlertCircle size={27} className='text-red-500' />
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </Link>
-
-
-                                            }
-                                            startContent={
-                                                <div className="bg-warning/10 text-warning p-2 rounded-md">
-                                                    <MdAssignment size={25} className="text-warning" />
-
-                                                </div>
-
-                                            }
-                                        >
-                                        </ListboxItem>
-                                    ) : (
-                                        null
-                                    )
+                                    </div>
                                 ))}
-                            </ListboxSection>
-
-                        </Listbox>
-                    </AccordionItem >
-                ))}
-            </Accordion >
+                            </div>
+                        </AccordionItem >
+                    ))}
+                </Accordion>
+            ) : (
+                <div className="flex flex-col items-center justify-center w-full h-[400px]">
+                    <Image
+                        width={250}
+                        height={200}
+                        alt="No course"
+                        src={find}
+                    />
+                    <p className="md:text-2xl sm:text-lg text-gray-800">ยังไม่มีบทเรียนในขณะนี้</p>
+                </div>
+            )}
         </>
     );
 };

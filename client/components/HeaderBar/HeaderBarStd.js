@@ -117,7 +117,7 @@ const HeaderBarTeacher = ({
                                         as="button"
                                         avatarProps={{
                                             isBordered: true,
-                                            src: userData.image ? userData.image.Location : '/profile.png'
+                                            src: userData.image ? userData.image.Location : ''
                                         }}
                                         className="uppercase transition-transform"
                                         description={userData?.role}

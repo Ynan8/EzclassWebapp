@@ -272,7 +272,7 @@ const GradeBookRoom = () => {
               ],
             }}
           >
-            <NavbarContent className=" gap-6" justify="center">
+            <NavbarContent className="gap-3" justify="start">
               <NavbarItem  >
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
@@ -418,13 +418,13 @@ const GradeBookRoom = () => {
                             {/* <td className="text-center pr-6 whitespace-no-wrap text-gray-800 tracking-normal leading-4">
                               Insert code room score here if applicable
                             </td> */}
-                            <td 
-                             className="text-center pl-14 pr-6"
+                            <td
+                              className="text-center pl-14 pr-6"
                             >
                               {totalWeightedScore.toFixed(2)}
                             </td>
-                            <td 
-                            className="text-center pl-14 pr-6">
+                            <td
+                              className="text-center pl-14 pr-6">
                               {calculateGrade(totalWeightedScore)}
                             </td>
                           </tr>

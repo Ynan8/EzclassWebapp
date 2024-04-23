@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Link, User, Avatar } from "@nextui-org/react";
 import Image from "next/image";
 import { UserOutlined } from "@ant-design/icons";
-import { AvatarGroup, AvatarIcon } from "@nextui-org/avatar";
 import Resizer from "react-image-file-resizer"
 import { Input, Button, ButtonGroup } from "@nextui-org/react";
 import { IoIosEyeOff, IoMdClose, IoMdEye } from "react-icons/io";
@@ -234,7 +233,11 @@ function editprofile() {
                 {preview ? (
                   <Avatar src={preview} className="w-32 h-32 md:w-52 md:h-52 text-lg" />
                 ) : (
-                  <Avatar src={userData.image ? userData.image.Location : '/profile.png'} className="w-32 h-32 md:w-52 md:h-52 text-lg" />
+                  <Avatar
+                   src={userData.image ? userData.image.Location : ''}
+                     className="w-32 h-32 md:w-52 md:h-52 text-lg"
+                    />
+              
                 )}
 
                 <div class="flex flex-col items-center mt-2">

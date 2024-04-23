@@ -213,7 +213,7 @@ const CheckAssignment = () => {
                                                 </div>
                                                 <div className="mb-3 p-4">
                                                     <div className="form-group">
-                                                        <p className=" flex space-x-2 text-base font-medium text-[#07074D]">ไฟล์งาน <BsFilePdf size={25} /> </p>
+                                                        <p className=" flex space-x-2 text-base font-medium text-[#07074D]"><BsFilePdf size={25} /> ไฟล์งาน</p>
                                                         <div className="flex items-center space-x-2 mt-2">
                                                             {assignments.assignmentFile ? (
                                                                 <Link

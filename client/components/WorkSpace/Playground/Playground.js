@@ -210,9 +210,9 @@ const Playground = ({
         } finally {
         }
     };
- 
 
-     return (
+
+    return (
         <div className=" bg-[#282827] min-h-screen  overflow-x-hidden">
             <nav className="flex justify-between items-center bg-[#1e1e1e] px-4 py-2">
                 <div className="text-white">
@@ -269,7 +269,7 @@ const Playground = ({
                     />
                 </div>
                 <div className='text-white p-4 mt-2 rounded-b-md'>
-                    <div className="w-full">
+                    <div className="w-full ">
                         <Tabs color='default' size='lg' variant="bordered" aria-label="Tabs variants" value={activeTab}>
                             <Tab key="playground" title="ผลรันโค้ด" >
                                 <div className='ml-4 flex flex-col sm:flex-row justify-between items-start sm:items-center'>
@@ -304,8 +304,8 @@ const Playground = ({
 
 
                                 </div>
-                                <div className="mt-5 pb-7 w-full flex flex-col sm:flex-row">
-                                    <div className="w-full sm:w-1/2 sm:mr-2 mb-4 sm:mb-0">
+                                <div className="mt-5 pb-7 w-full flex flex-row">
+                                    <div className="w-full  mb-4 sm:mb-0">
                                         <p className="text-sm mb-1 ml-4">Input:</p>
                                         <Textarea
                                             variant="faded"
@@ -316,7 +316,7 @@ const Playground = ({
                                             onChange={(e) => setInput(e.target.value)}
                                         />
                                     </div>
-                                    <div className="w-full sm:w-1/2">
+                                    <div className="w-full">
                                         <p className="text-sm mb-1 ml-4">Output:</p>
                                         <Textarea
                                             isReadOnly
@@ -325,19 +325,6 @@ const Playground = ({
                                             value={output ? output.join('\n') : 'กดปุ่ม "Run" เพื่อดูผลลัพธ์'}
                                             className={`w-full text-gray-500 ${isError ? 'text-red-500' : ''}`}
                                         />
-
-                                        {/* <div
-                     className="p-2 pt-3 pb-5 w-full h-60 bg-white whitespace-pre overflow-y-auto rounded-sm"
-                     style={isError ? errorStyle : {}}
-                 >
-                     <p className="font-mono cursor-text" style={isError ? { color: 'red' } : {}}>
-                         {output
-                             ? output.map((line, i) => <p key={i}>{line}</p>)
-                             : 'Click "Run Code" to see the output here'}
-                     </p>
-                 </div> */}
-
-
                                     </div>
                                 </div>
                             </Tab>

@@ -110,7 +110,7 @@ const MenuBar = ({
 
     useEffect(() => {
         getMessages();
-    }, [id]);
+    }, [messages, id]);
 
 
     useEffect(() => {
@@ -297,7 +297,6 @@ const MenuBar = ({
                         <div className="flex flex-col items-center justify-center h-[750px] bg-[#282827] text-gray-800 p-10">
                             <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden ">
                                 <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
-
                                     {messages.length === 0 ? (
                                         <div className="flex flex-col justify-center items-center space-y-2">
                                             <RiQuestionAnswerFill size={40} />
@@ -309,10 +308,9 @@ const MenuBar = ({
                                             const bubbleBgColor = fromMe ? "bg-blue-500" : "bg-gray-400"; // Set background color based on sender
 
                                             // Find the user object corresponding to the senderId of the message
-                                            const senderUser = clients.find(client => {
-                                                const user = client.user;
-                                                return user;
-                                            });
+                                            const senderUser = clients.find(client => client.user._id === msg.senderId);
+
+ 
                                             return (
                                                 <div key={index} ref={index === messages.length - 1 ? lastMessageRef : null} className={`flex w-full mt-2 space-x-3 max-w-xs ${fromMe ? "justify-end" : ""}`}>
                                                     {!fromMe && senderUser && (

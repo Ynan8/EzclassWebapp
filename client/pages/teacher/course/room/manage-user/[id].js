@@ -188,7 +188,7 @@ const ManageUser = () => {
               ],
             }}
           >
-            <NavbarContent className=" gap-6" justify="center">
+            <NavbarContent className="gap-3" justify="start">
               <NavbarItem  >
                 <Link
                   href={`/teacher/course/room/single/${id}/`}
@@ -300,7 +300,7 @@ const ManageUser = () => {
                                 {moment(student.createdAt)
                                   .locale('th')
                                   .format('LL HH:mm')}
-                                </td>
+                              </td>
                               <td className="flex justify-center items-center text-center">
                                 <div
                                   onClick={() => {

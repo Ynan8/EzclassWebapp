@@ -116,6 +116,26 @@ exports.removeTeacher = async (req, res) => {
   }
 };
 
+exports.removeStudent = async (req, res) => {
+  const studentId = req.params.id;
+
+  try {
+    // Delete the course year by ID
+    const deletedStudent = await User.findByIdAndDelete(studentId);
+
+    // Check if the course year exists
+    if (!deletedStudent) {
+      return res.status(404).json({ error: 'Course year not found.' });
+    }
+
+    // Return success response
+    res.status(200).json({ message: 'Course year deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting course year:', error);
+    res.status(500).json({ error: 'Failed to delete course.' });
+  }
+};
+
 exports.getCourseYearId = async (req, res) => {
   const { id } = req.params;
   try {

@@ -103,15 +103,17 @@ exports.getStdSubmitCodeCourse = async (req, res) => {
 
         // Filter submissions based on the courseId
         const submissionsForCourse = stdSubmitCodeCourse.filter(submission => {
-            return submission.codeRoomId.courseId.toString() === courseId;
+            // Add null check for submission.codeRoomId
+            return submission.codeRoomId && submission.codeRoomId.courseId.toString() === courseId;
         });
 
-        res.json(submissionsForCourse);
+        res.json(submissionsForCourse); // Return filtered submissions
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error fetching submissions.' });
     }
 };
+
 
 
 

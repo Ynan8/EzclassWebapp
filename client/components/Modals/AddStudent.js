@@ -14,7 +14,7 @@ const AddStudent = ({
     setUsername,
     password,
     setPassword,
-    loadStudentCourse,
+    loadDataStd,
     id,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -42,7 +42,7 @@ const AddStudent = ({
         }
     
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student/${id}`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/add-student`, {
                 firstName,
                 lastName,
                 username,
@@ -53,7 +53,7 @@ const AddStudent = ({
             setUsername('');
             setPassword('');
             toast.success("เพิ่มนักเรียนสำเร็จ");
-            loadStudentCourse();
+            loadDataStd();
             onClose();
         } catch (error) {
             console.error("Error adding student :", error);

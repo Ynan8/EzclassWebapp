@@ -7,7 +7,9 @@ import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import SideBarTeacher from '../../../../../components/Sidebar/SideBarTeacher'
 import HeaderBarTeacher from '../../../../../components/HeaderBar/HeaderBarTeacher'
-import { Avatar, Button } from '@nextui-org/react'
+import { Avatar, Button,  } from '@nextui-org/react'
+import { AiOutlineLeft } from 'react-icons/ai'
+import Link from 'next/link'
 
 const createCodeRoom = () => {
     const router = useRouter();
@@ -36,8 +38,8 @@ const createCodeRoom = () => {
     const handlePrev = () => {
         setPage(page === 0 ? formLength - 1 : page - 1);
     };
-   
-    
+
+
     const handleNext = () => {
         // Validation check for the current step's form fields
         switch (page) {
@@ -62,9 +64,9 @@ const createCodeRoom = () => {
         }
         setPage(page === formLength - 1 ? 0 : page + 1);
     };
-    
 
-    
+
+
     const [selectedPublish, setSelectedPublish] = useState("public");
 
     const handleButtonClick = (option) => {
@@ -159,25 +161,17 @@ const createCodeRoom = () => {
 
     return (
         <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white">
-            <SideBarTeacher  courseYearId={courseYear} />
+            <SideBarTeacher courseYearId={courseYear} />
             <HeaderBarTeacher />
             <div class="h-full ml-14 mt-28 mb-10 md:ml-64">
+               
                 <div className="px-10">
-                    <nav class="text-gray-500" aria-label="Breadcrumb">
-                        <ol class="list-none p-0 inline-flex">
-                            <li class="flex items-center">
-                                <a href="#">หน้าหลัก</a>
-                                <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
-                            </li>
-                            <li class="flex items-center">
-                                <a href="#">ห้องเรียนเขียนโค้ด</a>
-                                <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" /></svg>
-                            </li>
-                            <li>
-                                <a href="#" class=" text-blue-500 font-bold" aria-current="page">สร้างห้องเรียนเขียนโค้ด</a>
-                            </li>
-                        </ol>
-                    </nav>
+                <Link href={`/teacher/course/codeRoom/${courseYear}`}>
+                    <div className="flex item-center space-x-2  w-28">
+                        <AiOutlineLeft size={30} />
+                        <p>ย้อนกลับ</p>
+                    </div>
+                </Link>
                     <div class="max-w-4xl mx-auto bg-white p-16">
                         <ul className="flex justify-between w-full mb-16">
                             <li className={`rounded-lg relative flex items-center ${page === 0 ? 'border-2 bg-blue-500 border-blue-500  py-4 px-14' : 'border-2 border-blue-300  py-4 px-14'}`}>

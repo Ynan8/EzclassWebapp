@@ -166,13 +166,48 @@ const editCodeRoom = () => {
         }
     };
 
+    const generateRoomId = (length = 5) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    };
+
+    const [joinCode, setJoinCode] = useState(generateRoomId());
+
+    const generateNewRoomId = () => {
+        setJoinCode(generateRoomId());
+    };
+
+    useEffect(() => {
+        const interval = setInterval(generateNewRoomId, 3600000); // Generate new room ID every 1 hour
+
+        return () => {
+            clearInterval(interval); // Clear the interval when the component unmounts
+        };
+    }, []);
+
+    const [isStartTeaching, setIsStartTeaching] = useState(false);
 
     const handleStartTeaching = (roomId) => () => {
+        setIsStartTeaching(true); // Set loading to true
+
         router.push({
             pathname: `/editor/${roomId}`,
-            query: { firstName },
+            query: {
+                firstName,
+                joinCode
+            },
+        }).then(() => {
+            setIsStartTeaching(false); // Set loading to false after navigation is complete
+        }).catch((error) => {
+            console.error('Navigation error:', error);
+            setIsStartTeaching(false); // Set loading to false if navigation fails
         });
     };
+
 
     const [codeRoomId, setCodeRoomId] = useState("");
     const openDeleteModal = (id) => {
@@ -255,13 +290,14 @@ const editCodeRoom = () => {
                             ลบ
                         </Button>
                         <Button
+                            isLoading={isStartTeaching}
                             onClick={handleStartTeaching(values._id)}
                             className='px-10 text-white'
                             radius='lg'
                             size='lg'
                             color="warning"
                         >
-                            เข้าห้องเรียน
+                            {isStartTeaching ? "กำลังโหลด" : "เข้าห้องเรียน"}
                         </Button>
                     </div>
                     {handleForms()}

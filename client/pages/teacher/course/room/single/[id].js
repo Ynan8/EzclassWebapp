@@ -260,7 +260,7 @@ const SingleRoom = () => {
                             ],
                         }}
                     >
-                        <NavbarContent justify="start">
+                        <NavbarContent className="gap-3" justify="start">
                             <NavbarItem isActive >
                                 <Link
                                     href={`/teacher/course/room/single/${id}/`}
@@ -331,7 +331,7 @@ const SingleRoom = () => {
                                         <FaTrophy size={30} />
                                     </div>
 
-                                    <div className='flex flex-col space-y-1'>   
+                                    <div className='flex flex-col space-y-1'>
                                         <span className="block text-2xl font-semibold">
                                             {studentWithHighestAverageScore ? `${studentWithHighestAverageScore.studentName}` : 'ยังไม่มีนักเรียนทำแบบทดสอบ'}
                                         </span>

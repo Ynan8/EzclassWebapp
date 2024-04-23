@@ -509,40 +509,40 @@ const QuizContent = ({
                                             <div className="px-4">
                                                 <div className="flex flex-col item-center justify-center">
                                                     <div className="rounded-md shadow-md border border-opacity-50 mb-5">
-                                                        <div className="text-lg bg-gray-50 border-b rounded-t-md px-8 py-4 flex items-center justify-between space-x-6">
+                                                        <div className="md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
                                                             <p>
                                                                 แบบทดสอบท้ายบทที่ <span className='font-semibold'>{selectedQuizContent.quizName}</span>
-                                                                <span className="font-semibold">
-
-                                                                </span>
                                                             </p>
-                                                            <div className="flex space-x-2">
+                                                            <div className="flex space-x-1 md:space-x-2">
                                                                 {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (
-                                                                    <button
-                                                                        disabled
-                                                                        className="flex text-white bg-gray-400  py-2 px-6 rounded"
-                                                                    >
-                                                                        ทำอีกครั้ง  <RiLoopLeftFill className="ml-2" size={25} />
-                                                                    </button>
-                                                                ) : (
                                                                     <Button
-                                                                        variant='shadow'
-                                                                        color="primary"
-                                                                        onClick={restartQuiz}
-                                                                        startContent={
-                                                                            <RiLoopLeftFill className="ml-2" size={25} />
-                                                                        }
+                                                                        size='md'
+                                                                        isDisabled
+                                                                        color="default"
+                                                                        endContent={<RiLoopLeftFill size={20} />}
                                                                     >
                                                                         ทำอีกครั้ง
                                                                     </Button>
 
+                                                                ) : (
+                                                                    <Button
+                                                                        onPress={restartQuiz}
+                                                                        size='md'
+                                                                        color="primary"
+                                                                        endContent={<RiLoopLeftFill size={20} />}
+                                                                    >
+                                                                        ทำอีกครั้ง
+                                                                    </Button>
                                                                 )}
-                                                                <button
-                                                                    onClick={goToNextLessonQuiz}
-                                                                    className="flex text-white bg-green-500 hover:bg-green-700 duration-300 shadow-xl py-2 px-6 rounded"
+                                                                <Button
+                                                                    onPress={goToNextLessonQuiz}
+                                                                    size='md'
+                                                                    color="success"
+                                                                    className='text-white'
+                                                                    endContent={<AiOutlineArrowRight size={20} />}
                                                                 >
-                                                                    บทเรียนถัดไป  <AiOutlineArrowRight className="ml-2" size={25} />
-                                                                </button>
+                                                                    บทเรียนถัดไป
+                                                                </Button>
                                                             </div>
                                                         </div>
                                                         <div className="px-3">
@@ -558,23 +558,21 @@ const QuizContent = ({
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className="flex justify-center items-center">
-
-                                                            <div className="flex flex-col items-center justify-center  px-8 pt-4 pb-6 space-y-2">
-                                                                <div className=" flex flex-col justify-center items-center">
+                                                        <div className="flex flex-col sm:flex-row justify-center items-center">
+                                                            <div className="flex flex-col items-center px-4 sm:px-8 pt-4 pb-6 space-y-6">
+                                                                <div className="flex flex-col justify-center items-center">
                                                                     <h2 className={`text-4xl font-bold mb-2 ${averageHighestScore > selectedQuizContent.passingThreshold ? 'text-green-600' : 'text-red-600'}`}>
                                                                         {averageHighestScore > selectedQuizContent.passingThreshold ? 'ผ่าน' : 'ไม่ผ่าน'}
                                                                     </h2>
-                                                                    <p className='text-2xl' >คะแนนของคุณ {highestScore}/{selectedQuizContent.questions.length} คะแนน</p>
-                                                                    <p className='text-2xl'>คะแนนเฉลี่ย {averageHighestScore.toFixed(2)}%</p>
+                                                                    <p className='text-xl sm:text-2xl'>คะแนนของคุณ {highestScore}/{selectedQuizContent.questions.length} คะแนน</p>
+                                                                    <p className='text-xl sm:text-2xl'>คะแนนเฉลี่ย {averageHighestScore.toFixed(2)}%</p>
                                                                     <AverageQuizScoreStd
                                                                         averageHighestScore={averageHighestScore}
                                                                     />
                                                                 </div>
-
                                                             </div>
-                                                            <div className="px-8  pb-6 space-y-6">
-                                                                <h2 className="text-xl ">ประวัติทำแบบทดสอบนี้</h2>
+                                                            <div className="px-4 sm:px-8 pt-4 pb-6 space-y-6">
+                                                                <h2 className="text-lg sm:text-xl">ประวัติทำแบบทดสอบนี้</h2>
                                                                 {QuizScore.map((quizScore, index) => (
                                                                     <div className="flex flex-col justify-center">
                                                                         <p>ครั้งที่ {index + 1} : <span className='font-bold'>{quizScore.score}/{selectedQuizContent.questions.length} คะแนน</span></p>
@@ -586,14 +584,13 @@ const QuizContent = ({
                                                                         </p>
                                                                     </div>
                                                                 ))}
-
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ) :
+                                        </div>) :
                                         <div className="rounded-md shadow-md border border-opacity-50 mt-4">
                                             {/* <pre>{JSON.stringify(selectedQuizContent, null, 4)}</pre> */}
                                             <div className="bg-gray-50 border-b rounded-t-md px-4 py-3 sm:px-8 sm:py-4">
@@ -646,7 +643,7 @@ const QuizContent = ({
                             <div className="rounded-md shadow-md border border-opacity-50 mb-5">
                                 <div className="md:flex-row  text-base md:text-lg bg-gray-50 border-b rounded-t-md px-4 md:px-8 py-3 md:py-4 flex items-center justify-between space-x-2 md:space-x-6">
                                     <p>
-                                        แบบทดสอบท้ายบทที่ test <span className='font-semibold'>{selectedQuizContent.quizName}</span>
+                                        แบบทดสอบท้ายบทที่ <span className='font-semibold'>{selectedQuizContent.quizName}</span>
                                     </p>
                                     <div className="flex space-x-1 md:space-x-2">
                                         {selectedQuizContent.maxAttempts - QuizScore.length === 0 ? (

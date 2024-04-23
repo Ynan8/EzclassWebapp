@@ -9,8 +9,8 @@ import toast from 'react-hot-toast';
 
 const UploadStudentFile = ({
     onClose,
-    courseRoomId,
-    loadStudentCourse,
+    // courseRoomId,
+    loadDataStd,
 }) => {
     const [uploadButtonText, setUploadButtonText] = useState('อัพโหลดไฟล์');
     const [students, setStudents] = useState([]);
@@ -53,25 +53,27 @@ const UploadStudentFile = ({
     const importStudents = async () => {
         try {
             setLoading(true);
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/import-students/${courseRoomId}`, { students });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/import-students`, { students });
             console.log(response.data);
 
-            const existingStudentsUpdated = response.data.students.some((student) => student.message === 'Existing student updated');
+            // const existingStudentsUpdated = response.data.students.some((student) => student.message === 'Existing student updated');
 
-            if (existingStudentsUpdated) {
-                toast.error('Existing students were updated.');
-            } else {
-                toast.success('เพิ่มนักเรียนสำเร็จ');
-                onClose(); // Close the modal after successful import
-            }
-            loadStudentCourse()
+            // if (existingStudentsUpdated) {
+            //     toast.error('Existing students were updated.');
+            // } else {
+            toast.success('เพิ่มนักเรียนสำเร็จ');
+            onClose(); // Close the modal after successful import
+            loadDataStd()
             setLoading(false);
         } catch (error) {
-            console.error('Error importing students:', error);
-            setLoading(false);
+            console.error("Error adding student :", error);
+            if (error.response) {
+                toast.error(error.response.data);
+            } else {
+                toast.error("มีข้อผิดพลาดเกิดขึ้น");
+            }
         }
     };
-
 
     const handleDownloadTemplate = () => {
         const workSheetData = () => {
@@ -162,8 +164,8 @@ const UploadStudentFile = ({
                 <Button color="danger" variant="light" onPress={onClose}>
                     ยกเลิก
                 </Button>
-                <Button color="primary" onPress={importStudents} disabled={loading || students.length === 0}>
-                    ยืนยัน
+                <Button color="primary" onPress={importStudents} isLoading={loading}>
+                    {loading ? "กำลังโหลด" : "ยืนยัน"}
                 </Button>
             </ModalFooter>
         </div>
