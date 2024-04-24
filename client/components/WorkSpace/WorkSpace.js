@@ -26,7 +26,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
     // typescript: '5.0.3',
     java: '15.0.2',
     csharp: '6.12.0',
-    // php: '8.2.3',  
+    // php: '8.2.3',
   };
 
   const languages = Object.entries(LANGUAGE_VERSIONS);
@@ -85,11 +85,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
         setFetchedCode(code);
       });
 
-      socketRef.current.emit('code-change', {
-        roomId: joinCode,
-        code: fetchedCode,
-      });
-
+      
 
       socketRef.current.on('disconnected', ({ socketId, user }) => {
         toast.success(`${user.firstName} ออกจากห้องเรียน`);
@@ -113,6 +109,7 @@ const WorkSpace = ({ id, showConfetti, setShowConfetti }) => {
 
 
   const onCodeChange = (newCode) => {
+    console.log(newCode)
     setFetchedCode(newCode);
     socketRef.current.emit('code-change', {
       roomId: joinCode,
