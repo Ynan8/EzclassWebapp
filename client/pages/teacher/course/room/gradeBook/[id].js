@@ -365,7 +365,7 @@ const GradeBookRoom = () => {
                           className="text-center pl-14 pr-6"
                         >
                           <div className="flex flex-col items-center space-y-3">
-                            <span className="text-base font-semibold">{assignment.assignmentName}</span>
+                            <span className="text-base font-semibold">{assignment.assignmentName.substring(0, 15)}...</span>
                             <span className="  rounded p-2">
                               คะแนนเต็ม <span className='font-semibold' >{assignment.scoreLimit}</span>
                             </span>

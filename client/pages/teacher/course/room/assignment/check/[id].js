@@ -189,11 +189,19 @@ const CheckAssignment = () => {
                                                             </div>
                                                             <p className="text-xl font-semibold">{assignments.assignmentName}</p>
                                                         </div>
-                                                        <p>
-                                                            <span className='font-semibold'>มอบหมายเมื่อ</span> {moment(assignments.createdAt)
-                                                                .locale('th')
-                                                                .format('LL HH:mm')}
-                                                        </p>
+                                                        <div className="flex flex-col space-y-2">
+                                                            <p>
+                                                                <span className='font-semibold'>มอบหมายเมื่อ</span> {moment(assignments.createdAt)
+                                                                    .locale('th')
+                                                                    .format('LL HH:mm')}
+                                                            </p>
+                                                            <p>
+                                                                <span className='font-semibold'>กำหนดส่ง</span> {moment(assignments.assignmentDue)
+                                                                    .locale('th')
+                                                                    .format('LL HH:mm')}
+                                                            </p>
+                                                        </div>
+
                                                     </div>
                                                     <div className="flex flex-col justify-center items-center space-y-2 p-4">
                                                         <Chip

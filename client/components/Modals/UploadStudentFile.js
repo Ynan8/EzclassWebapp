@@ -1,4 +1,4 @@
-import { ModalBody, ModalFooter, ModalHeader, Button } from '@nextui-org/react'
+import { ModalBody, ModalFooter, ModalHeader, Button, Pagination } from '@nextui-org/react'
 import React, { useRef, useState } from 'react'
 import { AiOutlineUpload } from 'react-icons/ai';
 import { FaCloudUploadAlt } from 'react-icons/fa';
@@ -102,6 +102,11 @@ const UploadStudentFile = ({
         saveAs(data, 'Template.xlsx');
     };
 
+    const itemsPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil(students.length / itemsPerPage);
+
+
     return (
         <div>
             <ModalHeader className="flex flex-col gap-1">Import Excel</ModalHeader>
@@ -118,18 +123,22 @@ const UploadStudentFile = ({
                         </thead>
                         {students.length > 0 && (
                             <tbody className="text-lg">
-                                {students.map((student, index) => (
-                                    <tr key={index} className="h-10 transition-colors group">
-                                        <td className="text-center py-3">{student.รหัสนักเรียน}</td>
-                                        <td className="text-center py-3">{student.ชื่อจริง}</td>
-                                        <td className="text-center py-3">{student.นามสกุล}</td>
-                                    </tr>
-                                ))}
+                                {students
+                                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                                    .map((student, index) => (
+                                        <tr key={index} className="h-10 transition-colors group">
+                                            <td className="text-center py-3">{student.รหัสนักเรียน}</td>
+                                            <td className="text-center py-3">{student.ชื่อจริง}</td>
+                                            <td className="text-center py-3">{student.นามสกุล}</td>
+                                        </tr>
+                                    ))}
                             </tbody>
+
                         )}
                     </table>
+
                 </div>
-                {students.length === 0 && (
+                {students.length === 0 ? (
                     <div className="flex flex-col item-center justify-center my-6">
                         <p className='text-lg font-semibold mb-1' >
                             วิธีการการนำเข้ารายชื่อนักเรียนด้วยไฟล์ Excel
@@ -140,6 +149,17 @@ const UploadStudentFile = ({
                             <p>3.บันทึกไฟล์ excel</p>
                             <p>4.อัพโหลดไฟล์ และกดปุ่มบันทึก</p>
                         </div>
+                    </div>
+                ) : (
+                    <div className="flex justify-center mt-2">
+                        <Pagination
+                            size='lg'
+                            total={totalPages}
+                            initialPage={1}
+                            page={currentPage}
+                            onChange={(page) => setCurrentPage(page)}
+                        />
+
                     </div>
                 )}
                 <div className="flex justify-center items-center mt-4">

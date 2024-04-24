@@ -46,7 +46,7 @@ const AssignmentAccordionTeacher = ({
                                 <Link href={`/teacher/course/room/assignment/check/${assignment._id}?courseRoomId=${courseRoomId}`}>
                                     <div className='flex items-center text-lg'>
                                         <p>
-                                            <span className='font-semibold'>งานชิ้นที่ {index + 1}</span> {assignment.assignmentName}
+                                            <span className='font-semibold'>งานชิ้นที่ {assignmentIndex + 1}</span> {assignment.assignmentName}
                                         </p>
                                     </div>
                                     <div className='flex flex-col sm:flex-row  items-center  bg-gray-100 p-4 rounded-md'>
