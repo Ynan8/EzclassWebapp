@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher';
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher';
-import { BreadcrumbItem, Breadcrumbs, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Pagination } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Pagination, Select, SelectItem } from '@nextui-org/react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import axios from 'axios';
 import Link from 'next/link'
@@ -68,7 +68,7 @@ const CourseLogs = () => {
 
     // Show Course Logs
     const [courseLogs, setCourseLogs] = useState([])
-   
+
     useEffect(() => {
         if (courseId) { // Check if courseId is defined
             loadCourseLogs();
@@ -135,6 +135,22 @@ const CourseLogs = () => {
 
 
 
+    const [selectedLogFormat, setSelectedLogFormat] = useState("");
+
+
+    const logFormats = ["เข้ารายวิชา", "อัปโหลดไฟล์", "ยกเลิกอัปโหลดไฟล์"];
+
+    const handleFormatChange = (format) => {
+        setSelectedLogFormat(format);
+    };
+
+    // Filter logs based on the selected format
+    const filteredLogsByFormat = selectedLogFormat
+        ? filteredLogs.filter((log) => log.format.toLowerCase() === selectedLogFormat.toLowerCase())
+        : filteredLogs;
+
+
+
     return (
         <div>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
@@ -175,32 +191,17 @@ const CourseLogs = () => {
                                         startContent={<BiSearch />}
                                         onChange={(e) => setNameFilter(e.target.value)}
                                     />
-                                    {/* <Dropdown>
-                                        <DropdownTrigger className="hidden sm:flex">
-                                            <Button size='lg' endContent={<BiChevronDown className="text-sm" />} variant="flat">
-                                                ค้นหาประเภทผู้ใช้งาน
-                                            </Button>
-                                        </DropdownTrigger>
-                                        <DropdownMenu
-                                            disallowEmptySelection
-                                            aria-label="Table Columns"
-                                            closeOnSelect={false}
-                                            selectionMode="multiple"
-                                            onChange={(selectedIndexes) => {
-                                                const selectedItems = selectedIndexes.map(index => {
-                                                    return index === 0 ? "STUDENT" : "TEACHER"; // Assuming the index corresponds to the item's position in the DropdownItem list
-                                                });
-                                                setUserTypeFilter(selectedItems);
-                                            }}
-                                        >
-                                            <DropdownItem className="capitalize">
-                                                STUDENT
-                                            </DropdownItem>
-                                            <DropdownItem className="capitalize">
-                                                TEACHER
-                                            </DropdownItem>
-                                        </DropdownMenu>
-                                </Dropdown> */}
+                                    <Select
+                                        placeholder="เลือกรูปแบบการใช้งาน"
+                                        className="max-w-xs"
+                                    >
+                                        {logFormats.map((format) => (
+                                            <SelectItem key={format._id} onClick={() => handleFormatChange(format)}>
+                                                {format}
+                                            </SelectItem>
+
+                                        ))}
+                                    </Select>
                                     <Input
                                         size='sm'
                                         type='date'
@@ -224,9 +225,9 @@ const CourseLogs = () => {
                                             <TableColumn><p className='text-lg'>หมายเหตุ</p></TableColumn>
                                         </TableHeader>
                                         <TableBody>
-                                            {filteredLogs
+                                            {filteredLogsByFormat
                                                 .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                                                .map(log => (
+                                                .map((log) => (
                                                     <TableRow key={log._id}>
                                                         <TableCell className='text-lg'>
                                                             {moment(log.createdAt)
