@@ -39,8 +39,8 @@ const AssignmentAccordionTeacher = ({
         <>
             {section.map((item, index) => (
                 item.AssignmentData && item.AssignmentData.length > 0 ? ( // Check if AssignmentData exists and has length greater than 0
-                    <div className='flex flex-col space-y-8'  key={index}>
-                        <p className='text-xl font-medium text-black mb-4'>บทเรียนที่ {index + 1} {item.sectionName}</p>
+                    <div className='flex flex-col '  key={index}>
+                        <p className='text-xl font-medium text-black my-4'>บทเรียนที่ {index + 1} {item.sectionName}</p>
                         {item.AssignmentData.map((assignment, assignmentIndex) => (
                             <div key={assignment._id} >
                                 <Link href={`/teacher/course/room/assignment/check/${assignment._id}?courseRoomId=${courseRoomId}`}>
