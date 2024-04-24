@@ -138,7 +138,7 @@ const CourseLogs = () => {
     const [selectedLogFormat, setSelectedLogFormat] = useState("");
 
 
-    const logFormats = ["เข้ารายวิชา", "อัปโหลดไฟล์", "ยกเลิกอัปโหลดไฟล์"];
+    const logFormats = ["เข้าใช้งานวิชา", "อัปโหลดไฟล์", "ยกเลิกอัปโหลดไฟล์"];
 
     const handleFormatChange = (format) => {
         setSelectedLogFormat(format);
