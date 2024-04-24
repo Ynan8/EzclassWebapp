@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import TeacherRoute from '../../../../components/Routes/TeacherRoute';
 import { Breadcrumbs, BreadcrumbItem, Tabs, Tab, Button, Input, ModalHeader, ModalBody, ModalFooter, Skeleton } from "@nextui-org/react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, getKeyValue } from "@nextui-org/react";
 import HeaderBarTeacher from '../../../../components/HeaderBar/HeaderBarTeacher'
@@ -9,13 +8,12 @@ import { GoTrash } from "react-icons/go";
 import { CiEdit, CiSearch } from "react-icons/ci";
 import SideBarTeacher from '../../../../components/Sidebar/SideBarTeacher';
 import { useRouter } from 'next/router';
-import { Modal, ModalContent, useDisclosure, } from "@nextui-org/react";
-import Link from 'next/link';
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import AddCourseRoom from '../../../../components/Modals/AddCourseRoom';
 import axios from 'axios';
 import UpdateCourseRoom from '../../../../components/Modals/UpdateCourseRoom';
 import toast from 'react-hot-toast';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
+import Link from 'next/link';
 
 
 
@@ -84,6 +82,7 @@ const CourseRoom = () => {
     // Show Course Room
     const [courseRoom, setCourseRoom] = useState([])
 
+
     useEffect(() => {
         loadCourseRoom()
     }, [id])
@@ -104,24 +103,7 @@ const CourseRoom = () => {
     // Update Room
     const [currentRoom, setCurrentRoom] = useState({});
 
-    const handleUpdateRoom = async (e) => {
-        if (!currentRoom.roomName.trim()) {
-            toast.error("กรุณากรอกชื่อห้องเรียน");
-            return;
-        }
-
-        try {
-            const { data } = await axios.put(
-                `${process.env.NEXT_PUBLIC_API}/courseRoom/${currentRoom._id}`,
-                currentRoom
-            );
-            onClose(); // Close the modal only if the request is successful
-            loadCourseRoom();
-            toast.success("แก้ไขห้องเรียนสำเร็จ");
-        } catch (error) {
-            toast.error("ไม่สามารถแก้ไขห้องเรียนได้");
-        }
-    };
+   
 
     // Delete Room
     const [roomId, setRoomId] = useState("");
@@ -151,20 +133,20 @@ const CourseRoom = () => {
         { name: "จัดการ", uid: "actions" },
     ];
 
-    const renderCell = React.useCallback((courseRoom, columnKey, index) => {
+    const renderCell = React.useCallback((courseRoom, columnKey, index, course) => {
         const cellValue = courseRoom[columnKey];
 
         switch (columnKey) {
             case "index":
                 return (
-                    <div className="text-lg">
+                    <div className="">
                         {index}
                     </div>
                 );
             case "roomName":
                 return (
                     <div className="flex flex-col">
-                        <p className="text-lg  ">{courseRoom.roomName}</p>
+                        <p className="text-lg  ">{`ม.${course.level}/${courseRoom.roomName}`}</p>
                     </div>
                 );
             case "student":
@@ -215,7 +197,7 @@ const CourseRoom = () => {
                                 </span>
                             </Link>
                         </Tooltip> */}
-                        <Tooltip content="แก้ไข">
+                        <Tooltip content="แก้ไข" className="ml-5">
                             <span
                                 onClick={() => {
                                     onOpenModalUpdate();
@@ -241,34 +223,25 @@ const CourseRoom = () => {
     }, []);
 
     return (
-        <TeacherRoute>
+        <div>
             <div className="min-h-screen flex flex-col flex-auto bg-gray-50 text-black ">
                 <SideBarTeacher mobileSidebarOpen={mobileSidebarOpen} courseYearId={id} />
                 <HeaderBarTeacher handleSidebarToggle={toggleSidebar} />
-                <div className="h-full mt-28 mb-10 md:ml-64">
+
+                <div className="h-full  mt-28 mb-10 md:ml-64">
                     <div className="px-10">
+                        {/* Breadcrumbs */}
                         <Breadcrumbs size='lg'>
-                            <BreadcrumbItem>
-                                <Link href='/teacher/home' >
-                                    <p>หน้าหลัก</p>
-                                </Link>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem>
-                                <Link href='/teacher/home' >
-                                    {course.courseName} ม.{course.level}
-                                </Link>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem>
-                                <Link href={`/teacher/course/year/${course._id}`}>
-                                    ปีการศึกษา {courseYear.year}
-                                </Link>
-                            </BreadcrumbItem>
+                        <BreadcrumbItem><Link href={"/teacher/home"}>หน้าหลัก</Link></BreadcrumbItem>
+                            <BreadcrumbItem><Link href={`/teacher/course/year/${course._id}`}>{course.courseName} ม.{course.level}</Link></BreadcrumbItem>
+                            <BreadcrumbItem>ปีการศึกษา {courseYear.year}</BreadcrumbItem>
                             <BreadcrumbItem>ห้องเรียน</BreadcrumbItem>
                         </Breadcrumbs>
                     </div>
 
                     <main className="flex-1 mt-10 pb-16 sm:pb-32">
-                        <div className="mx-auto max-w-screen-2xl  px-4 sm:px-6 xl:px-12">
+
+                        <div className="mx-auto max-w-screen-xl  px-4 sm:px-6 xl:px-12">
                             <div className="bg-white rounded py-4 md:py-7 px-4 md:px-8 xl:px-10">
                                 <div className="flex flex-col sm:flex-row justify-between gap-3 items-end">
                                     <Input
@@ -295,6 +268,7 @@ const CourseRoom = () => {
                                     </Button>
                                 </div>
 
+
                                 <div className="mt-7 overflow-x-auto">
                                     {isLoading ? (
                                         <div className="mt-7 overflow-x-auto">
@@ -315,23 +289,18 @@ const CourseRoom = () => {
                                                     </TableColumn>
                                                 )}
                                             </TableHeader>
-                                            {courseRoom.length > 0 ? ( // Check if courseRoom array is not empty
-                                                <TableBody>
-                                                    {courseRoom
-                                                        .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
-                                                        .map((item, index) => (
-                                                            <TableRow key={item._id}>
-                                                                {columns.map((column) => (
-                                                                    <TableCell className='p-4'>{renderCell(item, column.uid, index + 1)}</TableCell>
-                                                                ))}
-                                                            </TableRow>
-                                                        ))}
-                                                </TableBody>
-                                            ) : (
-                                                <TableBody emptyContent={"ยังไม่มีห้องเรียนในรายวิชานี้"}>{[]}</TableBody>
-                                            )}
+                                            <TableBody emptyContent={"ไม่พบห้องเรียน"}>
+                                                    {courseRoom && courseRoom
+                                                    .filter((item) => item.roomName.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                    .map((item, index) => (
+                                                        <TableRow key={item._id}>
+                                                            {columns.map((column) => (
+                                                                <TableCell className='p-4'>{renderCell(item, column.uid, index + 1, course)}</TableCell>
+                                                            ))}
+                                                        </TableRow>
+                                                    ))}
+                                            </TableBody>
                                         </Table>
-
                                     )}
                                 </div>
                             </div>
@@ -351,6 +320,7 @@ const CourseRoom = () => {
                             courseYearId={id}
                             onClose={onClose}
                             loadCourseRoom={loadCourseRoom}
+                            courseLevel={course.level}
                         />
                     )}
                 </ModalContent>
@@ -370,7 +340,8 @@ const CourseRoom = () => {
                             loadCourseRoom={loadCourseRoom}
                             currentRoom={currentRoom}
                             setCurrentRoom={setCurrentRoom} // Use setCurrentRoom here
-                            handleUpdateRoom={handleUpdateRoom}
+                            courseLevel={course.level}
+
                         />
 
                     )}
@@ -411,7 +382,7 @@ const CourseRoom = () => {
                 </ModalContent>
             </Modal>
 
-        </TeacherRoute>
+        </div >
     )
 }
 
