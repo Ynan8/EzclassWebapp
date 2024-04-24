@@ -9,6 +9,7 @@ function Example({
   courseRoom,
   section,
   averageScores,
+  course,
 
 }) {
 
@@ -98,7 +99,7 @@ function Example({
     const chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: courseRoom.map(room => room.roomName), // labels should be the names of the rooms
+        labels: courseRoom.map(room => `ม.${course.level}/${room.roomName}`), // labels should be the names of the rooms
         datasets: datasets
       },
       options: {

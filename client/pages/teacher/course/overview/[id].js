@@ -267,6 +267,7 @@ const OverviewCourse = () => {
                                     courseRoom={courseRoom}
                                     section={section}
                                     averageScores={averageScores}
+                                    course={course}
                                 />
                             )}
                         </div>

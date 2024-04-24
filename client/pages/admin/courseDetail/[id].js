@@ -453,6 +453,7 @@ const CourseDetails = () => {
                                                 courseRoom={courseRoom}
                                                 section={section}
                                                 averageScores={averageScores}
+                                                course={course}
                                             />
                                         </div>
                                     </div>
